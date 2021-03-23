@@ -1,8 +1,8 @@
 BUILD_DIR   =   build
 SRC_DIR     =   src
 
-TARGET      =   test.com
-SOURCE      =   test.c
+TARGET      =   hello.com
+SOURCE      =   hello.c
 
 CC          = zcc
 CFLAGS      = +cpm
@@ -25,5 +25,5 @@ install:
     del /F /Q diskdefs
     copy ..\scripts\diskdefs diskdefs
     mkfs.cpm.exe -f idpfdd -t fddb.img
-    cpmcp -f idpfdd fddb.img test.com 0:test.com
+    cpmcp -f idpfdd fddb.img $(TARGET) 0:$(TARGET)
     cd ..

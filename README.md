@@ -1,49 +1,69 @@
 # idp
+
 Iskra Delta Partner code samples.
 
-# Building code samples on Windows
+# Building code samples 
 
-Prerequisites: z88dk installed
+## On Windows
 
-`nmake /f makefile.nmake` all
+z88dk, cpmtools, and nmake must be installed.
+
+Compile with 
+
+`nmake /f makefile.nmake all`
+
+Create disk image for the emulator with
+
+`nmake /f makefile.nmake install` 
+
+All output will go to the build file.
 
 # Creating disks
 
-Use cpmtools. 
-
-Binaries are available here.
+Use cpmtools to create disks for the emulator.
 
 http://www.moria.de/~michael/cpmtools/
 
-Disk definitions for floppy and hard drives are in
-the scripts folder (diskdefs):
+Disk definitions for Partner floppy and hard drives are in
+the the `scripts\diskdefs` file.
  * idpfdd for floppy drive
  * idphdd for the hard disk
 
-## Hard drive should be created like this
+## Create hard drive
 
-Note: -f is disk format and can be idphdd or idpfdd.
-Formats are defined in the scripts\diskdefs folder
+*Note: -f is disk format and can be idphdd or idpfdd.*
 
-mkfs.cpm.exe -f idphdd -t hdda.img
+`mkfs.cpm.exe -f idphdd -t hdda.img`
 
-## And floppy like this
+## Create floppy drive
 
-mkfs.cpm.exe -f idpfdd -t fddb.img
+`mkfs.cpm.exe -f idpfdd -t fddb.img`
 
-## Files can be added to disks like this
+## Add local files to disk
 
-Following command adds file test.com to 
-area 0: of floppy drive fddb.img.
+*Following command adds file test.com to area 0: of floppy drive fddb.img.*
 
-cpmcp -f idpfdd fddb.img test.com 0:test.com
+`cpmcp -f idpfdd fddb.img test.com 0:test.com`
 
-## And removed like this
+## Remove files from disk
 
-cpmrm -f idpfdd fddb.img 0:test.com
+`cpmrm -f idpfdd fddb.img 0:test.com`
 
- ## Iskra Delta Partner emulator
+ # Iskra Delta Partner emulator
 
  You can find the emulator here.
 
  http://matejhorvat.si/sl/slorac/delta/partner/index.htm
+
+ Once you are in the emulator, press Alt+O and select the `build\fddb.img` file.
+ This will create `B:` drive. Finally, type...
+
+ ~~~
+ B:
+ DIR
+ TEST
+ ~~~
+
+ And, voila...
+
+ ![Test in emulator](doc/test.jpg)

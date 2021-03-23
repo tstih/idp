@@ -67,3 +67,12 @@ the the `scripts\diskdefs` file.
  And, voila...
 
  ![Test in emulator](doc/test.jpg)
+
+ # Thank you
+
+ Matej Horvat for kindly sharing technical details about his emulator and functioning of a Partner, and complex code samples.
+
+ Miha Grcar for keeping a Partner Revival Slack and sharing his findings.
+
+Cheers,
+Tomaz Stih

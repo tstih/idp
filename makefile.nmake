@@ -1,0 +1,29 @@
+BUILD_DIR   =   build
+SRC_DIR     =   src
+
+TARGET      =   test.com
+SOURCE      =   test.c
+
+CC          = zcc
+CFLAGS      = +cpm
+
+all: $(BUILD_DIR)\$(TARGET)
+
+$(BUILD_DIR)\$(TARGET): $(SRC_DIR)\$(SOURCE)
+    cd build
+    $(CC) $(CFLAGS) -o ..\$(BUILD_DIR)\$(TARGET) ..\$(SRC_DIR)\$(SOURCE)
+    cd ..
+
+clean:
+    cd build
+    del /F /Q *.*
+    cd ..
+
+install:
+    cd build
+    del /F /Q fddb.img
+    del /F /Q diskdefs
+    copy ..\scripts\diskdefs diskdefs
+    mkfs.cpm.exe -f idpfdd -t fddb.img
+    cpmcp -f idpfdd fddb.img test.com 0:test.com
+    cd ..

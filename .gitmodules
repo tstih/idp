@@ -1,0 +1,3 @@
+[submodule "tools/cpmtools"]
+	path = tools/cpmtools
+	url = https://github.com/lipro-cpm4l/cpmtools.git

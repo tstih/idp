@@ -1,0 +1,70 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj": {}
+  },
+  "projects": {
+    "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj",
+        "projectName": "Idp.Gpx.Common",
+        "projectPath": "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj",
+        "packagesPath": "/home/tomaz/.nuget/packages/",
+        "outputPath": "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/tomaz/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[5.0.2, )"
+            },
+            "aforge": {
+              "target": "Package",
+              "version": "[2.2.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.201/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

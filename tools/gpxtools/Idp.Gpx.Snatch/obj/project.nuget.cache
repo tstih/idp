@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "v9lGZSDztYj5bWQP93AfKIff97hpvl7pYQ8uL+6K31uLX6xWZldDFkJGAfC33jJi3Phi2sR+dM2vw14yj5JrrA==",
+  "success": true,
+  "projectFilePath": "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Snatch/Idp.Gpx.Snatch.csproj",
+  "expectedPackageFiles": [
+    "/home/tomaz/.nuget/packages/microsoft.netcore.platforms/5.0.0/microsoft.netcore.platforms.5.0.0.nupkg.sha512",
+    "/home/tomaz/.nuget/packages/microsoft.win32.systemevents/5.0.0/microsoft.win32.systemevents.5.0.0.nupkg.sha512",
+    "/home/tomaz/.nuget/packages/system.drawing.common/5.0.2/system.drawing.common.5.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}

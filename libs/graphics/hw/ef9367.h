@@ -11,7 +11,10 @@
  * tomaz stih tue mar 23 2021
  * 
  */
+#ifndef _EF9367_H
+#define _EF9367_H
 
+#include <stdint.h>
 
 /* ----- graphics card registers ------------------------------------------- */
 
@@ -32,4 +35,6 @@
 extern void ef9367_init();
 
 /* wait until current command is executed, returns status register */
-extern uint8_t  ef9367_wait_ready() __z88dk_fastcall;
+extern uint8_t  ef9367_wait_ready() __naked;
+
+#endif /* _EF9367_H */

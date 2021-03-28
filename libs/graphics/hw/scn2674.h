@@ -9,6 +9,6 @@
 #ifndef _SCN2674_H
 #define _SCN2674_H
 
-uint8_t  scn2674_reset() __z88dk_fastcall
+void  scn2674_reset() __naked;
 
-#endif // _SCN2674_H
+#endif /* _SCN2674_H */

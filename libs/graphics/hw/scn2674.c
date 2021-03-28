@@ -12,10 +12,10 @@
 #define SCN2674_CMD_RESET       0x00
 
 /* execute master reset on the hardware */
-uint8_t  scn2674_reset() __z88dk_fastcall {
-#asm
-        la a, SCN2674_CMD_RESET     ; store flags
-        out (SCN2647_CMD), a
+void  scn2674_reset() __naked {
+__asm
+        ld a, #SCN2674_CMD_RESET        /* store flags */
+        out (#SCN2647_CMD), a
         ret
-#endasm
+__endasm;
 }

@@ -1,0 +1,91 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace Idp.Gpx.Common.CmdLine {
+
+    public class ArgumentParser {
+
+        private class ArgProperty {
+            public bool Present {get;set;}
+            public ArgumentAttribute Argument {get;set;}
+            public PropertyInfo PropertyInfo {get;set;}
+        }
+
+        public string Parse(object obj, string[] args, int startAt=0) {
+
+            // First get all arguments.
+            Dictionary<string,ArgProperty> annotatedProps=GetArguments(obj);
+
+            // Loop through the args.
+            int i=startAt;
+            while(i<args.Length) {
+
+                // Extract arg.
+                string arg=args[i++].Trim();
+                if (arg.StartsWith("/")||arg.StartsWith("-")) {
+
+                    // We have an option.
+                    string option = arg.Substring(1);
+
+                    // Find option in list of options.
+                    if (annotatedProps.ContainsKey(option)) {
+
+                        PropertyInfo prop=annotatedProps[option].PropertyInfo;
+                        if (prop.PropertyType!=typeof(bool)) {
+
+                            // Expect argument after option.
+                            if (i>=args.Length) return string.Format("Value expected after {0}.", arg);
+                            else {
+                                string val=args[i++];
+                                try { annotatedProps[option].PropertyInfo.SetValue(obj,Convert.ChangeType(val,prop.PropertyType),null);}
+                                catch(Exception) { return string.Format("Invalid value for {0} for option {1}.", val, arg);}
+                            }
+
+                        } else annotatedProps[option].PropertyInfo.SetValue(obj,true);
+                        
+                        // If we are here, it worked!
+                        annotatedProps[option].Present=true;
+
+                    } else return string.Format("Invalid option {0}.", arg);
+                } else return string.Format("Invalid argument {0}. Option expected. Options start with / or -.", arg);
+            }
+            return null; // Success.
+        }
+
+
+        public string[] GenerateArgsHelp(object obj) {
+            // First get all arguments.
+            Dictionary<string,ArgProperty> args=GetArguments(obj);
+
+            // Return description.
+            List<string> argSpec=new List<string>();
+            foreach(var arg in args.Select(a=>a.Value).Distinct())
+                argSpec.Add(string.Format("-{0,-20} {1}",
+                    arg.PropertyInfo.Name.ToLower(),
+                    arg.Argument.Help??"<not specified>"));
+
+            // Return list of arguments.
+            return argSpec.ToArray();
+        }
+
+        private Dictionary<string,ArgProperty> GetArguments(object obj) {
+            Dictionary<string,ArgProperty> dict=new Dictionary<string,ArgProperty>(StringComparer.InvariantCultureIgnoreCase);
+            PropertyInfo[] props=obj.GetType().GetProperties(BindingFlags.Public|BindingFlags.Instance);
+            foreach(PropertyInfo prop in props)
+                foreach(ArgumentAttribute attr in prop.GetCustomAttributes(typeof(ArgumentAttribute))) {
+                    // First create argument property.
+                    ArgProperty ap=new ArgProperty() {Argument=attr,PropertyInfo=prop};
+                    // Add property name.
+                    dict.Add(prop.Name,ap);
+
+                    // And all aliases too.
+                    if (attr.Aliases!=null)
+                        foreach(string alias in attr.Aliases.Split(new char[] {','}))
+                            dict.Add(alias,ap);
+                }
+            return dict;
+        }
+    }
+}

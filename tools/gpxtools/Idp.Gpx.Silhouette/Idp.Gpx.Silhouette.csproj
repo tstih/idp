@@ -7,13 +7,16 @@
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
-    <Content Include="gif\*.gif">
-    	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Idp.Gpx.Common\Idp.Gpx.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="gif\*.gif">
+    	<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

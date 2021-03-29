@@ -1,24 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "P021llp32l9EPskmU2GdCHONoD6ld96VV7qjLrOTZZN9QKbC4lWHswFr/JnJxxDq+5diHPP2hMYkuBxySIEMvA==",
+  "dgSpecHash": "nXxjvDB2PrejEzCJV6+FaF9Vw363uqrPwzmnQuW8ldSxDVm9hACZ1SURVcGS9thLMvAokGnhsWv484YYMpl6vQ==",
   "success": true,
   "projectFilePath": "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj",
   "expectedPackageFiles": [
-    "/home/tomaz/.nuget/packages/aforge/2.2.5/aforge.2.2.5.nupkg.sha512",
     "/home/tomaz/.nuget/packages/microsoft.netcore.platforms/5.0.0/microsoft.netcore.platforms.5.0.0.nupkg.sha512",
     "/home/tomaz/.nuget/packages/microsoft.win32.systemevents/5.0.0/microsoft.win32.systemevents.5.0.0.nupkg.sha512",
     "/home/tomaz/.nuget/packages/system.drawing.common/5.0.2/system.drawing.common.5.0.2.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'AForge 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
-      "libraryId": "AForge",
-      "targetGraphs": [
-        "net5.0"
-      ]
-    }
-  ]
+  "logs": []
 }

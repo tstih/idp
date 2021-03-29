@@ -2,15 +2,6 @@
   "version": 3,
   "targets": {
     "net5.0": {
-      "AForge/2.2.5": {
-        "type": "package",
-        "compile": {
-          "lib/AForge.dll": {}
-        },
-        "runtime": {
-          "lib/AForge.dll": {}
-        }
-      },
       "Microsoft.NETCore.Platforms/5.0.0": {
         "type": "package",
         "compile": {
@@ -63,19 +54,6 @@
     }
   },
   "libraries": {
-    "AForge/2.2.5": {
-      "sha512": "clkumhM9DggqIzEXAHgVLeWO4arG5YfoPr7J4jfjJx35AoeEIJSSm49J25bwp/9mXQYLwi7y1Wunc8qgYJsGxg==",
-      "type": "package",
-      "path": "aforge/2.2.5",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "aforge.2.2.5.nupkg.sha512",
-        "aforge.nuspec",
-        "lib/AForge.dll",
-        "lib/AForge.xml"
-      ]
-    },
     "Microsoft.NETCore.Platforms/5.0.0": {
       "sha512": "VyPlqzH2wavqquTcYpkIIAQ6WdenuKoFN0BdYBbCWsclXacSOHNQn66Gt4z5NBqEYW0FAPm5rlvki9ZiCij5xQ==",
       "type": "package",
@@ -167,8 +145,7 @@
   },
   "projectFileDependencyGroups": {
     "net5.0": [
-      "System.Drawing.Common >= 5.0.2",
-      "aforge >= 2.2.5"
+      "System.Drawing.Common >= 5.0.2"
     ]
   },
   "packageFolders": {
@@ -211,10 +188,6 @@
           "System.Drawing.Common": {
             "target": "Package",
             "version": "[5.0.2, )"
-          },
-          "aforge": {
-            "target": "Package",
-            "version": "[2.2.5, )"
           }
         },
         "imports": [
@@ -235,17 +208,5 @@
         "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.201/RuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'AForge 2.2.5' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework 'net5.0'. This package may not be fully compatible with your project.",
-      "libraryId": "AForge",
-      "targetGraphs": [
-        "net5.0"
-      ]
-    }
-  ]
+  }
 }

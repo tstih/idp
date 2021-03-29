@@ -41,10 +41,6 @@
             "System.Drawing.Common": {
               "target": "Package",
               "version": "[5.0.2, )"
-            },
-            "aforge": {
-              "target": "Package",
-              "version": "[2.2.5, )"
             }
           },
           "imports": [

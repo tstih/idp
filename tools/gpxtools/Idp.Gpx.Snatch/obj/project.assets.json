@@ -50,6 +50,19 @@
             "rid": "win"
           }
         }
+      },
+      "Idp.Gpx.Common/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "dependencies": {
+          "System.Drawing.Common": "5.0.2"
+        },
+        "compile": {
+          "bin/placeholder/Idp.Gpx.Common.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Idp.Gpx.Common.dll": {}
+        }
       }
     }
   },
@@ -141,10 +154,16 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "Idp.Gpx.Common/1.0.0": {
+      "type": "project",
+      "path": "../Idp.Gpx.Common/Idp.Gpx.Common.csproj",
+      "msbuildProject": "../Idp.Gpx.Common/Idp.Gpx.Common.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "Idp.Gpx.Common >= 1.0.0",
       "System.Drawing.Common >= 5.0.2"
     ]
   },
@@ -172,7 +191,11 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj": {
+              "projectPath": "/home/tomaz/Work/idp/tools/gpxtools/Idp.Gpx.Common/Idp.Gpx.Common.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

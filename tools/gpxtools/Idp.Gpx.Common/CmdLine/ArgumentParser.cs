@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Idp.Gpx.Common.CmdLine {
 
@@ -51,6 +52,33 @@ namespace Idp.Gpx.Common.CmdLine {
                     } else return string.Format("Invalid option {0}.", arg);
                 } else return string.Format("Invalid argument {0}. Option expected. Options start with / or -.", arg);
             }
+
+            // Check if all required properties are present.
+            StringBuilder missing = new StringBuilder();
+            bool first = true;
+            HashSet<ArgProperty> consumed = new HashSet<ArgProperty>();
+            foreach (var p in annotatedProps)
+                if (p.Value.Argument.Mandatory && !p.Value.Present)
+                {
+                    if (first)
+                    {
+                        first = false;
+                        missing.AppendFormat("Missing mandatory argument {0}.", p.Key);
+                        consumed.Add(p.Value); 
+                    }
+                    else
+                    {
+                        if (!consumed.Contains(p.Value))
+                        {
+                            missing.AppendFormat("{0}Missing mandatory argument {1}.", Environment.NewLine, p.Key);
+                            consumed.Add(p.Value);                        
+                        }
+                    }
+                }
+            if (!first)
+                return missing.ToString();
+            
+            // We're good.
             return null; // Success.
         }
 

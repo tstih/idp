@@ -13,9 +13,10 @@ namespace Idp.Gpx.Snatch
         const int MISSING_COMMAND = 1;
         const int INVALID_COMMAND = 2;
         const int INVALID_ARGS = 3;
+        const int EXEC_FAILED = 4;
 
         static Cmd[] _commands=new Cmd[] {
-            new CropCmd()
+            new ArrayCmd()
         };
 
         static public void Main(string[] args)
@@ -29,14 +30,14 @@ namespace Idp.Gpx.Snatch
 
             // Parse other args.
             string cmdName=args[0];
-            Cmd cmd=_commands.FirstOrDefault(c=>cmdName.Equals(c.Name));
+            Cmd cmd=_commands.FirstOrDefault(c=>cmdName.Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
             if (cmd==null) Error(string.Format("Invalid command {0}.", cmdName), INVALID_COMMAND);
 
             // Now parse the rest of arguments.
             ArgumentParser parser=new ArgumentParser();
             string result=parser.Parse(cmd,args,1);
             if (result!=null) 
-                Error(string.Format("Invalid command {0}.", cmdName),INVALID_COMMAND);
+                Error(result, INVALID_ARGS);
         
             // If we are here, we have evrything.
             StringBuilder std=new StringBuilder();
@@ -46,7 +47,7 @@ namespace Idp.Gpx.Snatch
             if (retCode==0) 
                 Environment.Exit(SUCCESS);
             else 
-                Error(err.ToString(),INVALID_ARGS);
+                Error(err.ToString(), EXEC_FAILED);
         }
 
         static void Welcome() {

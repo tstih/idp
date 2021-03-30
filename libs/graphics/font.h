@@ -36,7 +36,6 @@ typedef struct font_header_s {
     uint8_t descent;
     uint8_t median;
     uint8_t baseline;
-    uint8_t descent;
     
     /* offsets to glpyhs, to get the address of glyph
        just add glpyh_offs[my ascii-start ascii] to the header address */

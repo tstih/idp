@@ -2,7 +2,7 @@
   "profiles": {
     "Idp.Gpx.Snatch": {
       "commandName": "Project",
-      "commandLineArgs": "array -f fonts\\atari-small.gif -gw 4 -gh 8 -t 2 -l 3 -first 0  -format images"
+      "commandLineArgs": "array -f fonts\\atari-small.gif -gw 4 -gh 8 -t 2 -l 3 -first 0  -format asm -o font8x4"
     }
   }
 }

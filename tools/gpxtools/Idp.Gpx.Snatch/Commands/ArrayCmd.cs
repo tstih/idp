@@ -1,15 +1,96 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
-using Idp.Gpx.Common.CmdLine; 
+
+using Idp.Gpx.Common.CmdLine;
+using Idp.Gpx.Common.Formats;
 
 namespace Idp.Gpx.Snatch.Commands {
     public class ArrayCmd : Cmd {
 
         const int SUCCESS = 0;
         const int INVALID_FORMAT = 5;
+
+        private class Export
+        {
+            public virtual int Begin(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err) { return 0; }
+            public virtual int OnGlyph(ArrayCmd cmd, Bitmap bmp, Rectangle rect, int ascii, StringBuilder std, StringBuilder err) { return 0; }
+            public virtual int End(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err) { return 0; }
+        }
+
+        private class AsmExport : Export
+        {
+            private Asm _asm;
+            public override int Begin(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err)
+            {
+                _asm = new Asm(std); // In case we need it, prepare it.
+                byte bytesPerGlyph = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
+                _asm.AddFontHeader(cmd.Output, FontType.Tiny|FontType.Fixed,(byte)cmd.GlyphWidth,(byte)cmd.GlyphHeight,bytesPerGlyph);
+                return SUCCESS;
+            }
+
+            public override int OnGlyph(ArrayCmd cmd, Bitmap bmp, Rectangle rect, int ascii, StringBuilder std, StringBuilder err)
+            {
+                byte bytesPerGlyph = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
+                
+                return SUCCESS;
+            }
+
+            protected byte[] GetCharBytes()
+            {
+                return null;
+            }
+        }
+
+        private class CExport : Export { }
+
+        private class GridExport : Export {
+            private Pen _pen;
+            private Graphics _graphics;
+            public override int Begin(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err)
+            {
+                _pen = new Pen(Color.FromArgb(224, 224, 224, 224));
+                _graphics = Graphics.FromImage(bmp);
+                return SUCCESS;
+            }
+            public override int OnGlyph(ArrayCmd cmd, Bitmap bmp, Rectangle rect, int ascii, StringBuilder std, StringBuilder err)
+            {
+                _graphics.DrawRectangle(_pen, rect.Left, rect.Top, rect.Width - 1, rect.Height- 1);
+                return SUCCESS;
+            }
+            public override int End(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err)
+            {
+                // Release pen and graphics.
+                _pen.Dispose();
+                _graphics.Dispose();
+                // Save image.
+                bmp.Save(cmd.Output + ".png", ImageFormat.Png);
+                // And return success.
+                return SUCCESS;
+            }
+        }
+
+        private class ImagesExport : Export {
+            public override int OnGlyph(ArrayCmd cmd, Bitmap bmp, Rectangle rect, int ascii, StringBuilder std, StringBuilder err)
+            {
+                Bitmap gbmp = new Bitmap(cmd.GlyphWidth, cmd.GlyphHeight);
+                using (Graphics gg = Graphics.FromImage(gbmp))
+                {
+                    gg.DrawImage(
+                        bmp,
+                        new Rectangle(0, 0, rect.Width, rect.Height),
+                        rect,
+                        GraphicsUnit.Pixel);
+                }
+                string ofname = string.Format("{0}_{1}.png", cmd.Output, ascii);
+                gbmp.Save(ofname, ImageFormat.Png);
+
+                return SUCCESS;
+            }
+        }
 
         public override string Name { get {return "Array";} }
         public override string Desc { get {return "Create an array from image and export it.";} }
@@ -65,13 +146,24 @@ namespace Idp.Gpx.Snatch.Commands {
 
         public override int Execute(StringBuilder std, StringBuilder err) {
 
+            // Available exports.
+            var ie = new ImagesExport();
+            Dictionary<string, Export> exports = new Dictionary<string, Export>(StringComparer.InvariantCultureIgnoreCase)
+            {
+                { "grid", new GridExport() },
+                { "c", new CExport() },
+                { "asm", new AsmExport() },
+                { "glyphs", ie },
+                { "images", ie },
+            };
+
             // Format must be valid.
-            string[] validFormats = { "grid","c","asm", "glyphs", "images" };
-            if (validFormats.FirstOrDefault(f=>f.Equals(Format,StringComparison.InvariantCultureIgnoreCase))==null)
+            Export export;
+            if (exports.Keys.FirstOrDefault(f => f.Equals(Format, StringComparison.InvariantCultureIgnoreCase)) == null)
             {
                 err.AppendFormat("Invalid format {0}.{1}", Format, Environment.NewLine);
                 return INVALID_FORMAT;
-            }
+            } else export = exports[Format];
 
             // Get the bitmap.
             Bitmap loadBmp = Bitmap.FromFile(Filename) as Bitmap;
@@ -80,50 +172,33 @@ namespace Idp.Gpx.Snatch.Commands {
             Bitmap bmp = new Bitmap(loadBmp.Width, loadBmp.Height);
             using (Graphics g = Graphics.FromImage(bmp)) g.DrawImage(loadBmp, 0, 0, loadBmp.Width, loadBmp.Height);
 
+            // Initialize basic members.
             int ascii = First;
             int x = Left, y = Top; // Respect margins.
             int maxx = bmp.Width - Left - Right, maxy = bmp.Height - Top - Bottom;
 
-            using (Pen p = new Pen(Color.FromArgb(224, 224, 224, 224)))
-            using (Graphics g = Graphics.FromImage(bmp))
-            {
-                int advancex = (GlyphWidth + HorizontalPadding), advancey = (GlyphHeight + VerticalPadding);
-                for (int yc = y; yc + GlyphHeight - 1 <= maxy; yc += advancey)
-                    for (int xc = x; xc + GlyphWidth - 1 <= maxx; xc += advancex)
-                    {
-                        // Are we too far?
-                        if (ascii > Last) goto done;
+            // Initialize export.
+            int exitCode = export.Begin(this, bmp, std, err);
+            if (exitCode != SUCCESS) return exitCode;
 
-                        // Draw grid?
-                        if ("grid".Equals(Format,StringComparison.InvariantCultureIgnoreCase))
-                            g.DrawRectangle(p, xc, yc, GlyphWidth - 1, GlyphHeight - 1);
-                        else if ("glyphs".Equals(Format, StringComparison.InvariantCultureIgnoreCase)
-                            || ("images".Equals(Format, StringComparison.InvariantCultureIgnoreCase)))
-                        {
-                            Bitmap gbmp = new Bitmap(GlyphWidth, GlyphHeight);
-                            using (Graphics gg=Graphics.FromImage(gbmp))
-                            {
-                                gg.DrawImage(
-                                    bmp,
-                                    new Rectangle(0, 0, GlyphWidth, GlyphHeight), 
-                                    new Rectangle(xc, yc, GlyphWidth, GlyphHeight),
-                                    GraphicsUnit.Pixel);
-                            }
-                            string ofname = string.Format("{0}_{1}.png", Output, ascii);
-                            gbmp.Save(ofname,ImageFormat.Png);
-                        }
+            
+            int advancex = (GlyphWidth + HorizontalPadding), advancey = (GlyphHeight + VerticalPadding);
+            for (int yc = y; yc + GlyphHeight - 1 <= maxy; yc += advancey)
+                for (int xc = x; xc + GlyphWidth - 1 <= maxx; xc += advancex)
+                {
+                    // Are we too far?
+                    if (ascii > Last) goto done;
 
-                        // Next ascii.
-                        ascii++;
-                    }
-                done:;
-            }
+                    // glyph found?
+                    exitCode=export.OnGlyph(this, bmp, new Rectangle(xc, yc, GlyphWidth, GlyphHeight), ascii, std, err);
+                    if (exitCode != SUCCESS) return exitCode;
 
-            // Only save changed image if grid format.
-            if ("grid".Equals(Format, StringComparison.InvariantCultureIgnoreCase))
-                bmp.Save(Output + ".png",ImageFormat.Png);
+                    // Next ascii.
+                    ascii++;
+                }
 
-            return 0;
+            done:
+            return export.End(this, bmp, std, err);
         } 
     }
 }

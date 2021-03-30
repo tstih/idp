@@ -9,6 +9,8 @@
 
 #include <stdint.h>
 
+#include "glyph.h"
+
 /* 
  * SPR_TYP_IDP_TINY sprite type is max 16x16 and defined
  * by a sequen of moves. each move is 1 byte and has format
@@ -32,17 +34,10 @@
  * when it is up it merely moves the position
  * 
  */
-#define SPR_TYP_IDP_TINY    1  /* max 16x16 */
-
 typedef struct spirte_s {
 
-    uint8_t type;       /* sprite type, only SPR_TYP_IDP_TINY is supported  */
-    union {
-        uint8_t moves;  /* only for SPR_TYP_IDP_TINY  */
-    };
-    uint8_t width;     
-    uint8_t height;
-    uint8_t data[0];    /* sprite data */
+    glyph_header_t ghdr;        /* standard glyph header */    
+    glyph_data_t gdata;         /* glyph data */
 
 } sprite_t;
 

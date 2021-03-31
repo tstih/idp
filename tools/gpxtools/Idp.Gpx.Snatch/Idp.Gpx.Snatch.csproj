@@ -20,6 +20,10 @@
   </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="fonts\_parameters.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Idp.Gpx.Common\Idp.Gpx.Common.csproj" />
     </ItemGroup>
 

@@ -28,7 +28,5 @@ namespace Idp.Gpx.Common.Formats
         public byte OriginX;
         [FieldOffset(1)]
         public byte OriginY;
-        [FieldOffset(2)]
-        public byte Width;
     }
 }

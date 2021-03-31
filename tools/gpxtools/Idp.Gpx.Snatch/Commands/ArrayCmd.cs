@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -23,25 +25,53 @@ namespace Idp.Gpx.Snatch.Commands {
 
         private class AsmExport : Export
         {
+            private StringBuilder _internal;
             private Asm _asm;
+
+            public AsmExport()
+            {
+                _internal = new StringBuilder();
+            }
+
             public override int Begin(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err)
             {
-                _asm = new Asm(std); // In case we need it, prepare it.
+                _asm = new Asm(_internal); 
                 byte bytesPerGlyph = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
-                _asm.AddFontHeader(cmd.Output, FontType.Tiny|FontType.Fixed,(byte)cmd.GlyphWidth,(byte)cmd.GlyphHeight,bytesPerGlyph);
+                _asm.AddFontHeader(cmd.Output, FontType.Tiny|FontType.Fixed,(byte)cmd.GlyphWidth,(byte)cmd.GlyphHeight,bytesPerGlyph, (byte)cmd.First, (byte)cmd.Last);
                 return SUCCESS;
             }
 
             public override int OnGlyph(ArrayCmd cmd, Bitmap bmp, Rectangle rect, int ascii, StringBuilder std, StringBuilder err)
             {
-                byte bytesPerGlyph = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
-                
+                // Char to bitfield.
+                byte bytesPerGlyph = (byte)((cmd.GlyphWidth - 1) / 8 + 1);   
+                int bit = 0;
+                BitArray bits = new BitArray(8 * bytesPerGlyph * cmd.GlyphHeight,false);
+                for (int y = 0; y < rect.Height; y++)
+                    for (int x = 0; x < rect.Width; x++)
+                        bits[y * 8 * bytesPerGlyph + x] = !IsWhite((bmp.GetPixel(rect.Left+x, rect.Top+y)));
+
+                // And generate as 0b const.
+                _asm.AddGlyph(ascii, bits, bytesPerGlyph, (byte)rect.Height, 0, 0);
+
                 return SUCCESS;
             }
 
-            protected byte[] GetCharBytes()
+            public override int End(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err)
             {
-                return null;
+                // Write result to text file.
+                File.WriteAllText(cmd.Output + ".s", _internal.ToString());
+
+                // And write result to std. output.
+                std.Append(_internal.ToString());
+
+                return SUCCESS;
+            }
+
+            private bool IsWhite(Color c, byte threshold=192)
+            {
+                byte avg = (byte)((c.R + c.G + c.B) / 3);
+                return avg > threshold;
             }
         }
 
@@ -133,6 +163,18 @@ namespace Idp.Gpx.Snatch.Commands {
 
         [Argument(Aliases = "end,e", Mandatory = false, Help = "Last ascii.")]
         public int Last { get; set; }
+
+        [Argument(Aliases = "p", Mandatory = false, Help = "Make font proportional.")]
+        public bool Proportional { get; set; }
+
+        [Argument(Aliases = "c", Mandatory = false, Help = "Point color in (r,g,b) format, no spaces!")]
+        public string Color { get; set; }
+
+        [Argument(Aliases = "th", Mandatory = false, Help = "Point color threshold (0-255) for soft recognition of points.")]
+        public int Threshold { get; set; }
+
+        [Argument(Aliases = "i", Mandatory = false, Help = "Use color and threshold to recognize background instead of point.")]
+        public bool Inverse { get; set; }
 
         public ArrayCmd() {
             // Default arguments.

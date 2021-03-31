@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Text;
 
 namespace Idp.Gpx.Common.Formats
@@ -7,7 +8,7 @@ namespace Idp.Gpx.Common.Formats
     {
         private StringBuilder _sb;
         public Asm(StringBuilder sb) { _sb = sb; Tab = 8; }
-        public void AddFontHeader(string name, FontType generation, byte width, byte height, byte widthInBytes)
+        public void AddFontHeader(string name, FontType generation, byte width, byte height, byte widthInBytes, byte firstAscii, byte lastAscii)
         {
             // File name.
             _sb.AppendFormat("{0};;{1}{2}.s{3}", Spaces(2*Tab), Spaces(6), name, Environment.NewLine);
@@ -26,6 +27,10 @@ namespace Idp.Gpx.Common.Formats
             AddCommentedByte(height, "font height");
             AddCommentedByte(widthInBytes, "width in bytes");
 
+            // First and last ascii.
+            AddCommentedByte(firstAscii, "first ascii");
+            AddCommentedByte(lastAscii, "last ascii");
+
             // Font defs.
             if (generation.HasFlag(FontType.Typo))
             { // Typographic font?
@@ -41,10 +46,38 @@ namespace Idp.Gpx.Common.Formats
             _sb.AppendLine();
         }
         
+        public void AddGlyph(int ascii, BitArray bits, byte widthInBytes, byte height, byte originx=0, byte originy=0)
+        {
+            string glyph;
+            if (ascii < 32) glyph = "<control>";
+            else if (ascii > 126) glyph = "<non standard>";
+            else glyph = ((char)ascii).ToString();
+            _sb.AppendFormat("{0};; ascii {1}: '{2}'{3}", Spaces(2 * Tab), ascii, glyph, Environment.NewLine);
+
+            for (int line = 0; line < height; line++)
+            {
+                _sb.Append(Spaces(2 * Tab)); // Ident.
+                bool bFirstInRow = true;
+                for (int byt = 0; byt < widthInBytes; byt++)
+                {
+                    if (!bFirstInRow) _sb.Append(", "); else { _sb.Append(".db ");  bFirstInRow = false; }
+                    _sb.Append("0b");
+                    for (int bit = 0; bit < 8; bit++)
+                    {
+                        int index = line * 8 * widthInBytes + 8 * byt + bit;
+                        _sb.Append(bits[index] ? 1 : 0);
+                    }
+                }
+                _sb.AppendLine();
+            }
+
+            _sb.AppendLine(); // Conclude glyph.
+        }
+
         private void AddCommentedByte(byte b, string comment)
         {
             string db = string.Format("{0}.db {1}", Spaces(2*Tab), b);
-            db = FixedWidth(db, 6 * Tab);
+            db = FixedWidth(db, 5 * Tab);
             _sb.AppendFormat("{0};; {1}{2}", db, comment, Environment.NewLine);
         }
 

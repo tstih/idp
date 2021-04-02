@@ -6,21 +6,26 @@ Iskra Delta Partner code samples.
 
 ## On Windows
 
-z88dk, cpmtools, and nmake must be installed.
+Sorry, only Linux is supported at this time.
+
+## On Linux
+
+Make sure you have gcc, sdcc, and cpmtools installed.
 
 Compile with 
 
-`nmake /f makefile.nmake all`
+`make`
 
 Create disk image for the emulator with
 
-`nmake /f makefile.nmake install` 
+`make install`
 
-All output will go to the build file.
+All output will go to the build folder. Disk image that you 
+can import into Partner emulator (using Alt+O) is called `fddb.img`.
 
 # Creating disks
 
-Use cpmtools to create disks for the emulator.
+Use cpmtools to create your own disks for the emulator.
 
 http://www.moria.de/~michael/cpmtools/
 

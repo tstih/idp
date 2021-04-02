@@ -55,13 +55,24 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
-          "System.Drawing.Common": "5.0.2"
+          "System.Drawing.Common": "5.0.2",
+          "XYZ": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Idp.Gpx.Common.dll": {}
         },
         "runtime": {
           "bin/placeholder/Idp.Gpx.Common.dll": {}
+        }
+      },
+      "XYZ/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/XYZ.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/XYZ.dll": {}
         }
       }
     }
@@ -159,6 +170,11 @@
       "type": "project",
       "path": "../Idp.Gpx.Common/Idp.Gpx.Common.csproj",
       "msbuildProject": "../Idp.Gpx.Common/Idp.Gpx.Common.csproj"
+    },
+    "XYZ/1.0.0": {
+      "type": "project",
+      "path": "../XYZ/XYZ.csproj",
+      "msbuildProject": "../XYZ/XYZ.csproj"
     }
   },
   "projectFileDependencyGroups": {

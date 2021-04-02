@@ -1,3 +1,15 @@
+/*
+ * ArgumentParser.cs
+ * 
+ * Command line parser. Takes a class with properties, annotated with 
+ * [Argument] attributes, and tries to match them with command line arguments.
+ *  
+ * MIT License (see: LICENSE)
+ * Copyright (c) 2021 Tomaz Stih
+ * 
+ * 07.09.2015   tstih
+ * 
+ */
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +20,15 @@ namespace Idp.Gpx.Common.CmdLine {
 
     public class ArgumentParser {
 
+        #region Private Classes
         private class ArgProperty {
-            public bool Present {get;set;}
             public ArgumentAttribute Argument {get;set;}
             public PropertyInfo PropertyInfo {get;set;}
+            public bool Exists { get; set; }
         }
+        #endregion // Private Classes
 
+        #region Method(s)
         public string Parse(object obj, string[] args, int startAt=0) {
 
             // First get all arguments.
@@ -47,7 +62,7 @@ namespace Idp.Gpx.Common.CmdLine {
                         } else annotatedProps[option].PropertyInfo.SetValue(obj,true);
                         
                         // If we are here, it worked!
-                        annotatedProps[option].Present=true;
+                        annotatedProps[option].Exists=true;
 
                     } else return string.Format("Invalid option {0}.", arg);
                 } else return string.Format("Invalid argument {0}. Option expected. Options start with / or -.", arg);
@@ -58,7 +73,7 @@ namespace Idp.Gpx.Common.CmdLine {
             bool first = true;
             HashSet<ArgProperty> consumed = new HashSet<ArgProperty>();
             foreach (var p in annotatedProps)
-                if (p.Value.Argument.Mandatory && !p.Value.Present)
+                if (p.Value.Argument.Required && !p.Value.Exists)
                 {
                     if (first)
                     {
@@ -83,7 +98,7 @@ namespace Idp.Gpx.Common.CmdLine {
         }
 
 
-        public string[] GenerateArgsHelp(object obj) {
+        public string[] GenerateManual(object obj) {
             // First get all arguments.
             Dictionary<string,ArgProperty> args=GetArguments(obj);
 
@@ -92,12 +107,15 @@ namespace Idp.Gpx.Common.CmdLine {
             foreach(var arg in args.Select(a=>a.Value).Distinct())
                 argSpec.Add(string.Format("-{0,-20} {1}",
                     arg.PropertyInfo.Name.ToLower(),
-                    arg.Argument.Help??"<not specified>"));
+                    arg.Argument.Description??"<not specified>"));
 
             // Return list of arguments.
             return argSpec.ToArray();
         }
 
+        #endregion // Method(s)
+
+        #region Helper(s)
         private Dictionary<string,ArgProperty> GetArguments(object obj) {
             Dictionary<string,ArgProperty> dict=new Dictionary<string,ArgProperty>(StringComparer.InvariantCultureIgnoreCase);
             PropertyInfo[] props=obj.GetType().GetProperties(BindingFlags.Public|BindingFlags.Instance);
@@ -115,5 +133,6 @@ namespace Idp.Gpx.Common.CmdLine {
                 }
             return dict;
         }
+        #endregion // Helper(s)
     }
 }

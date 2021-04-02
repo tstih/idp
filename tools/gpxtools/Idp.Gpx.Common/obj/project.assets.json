@@ -50,6 +50,16 @@
             "rid": "win"
           }
         }
+      },
+      "XYZ/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v5.0",
+        "compile": {
+          "bin/placeholder/XYZ.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/XYZ.dll": {}
+        }
       }
     }
   },
@@ -141,11 +151,17 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "XYZ/1.0.0": {
+      "type": "project",
+      "path": "../XYZ/XYZ.csproj",
+      "msbuildProject": "../XYZ/XYZ.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net5.0": [
-      "System.Drawing.Common >= 5.0.2"
+      "System.Drawing.Common >= 5.0.2",
+      "XYZ >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -178,7 +194,11 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "W:\\TOMAZ-STIH\\github\\idp\\tools\\gpxtools\\XYZ\\XYZ.csproj": {
+              "projectPath": "W:\\TOMAZ-STIH\\github\\idp\\tools\\gpxtools\\XYZ\\XYZ.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

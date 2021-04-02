@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * Program.cs
+ * 
+ * Snatch entry point.
+ * 
+ * MIT License (see: LICENSE)
+ * Copyright (c) 2021 Tomaz Stih
+ * 
+ * 02.03.2021   tstih
+ * 
+ */
+using System;
 using System.Linq;
 using System.Text;
 
@@ -7,14 +18,10 @@ using Idp.Gpx.Common.CmdLine;
 
 namespace Idp.Gpx.Snatch
 {
+    public enum RetCode : int { SUCCESS = 0, MISSING_COMMAND, INVALID_COMMAND, INVALID_ARGS, EXEC_FAILED };
+
     class Program
     {
-        const int SUCCESS=0;
-        const int MISSING_COMMAND = 1;
-        const int INVALID_COMMAND = 2;
-        const int INVALID_ARGS = 3;
-        const int EXEC_FAILED = 4;
-
         static Cmd[] _commands=new Cmd[] {
             new ArrayCmd()
         };
@@ -26,18 +33,18 @@ namespace Idp.Gpx.Snatch
 
             // Must have at least 1 arg.
             if (args.Length<1) 
-                Error("Missing command.", MISSING_COMMAND);
+                Error("Missing command.", RetCode.MISSING_COMMAND);
 
             // Parse other args.
             string cmdName=args[0];
             Cmd cmd=_commands.FirstOrDefault(c=>cmdName.Equals(c.Name, StringComparison.CurrentCultureIgnoreCase));
-            if (cmd==null) Error(string.Format("Invalid command {0}.", cmdName), INVALID_COMMAND);
+            if (cmd==null) Error(string.Format("Invalid command {0}.", cmdName), RetCode.INVALID_COMMAND);
 
             // Now parse the rest of arguments.
             ArgumentParser parser=new ArgumentParser();
             string result=parser.Parse(cmd,args,1);
             if (result!=null) 
-                Error(result, INVALID_ARGS);
+                Error(result, RetCode.INVALID_ARGS);
         
             // If we are here, we have evrything.
             StringBuilder std=new StringBuilder();
@@ -45,9 +52,9 @@ namespace Idp.Gpx.Snatch
             var retCode = cmd.Execute(std,err);
             Report(std.ToString());
             if (retCode==0) 
-                Environment.Exit(SUCCESS);
+                Environment.Exit((byte)RetCode.SUCCESS);
             else 
-                Error(err.ToString(), EXEC_FAILED);
+                Error(err.ToString(), RetCode.EXEC_FAILED);
         }
 
         static void Welcome() {
@@ -62,16 +69,15 @@ namespace Idp.Gpx.Snatch
             Console.Error.WriteLine();
         }
 
-        static void Error(string err, int retCode) {
+        static void Error(string err, RetCode retCode) {
             Console.Error.WriteLine(err);
             Console.Error.WriteLine();
             Usage();
-            Environment.Exit(retCode);
+            Environment.Exit((int)retCode);
         }
 
         static void Report(string msg) {
             Console.WriteLine(msg);
         }
-        
     }              
 }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idp.Gpx.Silhouette", "Idp.G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idp.Gpx.Snatch", "Idp.Gpx.Snatch\Idp.Gpx.Snatch.csproj", "{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XYZ", "XYZ\XYZ.csproj", "{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}.Release|x64.Build.0 = Release|Any CPU
 		{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}.Release|x86.ActiveCfg = Release|Any CPU
 		{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}.Release|x86.Build.0 = Release|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x64.Build.0 = Debug|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x86.Build.0 = Debug|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x64.ActiveCfg = Release|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x64.Build.0 = Release|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x86.ActiveCfg = Release|Any CPU
+		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

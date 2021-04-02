@@ -7,7 +7,6 @@
        	.globl	_main
 	    
         .area	_CODE
-	    .org	0x0100
 init:
         ;; define a stack   
         ld	sp,#stack

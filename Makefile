@@ -4,14 +4,15 @@ $(error OS must be Linux!)
 endif
 
 # Check if all required tools are on the system.
-REQUIRED = sdcc sdar sdasz80 mkfs.cpm cpmcp
+REQUIRED = sdcc sdar sdasz80 mkfs.cpm cpmcp gcc
 K := $(foreach exec,$(REQUIRED),\
     $(if $(shell which $(exec)),,$(error "$(exec) not found. Please install or add to path.")))
 
 # Global settings: folders.
 ROOT = $(realpath .)
 export BUILD_DIR=	$(ROOT)/build
-export INC_DIR	=	$(ROOT)/include	
+export INC_DIR	=	$(ROOT)/include
+export SCR_DIR	=	$(ROOT)/scripts
 
 # Globa settings: tools.
 export CC	=	sdcc
@@ -22,7 +23,7 @@ export AR	=	sdar
 export ARFLAGS	=	-rc
 
 # Subfolders for make.
-SUBDIRS = libs
+SUBDIRS = tools libs src
 HELLO   = hello.com
 
 # Rules.
@@ -43,8 +44,13 @@ clean:
 	rm -f diskdefs
 
 .PHONY: install
-install:
+install: all
+	$(BUILD_DIR)/load $(BUILD_DIR)/hello
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/$(HELLO) 0:$(HELLO)
 	rm -f diskdefs
+	
+.PHONE: dex
+dex:	install
+	cp $(BUILD_DIR)/fddb.img ~/Dex/fddb.img

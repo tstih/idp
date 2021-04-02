@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = hello
+SUBDIRS = fileformat
 
 # Rules.
 .PHONY: all

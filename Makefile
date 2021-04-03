@@ -51,6 +51,7 @@ install: all
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/$(HELLO) 0:$(HELLO)
 	rm -f diskdefs
 	
+# Special build shortcut. Don't use!
 .PHONE: dex
 dex:	install
 	cp $(BUILD_DIR)/fddb.img ~/Dex/fddb.img

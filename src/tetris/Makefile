@@ -6,7 +6,7 @@ LDFLAGS	= -mz80 --no-std-crt0 --nostdlib --code-loc 0x100 -Wl -y
 CRT0	=	cpm0
 SRC		=	$(wildcard *.c)
 OBJS	=	$(BUILD_DIR)/$(CRT0).rel $(patsubst %.c,$(BUILD_DIR)/%.rel,$(SRC))
-TARGET	=	hello
+TARGET	=	tetris
 
 # Rules.
 .PHONY: all

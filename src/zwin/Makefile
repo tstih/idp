@@ -1,12 +1,13 @@
 # Special tools.
 LD		= sdcc
-LDFLAGS	= -mz80 --no-std-crt0 --nostdlib --code-loc 0x100 -Wl -y 
+LDFLAGS	= -mz80 --no-std-crt0 --nostdlib --code-loc 0x100 -l$(BUILD_DIR)/graphics.lib -Wl -y 
 
 # Source files.
 CRT0	=	cpm0
-SRC		=	$(wildcard *.c)
-OBJS	=	$(BUILD_DIR)/$(CRT0).rel $(patsubst %.c,$(BUILD_DIR)/%.rel,$(SRC))
-TARGET	=	hello
+C_SRCS	=	$(wildcard *.c)
+S_SRCS	=	$(wildcard *.s)
+OBJS	=	$(BUILD_DIR)/$(CRT0).rel $(patsubst %.c,$(BUILD_DIR)/%.rel,$(C_SRCS)) $(patsubst %.s,$(BUILD_DIR)/%.rel,$(S_SRCS))
+TARGET	=	zwin
 
 # Rules.
 .PHONY: all
@@ -20,5 +21,8 @@ $(BUILD_DIR)/cpm0.rel: $(SCR_DIR)/$(CRT0).s
 
 $(BUILD_DIR)/%.rel: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
+	
+$(BUILD_DIR)/%.rel:	%.s
+	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(basename $*).rel $*.s
 
 $(BUILD_DIR)/%.rel: %.h

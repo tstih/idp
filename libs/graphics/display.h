@@ -17,6 +17,8 @@ typedef struct display_s {
     uint16_t height;
 } display_t;
 
+/* global variables */
+extern display_t display;
 
 /* initialize display()
  * clears text and graph. screens, disables text mode (and hides 

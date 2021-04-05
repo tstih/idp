@@ -193,11 +193,11 @@ public:
 /*
 implement these somewhere for your hardware
 */
-  uint8_t readram(uint16_t adr);
-  void writeram(uint16_t adr,uint8_t data);
-  uint8_t readio(uint16_t adr);
-  void writeio(uint16_t adr,uint8_t data);
-  void fault(void);   
+  virtual uint8_t readram(uint16_t adr)=0;
+  virtual void writeram(uint16_t adr,uint8_t data)=0;
+  virtual uint8_t readio(uint16_t adr)=0;
+  virtual void writeio(uint16_t adr,uint8_t data)=0;
+  virtual void fault(void)=0;   
     
 };
 

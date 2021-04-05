@@ -5,8 +5,8 @@ ODIR	= build
 BDIR	= bin
 
 # Special tools.
-CC		= gcc
-CCFLAGS	= -g -I$(IDIR)
+CC		= g++
+CFLAGS	= -g -I$(IDIR) -I$(LDIR)
 
 # Source files.
 INC		= $(wildcard *.h) $(wildcard *.hpp) $(wildcard */*.h) $(wildcard */*.hpp)
@@ -20,6 +20,7 @@ OBJS	= $(patsubst %.o,$(ODIR)/%.o, $(shell basename $(patsubst %.cpp,%.o,$(SRC))
 .PHONY: all
 all: subdirs $(ODIR)/$(TARGET)
 	cp $(ODIR)/$(TARGET) $(BDIR)/$(TARGET)
+	cp ./partner.rom $(BDIR)/partner.rom
 	
 #.PHONY: subdirs
 subdirs:

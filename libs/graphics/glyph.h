@@ -20,7 +20,7 @@
  *      011 = up + left
  *      100 = down
  *      101 = down + right
- *      110 = keft
+ *      110 = left
  *      111 = down + left
  *  
  *  when pen is down the content of screen is changed (erased or drawn), 
@@ -58,7 +58,6 @@ typedef struct glyph_data_s {
     /* Glyph origin. This is (for vector fonts) also the point where we start drawing it. */
     uint8_t originx; 
     uint8_t originy;
-    uint8_t width; /* if proportional font, this is glyph width. */
     uint8_t data[0]; /* actual glyph data i.e. moves or raster. */
 } glyph_data_t;
 

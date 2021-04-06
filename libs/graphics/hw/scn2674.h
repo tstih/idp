@@ -18,6 +18,7 @@
 
 /* 0x35 - R/W:attribute register */
 #define SCN2647_AT              0x35
+#define SCN2647_AT_NONE         0x00    /* no attributes */
 #define SCN2647_AT_BLINK        0x01    /* blink */
 #define SCN2647_AT_UNDERLINE    0x02    /* underline */
 #define SCN2647_AT_SPC_CHR      0x04    /* special character */
@@ -46,9 +47,11 @@
 
 /* 0x39 - W:command (byte is command), R:status (bits 7-5 default 0) */
 #define SCN2647_CMD             0x39    
-#define SCN2674_CMD_RESET       0x00
-#define SCN2674_CMD_CURS_OFF    0x30
-#define SCN2674_CMD_CURS_ON     0x31
+#define SCN2674_CMD_RESET       0x00    /* master reset */
+#define SCN2674_CMD_CURS_OFF    0x30    /* switch off cursor */
+#define SCN2674_CMD_CURS_ON     0x31    /* switch on cursor */
+#define SCN2647_CMD_WC2P        0xbb    /* write from cursor to pointer */
+#define SCN2647_CMD_WAC         0xab    /* write at cursor */
 
 #define SCN2647_STS             0x39    /* same register, different name */    
 #define SCN2647_STS_SS2         0x01    /* split screen 2 interrupt */
@@ -81,12 +84,18 @@
  */
 
 /* master reset */
-extern void  scn2674_reset() __naked;
+extern void  scn2674_reset();
+
+/* wait until ready */
+extern uint8_t scn2674_wait_sts_ready();
 
 /* display off and float DADD bus */
-extern void scn2674_display_off() __naked;
+extern void scn2674_display_off();
 
 /* cursor off */
-extern void scn2674_cursor_off() __naked;
+extern void scn2674_cursor_off();
+
+/* clear screen */
+extern void scn2674_cls();
 
 #endif /* _SCN2674_H */

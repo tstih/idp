@@ -1,14 +1,11 @@
-		;; ef9367.s
-        ;; a library of graphical primitives for the thompson ef9367 card. 
+		;; rtclock.s
+        ;; real time clock routines. 
 		;;
-		;; tomaz stih, sun apr 04 2021
-		.module ef9367
+		;; tomaz stih, mon apr 05 2021
+		.module rtclock
 
 		.globl	_ef9367_wait_sts_ready
 		.globl	_ef9367_set_1024x512
-       	.globl	_ef9367_xy
-		.globl 	_ef9367_cls
-		.globl 	_ef9367_qright
 	    
 		;; consts
 		.equ	EF9367_STS, 0x20 
@@ -45,7 +42,6 @@ sts_nready:
 
 		;; init graphic mode, set resolution to 1024x512
 _ef9367_set_1024x512::
-		call _ef9367_wait_sts_ready
 		ld a,#EF9367_GR_CMN_1024x512
 		out (#EF9367_GR_CMN),a
 		ret
@@ -53,10 +49,8 @@ _ef9367_set_1024x512::
 
 		;; clear graphic screen, move cursor to 0,0 (left, bottom)
 _ef9367_cls::
-		call _ef9367_wait_sts_ready
-		ld a,#0x04
+		ld a,#EF9367_CMD_CLS00
 		out (#EF9367_CMD),a
-		call _ef9367_wait_sts_ready
 		ret
 
 
@@ -80,23 +74,4 @@ _ef9367_xy::
 		out (c),h
 		inc c
 		out (c),l
-
-		;; vector type to cr2
-
-		;; todo
-		call _ef9367_wait_sts_ready
-		ld a,#0x00						; pen selection!
-		out (#EF9367_CMD),a
-
-		call _ef9367_wait_sts_ready
-		ld a,#0x02						; pen down!
-		out (#EF9367_CMD),a
-
-		ret
-
-
-_ef9367_qright::
-		call _ef9367_wait_sts_ready
-		ld a,#0b10100000
-		out (#EF9367_CMD),a
 		ret

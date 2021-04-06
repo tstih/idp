@@ -26,4 +26,8 @@ extern display_t display;
  */
 extern display_t* display_init();
 
+extern void horizontal_line();
+
+extern void gpx_wait_complete();
+
 #endif /* _DISPLAY_H */

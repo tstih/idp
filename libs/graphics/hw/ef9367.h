@@ -133,15 +133,17 @@
 /* ----- graphic functions ------------------------------------------------- */
 
 /* wait until current command is executed, returns status register */
-extern uint8_t  ef9367_wait_sts_ready() __naked;
+extern uint8_t  ef9367_wait_sts_ready();
 
 /* enter hires (1024x512) mode */
-extern void ef9367_set_1024x512() __naked;
+extern void ef9367_set_1024x512();
 
 /* clear screen and goto 0,0 */
-extern void ef9367_cls() __naked;
+extern void ef9367_cls();
 
 /* goto x,y */
-extern void ef9367_xy(uint16_t x, uint16_t y) __naked;
+extern void ef9367_xy(uint16_t x, uint16_t y);
+
+extern void ef9367_qright();
 
 #endif /* _EF9367_H */

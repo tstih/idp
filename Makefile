@@ -17,7 +17,7 @@ export SCR_DIR	=	$(ROOT)/scripts
 
 # Globa settings: tools.
 export CC		=	sdcc
-export CFLAGS	=	--std-sdcc99 -mz80 -I. -I$(INC_DIR) --no-std-crt0 -DSDCC --debug
+export CFLAGS	=	--std-sdcc99 -mz80 -I. -I$(INC_DIR) --no-std-crt0 -D__EMULATOR__ --debug
 export AS		=	sdasz80
 export ASFLAGS	=	-xlos -g
 export AR		=	sdar

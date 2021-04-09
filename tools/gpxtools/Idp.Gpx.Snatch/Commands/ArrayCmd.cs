@@ -28,8 +28,10 @@ using System.Text;
 using XYZ.Formats;
 using Idp.Gpx.Common.CmdLine;
 using Idp.Gpx.Snatch.Generators;
+using Idp.Gpx.Snatch.Exports;
 
-namespace Idp.Gpx.Snatch.Commands {
+namespace Idp.Gpx.Snatch.Commands
+{
 
     public class ArrayCmd : Cmd {
 
@@ -39,6 +41,7 @@ namespace Idp.Gpx.Snatch.Commands {
         #endregion // Const(s)
 
         #region Private Class(es)
+        /*
         private class AsmExport : Export
         {
             private StringBuilder _internal;
@@ -49,7 +52,7 @@ namespace Idp.Gpx.Snatch.Commands {
                 _internal = new StringBuilder();
             }
 
-            public override int Begin(ArrayCmd cmd, Bitmap bmp, StringBuilder std, StringBuilder err)
+            public override int Begin(ArrayCmd cmd)
             {
                 _asm = new FontAsmCodeGenerator(_internal); 
                 byte bytesPerGlyphLine = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
@@ -293,7 +296,7 @@ namespace Idp.Gpx.Snatch.Commands {
                 return avg > threshold;
             }
         }
-
+        */
         
         #endregion // Private Class(es)
 
@@ -391,8 +394,8 @@ namespace Idp.Gpx.Snatch.Commands {
             Dictionary<string, Export> exports = new Dictionary<string, Export>(StringComparer.InvariantCultureIgnoreCase)
             {
                 { "grid", new GridExport() },
-                { "c", new CExport() },
-                { "asm", new AsmExport() },
+                /*{ "c", new CExport() },
+                { "asm", new AsmExport() },*/
                 { "glyphs", ie },
                 { "images", ie },
             };
@@ -419,7 +422,7 @@ namespace Idp.Gpx.Snatch.Commands {
             int maxx = SourceBitmap.Width - Left - Right, maxy = SourceBitmap.Height - Top - Bottom;
 
             // Initialize export.
-            int exitCode = export.Begin(this);
+            int exitCode = (int)export.Begin(this);
             if (exitCode != SUCCESS) return exitCode;
 
 
@@ -431,10 +434,10 @@ namespace Idp.Gpx.Snatch.Commands {
                     if (CurrentGlyphAscii > Last) goto done;
 
                     // Get current glyph rect.
-                    CurrentGlyphRect = new Rectangle(xc, yc, GlyphWidth, GlyphHeight)
+                    CurrentGlyphRect = new Rectangle(xc, yc, GlyphWidth, GlyphHeight);
 
                     // glyph found?
-                    exitCode = export.OnGlyph(this);
+                    exitCode = (int)export.OnGlyph(this);
                     if (exitCode != SUCCESS) return exitCode;
 
                     // Next ascii.
@@ -442,7 +445,7 @@ namespace Idp.Gpx.Snatch.Commands {
                 }
 
             done:
-            return export.End(this, bmp, std, err);
+            return (int)export.End(this);
         }
         #endregion Override(s)
     }

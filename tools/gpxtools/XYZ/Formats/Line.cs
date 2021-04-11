@@ -13,17 +13,6 @@ using System.Runtime.InteropServices;
 
 namespace XYZ.Formats
 {
-    /// <summary>
-    /// lin file has line header, followed by an array of line structures.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi)]
-    public struct LineHeader
-    {
-        [FieldOffset(0)] public ushort w;
-        [FieldOffset(2)] public ushort h;
-        [FieldOffset(4)] public ushort lines;
-    }
-
     [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi)]
     public struct Line
     {

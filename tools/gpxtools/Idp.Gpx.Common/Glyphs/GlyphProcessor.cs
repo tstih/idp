@@ -386,6 +386,31 @@ namespace Idp.Gpx.Common.Glyphs
             return returnPoints;
         }
 
+        /// <summary>
+        /// Creates an list of lines out of a polygon.
+        /// </summary>
+        public List<Line> Polygon2Lines(List<Point> pts)
+        {
+            List<Line> result = new List<Line>();
+            // What are you doing here?
+            if (pts.Count > 2)
+            {
+                int prev = 0;
+                for (int curr = 1; curr < pts.Count; curr++)
+                {
+                    result.Add(new Line()
+                    {
+                        x1 = (ushort)pts[prev].X,
+                        x2 = (ushort)pts[curr].X,
+                        y1 = (ushort)pts[prev].Y,
+                        y2 = (ushort)pts[curr].Y
+                    });
+                    prev = curr;
+                }
+            }
+            return result;
+        }
+
         #endregion // Method(s)
 
         #region Helper(s)

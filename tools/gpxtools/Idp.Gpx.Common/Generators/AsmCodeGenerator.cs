@@ -26,7 +26,7 @@ namespace Idp.Gpx.Common.Generators
         #endregion // Protected(s)
 
         #region Ctor
-        public AsmCodeGenerator(StringBuilder sb, int codeIdentTabs=2, int commentIdentTabs=5) { 
+        public AsmCodeGenerator(StringBuilder sb, int codeIdentTabs = 3, int commentIdentTabs=8) { 
             _sb = sb;
             _codeIdentTabs = codeIdentTabs;
             _commentIdentTabs = commentIdentTabs;

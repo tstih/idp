@@ -16,10 +16,11 @@ namespace XYZ.Formats
 {
     /// <summary>
     /// Glyph generation. Can be Tiny (small "vector" format for the
-    /// Delta Partner machine) or Raster (standard raster format).
+    /// Delta Partner machine), Raster (standard raster format) or
+    /// Line (a group of lines).
     /// </summary>
     [Flags]
-    public enum Generation : byte { Tiny = 0x01, Raster = 0x02};
+    public enum Generation : byte { Tiny = 0x01, Raster = 0x02, Line=0x04};
 
     /// <summary>
     /// Glyph header. All glyphs (fons, and sprites) share the same
@@ -33,26 +34,29 @@ namespace XYZ.Formats
     [StructLayout(LayoutKind.Explicit)]
     public struct GlyphHeader
     {
+        /// <summary>
+        /// Glyph generation.
+        /// </summary>
         [FieldOffset(0)]
         public Generation Generation;
-        
-        /// <summary>
-        /// Width in pixels for fixed glyphs. Max width for proportional glyphs.
-        /// </summary>
-        [FieldOffset(1)]
-        public byte Width; 
-        
-        /// <summary>
-        /// Height in pixels.
-        /// </summary>
-        [FieldOffset(2)]
-        public byte Height;
 
         /// <summary>
         /// Width in bytes for raster glyphs. This field is not used for vector glyphs.
         /// </summary>
-        [FieldOffset(3)]
-        public byte WidthInBytes;
+        [FieldOffset(1)]
+        public byte LineWidthInBytes;
+
+        /// <summary>
+        /// Width in pixels for fixed glyphs. Max width for proportional glyphs.
+        /// </summary>
+        [FieldOffset(2)]
+        public ushort Width; 
+        
+        /// <summary>
+        /// Height in pixels.
+        /// </summary>
+        [FieldOffset(4)]
+        public ushort Height;
     }
 
     /// <summary>
@@ -66,9 +70,9 @@ namespace XYZ.Formats
         /// (first point of first stroke). For raster fonts it is not there.
         /// </summary>
         [FieldOffset(0)]
-        public byte OriginX;
+        public ushort OriginX;
 
-        [FieldOffset(1)]
-        public byte OriginY;
+        [FieldOffset(2)]
+        public ushort OriginY;
     }
 }

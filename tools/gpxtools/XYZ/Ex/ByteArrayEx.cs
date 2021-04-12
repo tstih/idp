@@ -36,7 +36,7 @@ namespace XYZ.Ex {
         /// Convert struct to byte array. The struct should have the
         /// [StructLayout(LayoutKind.Explicit)] attribute.
         /// </summary>
-        static byte[] ToByteArray<S>(this S s) where S: struct
+        public static byte[] ToByteArray<S>(this S s) where S: struct
         {
             //Set the buffer to the correct size 
             byte[] buffer = new byte[Marshal.SizeOf(s)];

@@ -35,13 +35,13 @@ namespace XYZ.Formats
         /// <summary>
         /// First ascii char. Usually 32.
         /// </summary>
-        [FieldOffset(4)]
+        [FieldOffset(6)]
         public byte FirstAscii;
 
         /// <summary>
         /// Last ascii char. Usually 126.
         /// </summary>
-        [FieldOffset(5)]
+        [FieldOffset(7)]
         public byte LastAscii;
     };
 
@@ -59,15 +59,15 @@ namespace XYZ.Formats
         public FontHeader FontHeader;
 
         // Typo font specific, for explanation see: https://en.wikipedia.org/wiki/Typeface
-        [FieldOffset(6)]
+        [FieldOffset(8)]
         public byte Cap;
-        [FieldOffset(7)]
-        public byte Ascent;
-        [FieldOffset(8)] 
-        public byte Descent;
         [FieldOffset(9)]
+        public byte Ascent;
+        [FieldOffset(10)] 
+        public byte Descent;
+        [FieldOffset(11)]
         public byte Median;
-        [FieldOffset(10)]
+        [FieldOffset(12)]
         public byte Baseline;
     };
 }

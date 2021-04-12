@@ -13,8 +13,8 @@ using System;
 using System.Linq;
 using System.Text;
 
-using Idp.Gpx.Snatch.Commands;
 using Idp.Gpx.Common.CmdLine;
+using Idp.Gpx.Snatch.Commands;
 
 namespace Idp.Gpx.Snatch
 {

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Idp.Gpx.Silhouette": {
+      "commandName": "Project",
+      "commandLineArgs": "animate -f gif\\charlie-chaplin.gif -o charlie -outline -th 4"
+    }
+  }
+}

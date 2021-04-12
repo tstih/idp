@@ -4,12 +4,12 @@
  *
  * tomaz stih tue mar 23 2021
  */
-#include "graphics.h"
+#include "gpx.h"
 
 void main() {
 
     /* initialize graphics */
-    display_t *disp=display_init();
+    display_t *disp=display_init(NULL);
 
     /* draw horizontal lines */
     //horizontal_line();

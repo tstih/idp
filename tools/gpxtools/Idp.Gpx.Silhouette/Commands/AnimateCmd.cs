@@ -127,7 +127,7 @@ namespace Idp.Gpx.Silhouette.Commands {
                 cgen
                     .AddHeader(Output, "Outline animmation.", ".c", "tstih", "Tomaz Stih")
                     .Include("yos.h", true)
-                    .LineOfCode(string.Format("byte {0}[] = {{", Output.ToLower()));
+                    .LineOfCode(string.Format("byte_t {0}[] = {{", Output.ToLower()));
 
                 // Export glyph header first.
                 cgen.CommentedByte((byte)a.GlyphHeader.Generation, "Lines animation format.", true);

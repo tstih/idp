@@ -17,14 +17,14 @@ export SCR_DIR	=	$(ROOT)/scripts
 
 # Globa settings: tools.
 export CC		=	sdcc
-export CFLAGS	=	--std-sdcc99 -mz80 -I. -I$(INC_DIR) --no-std-crt0 -D__EMULATOR__ --debug
+export CFLAGS	=	--std-sdcc99 -mz80 -I. -I$(INC_DIR) --no-std-crt0 -D__ID_PARTNER__ --debug
 export AS		=	sdasz80
 export ASFLAGS	=	-xlos -g
 export AR		=	sdar
 export ARFLAGS	=	-rc
 
 # Subfolders for make.
-SUBDIRS = tools libs src
+SUBDIRS = tools lib src
 
 # Rules.
 .PHONY: all

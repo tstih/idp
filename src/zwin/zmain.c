@@ -13,10 +13,14 @@
 
 void main() {
 
+    /* initialize display */
     graphics_t* g;
     g=graphics_init();
 
-    /* and enter eternal loop */
-    while (TRUE) {}
+    /* do some drawing */
+    int y;
+    for (y=0;y<SCREEN_HEIGHT-1;y+=16)
+        draw_line(g,0,y,SCREEN_WIDTH-1,y, 0, 0xaa);
 
+    /* and exit */
 }

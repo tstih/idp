@@ -1,34 +1,47 @@
-		;; partner/boot.s
-        ;; boot sector for iskra delta partner 
-		;;
-		;; tomaz stih, mon apr 05 2021
+        ;; boot.s
+        ;;
+        ;; boot sector for id partner
+        ;;
+        ;; MIT License (see: LICENSE)
+        ;; copyright (c) 2021 tomaz stih
+        ;;
+        ;; 27.03.2021   tstih
 		.module boot
 
-        .equ    BOOT_STACK, 0xffff
+        .globl  _boot
+        .globl  _start
 
-        .area   _CODE
-		;; boot sector is loaded to 0xe000
+        .equ    OS_STACK, 0xffff
+
+
+        ;; --- the boot  ------------------------------------------------------
+        .area   _BOOT(ABS)
         .org    0xe000
-boot::
-        di                              ; no interrupts
+_boot::   
+        ;; check if the SETUP button is pressed?
 
-        ;; switch off ROM.
-        xor a
-        out (#080),a
+        ;; load the operating system to 0x0000
 
-        ;; read operating system from disk.
-        
+        ;; and jump to it
+        jp      0x0000
 
-        ;; the boot is done. jump to OS.
-        jp 0x0000
 
-        .area   _INIT
-        ;; but startup is at 0xf600
+        ;; --- start ----------------------------------------------------------
+        ;; after loading the boto sector, ROM jumps to 0xf600
+        .area   _START(ABS)
 	    .org    0xf600
-init::
+_start::
         ;; set operating system stack pointer
         ;; to the top of shared memory
-        ld sp,#BOOT_STACK
+        ;; ROM checks if the first instruction is JP or LD SP,#nnnn
+        ld sp,#OS_STACK
 
-        ;; jump to boot 
-        jp boot
+        ;; don't surprise us while we're setting up things
+        di
+
+        ;; switch off ROM, make space...
+        xor a
+        out (#0x80),a
+
+        ;; and jump to boot
+        jp _boot

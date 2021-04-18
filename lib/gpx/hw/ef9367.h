@@ -33,4 +33,7 @@ extern void gdp_cls();
 /* goto x,y */
 extern void gdp_xy(int16_t x, int16_t y);
 
+/* pixel at x,y */
+extern void gdp_setpixel(int16_t x, int16_t y);
+
 #endif /* _EF9367_H */

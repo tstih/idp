@@ -1,0 +1,52 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next), page 1.
+Hexadecimal [16-Bits]
+
+
+
+                              1         ;; boot.s
+                              2         ;;
+                              3         ;; boot sector for id partner
+                              4         ;;
+                              5         ;; MIT License (see: LICENSE)
+                              6         ;; copyright (c) 2021 tomaz stih
+                              7         ;;
+                              8         ;; 27.03.2021   tstih
+                              9 		.module boot
+                             10 
+                             11         .globl  _boot
+                             12         .globl  _start
+                             13 
+                     FFFF    14         .equ    OS_STACK, 0xffff
+                             15 
+                             16 
+                             17         ;; --- the boot  ------------------------------------------------------
+                             18         .area   _BOOT(ABS)
+   E000                      19         .org    0xe000
+   E000                      20 _boot::   
+                             21         ;; check if the SETUP button is pressed?
+                             22 
+                             23         ;; load the operating system to 0x0000
+                             24 
+                             25         ;; and jump to it
+   E000 C3 00 00      [10]   26         jp      0x0000
+                             27 
+                             28 
+                             29         ;; --- start ----------------------------------------------------------
+                             30         ;; after loading the boto sector, ROM jumps to 0xf600
+                             31         .area   _START(ABS)
+   F600                      32 	    .org    0xf600
+   F600                      33 _start::
+                             34         ;; set operating system stack pointer
+                             35         ;; to the top of shared memory
+                             36         ;; ROM checks if the first instruction is JP or LD SP,#nnnn
+   F600 31 FF FF      [10]   37         ld sp,#OS_STACK
+                             38 
+                             39         ;; don't surprise us while we're setting up things
+   F603 F3            [ 4]   40         di
+                             41 
+                             42         ;; switch off ROM, make space...
+   F604 AF            [ 4]   43         xor a
+   F605 D3 80         [11]   44         out (#0x80),a
+                             45 
+                             46         ;; and jump to boot
+   F607 C3 00 E0      [10]   47         jp _boot

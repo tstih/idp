@@ -1,0 +1,22 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.=  2710 L   |     .__.ABS.=  0000 G   |     .__.CPU.=  0000 L
+    .__.H$L.=  0000 L   |   2 A$boot$2   E000 GR  |   4 A$boot$3   F600 GR
+  4 A$boot$4   F603 GR  |   4 A$boot$4   F604 GR  |   4 A$boot$4   F605 GR
+  4 A$boot$4   F607 GR  |     OS_STACK=  FFFF     |   2 _boot      E000 GR
+  4 _start     F600 GR
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE      size    0   flags    0
+   1 _BOOT      size    0   flags    8
+   2 _BOOT0     size    3   flags    8
+   3 _START     size    0   flags    8
+   4 _START1    size    A   flags    8
+

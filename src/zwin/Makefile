@@ -1,6 +1,6 @@
 # Special tools.
 LD		= sdcc
-LDFLAGS	= -mz80 --no-std-crt0 --nostdlib --code-loc 0x100 -l$(BUILD_DIR)/libgpx.lib -Wl -y 
+LDFLAGS	= -mz80 --no-std-crt0 --code-loc 0x100 -l$(BUILD_DIR)/libgpx.lib -Wl -y 
 
 # Source files.
 CRT0	=	cpm0

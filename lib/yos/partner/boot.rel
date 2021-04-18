@@ -1,0 +1,30 @@
+;!FILE boot.s
+XL2
+H 5 areas 9 global symbols
+M boot
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _BOOT size 0 flags 8 addr 0
+A _BOOT0 size 3 flags 8 addr E000
+S _boot DefE000
+S A$boot$26 DefE000
+A _START size 0 flags 8 addr 0
+A _START1 size A flags 8 addr F600
+S _start DefF600
+S A$boot$40 DefF603
+S A$boot$43 DefF604
+S A$boot$44 DefF605
+S A$boot$37 DefF600
+S A$boot$47 DefF607
+T 00 E0
+R 00 00 02 00
+T 00 E0
+R 00 00 02 00
+T 00 E0 C3 00 00
+R 00 00 02 00
+T 00 F6
+R 00 00 04 00
+T 00 F6
+R 00 00 04 00
+T 00 F6 31 FF FF F3 AF D3 80 C3 00 E0
+R 00 00 04 00 00 0A 02 00

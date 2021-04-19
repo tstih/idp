@@ -17,6 +17,7 @@ using System.Drawing.Imaging;
 
 using XYZ.Formats;
 using Idp.Gpx.Common.Ex;
+using System.Collections;
 
 namespace Idp.Gpx.Common.Glyphs
 {
@@ -40,9 +41,33 @@ namespace Idp.Gpx.Common.Glyphs
         {
             _bmp = bmp;
         }
+
+        public GlyphProcessor(Bitmap sourceBitmap, Rectangle glyphRect)
+        {
+            _bmp = new Bitmap(glyphRect.Width, glyphRect.Height);
+            using (Graphics gg = Graphics.FromImage(_bmp))
+            {
+                gg.DrawImage(
+                    sourceBitmap,
+                    new Rectangle(0, 0, glyphRect.Width, glyphRect.Height),
+                    glyphRect,
+                    GraphicsUnit.Pixel);
+            }
+        }
         #endregion // Ctor
 
         #region Method(s)
+
+        public byte[] ToTiny()
+        {
+            // Get all pixels from image.
+            Pixel[] pixels=Pixels(Color.Black); // TODO: Configure correct color.
+
+            // Create graph of pixel edges.
+            Tuple<int,int>[] edges = Edges(pixels);
+
+            return null;
+        }
 
         /// <summary>
         /// Convert lines to bitmap (to test)
@@ -212,7 +237,6 @@ namespace Idp.Gpx.Common.Glyphs
         }
 
 
-
         /// <summary>
         /// Return all pixels of specific color in image.
         /// TODO: Threshold.
@@ -225,7 +249,7 @@ namespace Idp.Gpx.Common.Glyphs
             // First enumerate all pixels.
             for (int y = 0; y < _bmp.Height; y++)
                 for (int x = 0; x < _bmp.Width; x++)
-                    if (!IsPixel(x, y, color))
+                    if (IsPixel(x, y, color))
                         pixels.Add(new Pixel() { X = x, Y = y, C = color });
 
             // And return it.
@@ -272,7 +296,11 @@ namespace Idp.Gpx.Common.Glyphs
         /// Is pixel of specific color?
         /// TODO: Threshold.
         /// </summary>
-        public bool IsPixel(int x, int y, Color c) { return _bmp.GetPixel(x, y) == c; }
+        public bool IsPixel(int x, int y, Color c, byte threshold=32) {
+            Color p = _bmp.GetPixel(x, y);
+            double distance = Math.Sqrt(Math.Pow(c.R-p.R,2)+ Math.Pow(c.G - p.G, 2)+ Math.Pow(c.B - p.B, 2));
+            return distance < threshold;
+        }
 
         /// <summary>
         /// Calculate tiny delta between two adjacent points.
@@ -346,7 +374,6 @@ namespace Idp.Gpx.Common.Glyphs
             return lines.ToArray();
         }
 
-
         /// <summary>
         /// Uses the Douglas Peucker algorithm to reduce the number of points.
         /// </summary>
@@ -411,6 +438,19 @@ namespace Idp.Gpx.Common.Glyphs
             return result;
         }
 
+        public BitArray ToBits()
+        {
+            // Char to bitfield.
+            BitArray bits;
+            int bytesPerGlyphLine = (byte)((_bmp.Width - 1) / 8 + 1);
+            bits = new BitArray(8 * bytesPerGlyphLine * _bmp.Height, false);
+            for (int y = 0; y < _bmp.Height; y++)
+                for (int x = 0; x < _bmp.Width; x++)
+                    bits[y * 8 * bytesPerGlyphLine + x] =
+                        IsPixel(x,y, Color.Black); // TODO: configure pixel color.
+            return bits;
+        }
+
         #endregion // Method(s)
 
         #region Helper(s)
@@ -456,10 +496,6 @@ namespace Idp.Gpx.Common.Glyphs
         /// <summary>
         /// The distance of a point from a line made from point1 and point2.
         /// </summary>
-        /// <param name="pt1">The PT1.</param>
-        /// <param name="pt2">The PT2.</param>
-        /// <param name="p">The p.</param>
-        /// <returns></returns>
         private Double PerpendicularDistance
             (Point Point1, Point Point2, Point Point)
         {
@@ -473,7 +509,10 @@ namespace Idp.Gpx.Common.Glyphs
             return height;
         }
 
-        private int[] Route(
+        /// <summary>
+        /// Find longest route through edges.
+        /// </summary>
+        private int[] LongestRoute(
             int n,
             Tuple<int, int>[] edges,
             HashSet<int> visited = null,
@@ -487,7 +526,7 @@ namespace Idp.Gpx.Common.Glyphs
                 for (index = 0; index < n; index++)
                 {
                     visited = new HashSet<int>(); // New path.
-                    Route(n, edges, visited, index);
+                    LongestRoute(n, edges, visited, index);
                     if (longest == null) longest = new HashSet<int>(visited);
                     else if (longest.Count < visited.Count) longest = new HashSet<int>(visited);
                 }
@@ -502,9 +541,9 @@ namespace Idp.Gpx.Common.Glyphs
                     // Visit all edges.
                     for (int i = 0; i < edges.Length; i++)
                         if (edges[i].Item1 == index)
-                            Route(n, edges, visited, edges[i].Item2);
+                            LongestRoute(n, edges, visited, edges[i].Item2);
                         else if (edges[i].Item2 == index)
-                            Route(n, edges, visited, edges[i].Item1);
+                            LongestRoute(n, edges, visited, edges[i].Item1);
 
                     // Now build path to all pixels not in path.
                     for (int i = 0; i < n; i++)
@@ -512,14 +551,12 @@ namespace Idp.Gpx.Common.Glyphs
                         { // Try this pixel.
 
                         }
-                    // Pixel[] shadowPixels = AddPath(p1,;
-                    // HashSet<int> shadowVisited = new HashSet<int>(visited);
                 }
                 return null;
             }
         }
 
-        private Pixel[] AddPath(Pixel p1, Pixel p2)
+        private Pixel[] ShortestPath(Pixel p1, Pixel p2)
         {
             List<Pixel> result = new List<Pixel>();
             Pixel pixel = new Pixel() { X = p1.X, Y = p1.Y };
@@ -586,7 +623,9 @@ namespace Idp.Gpx.Common.Glyphs
 
             return boundaryPoints;
         }
+
         private Point GoLeft(Point p) => new Point(p.Y, -p.X);
+        
         private Point GoRight(Point p) => new Point(-p.Y, p.X);
         #endregion // Helper(s)
     }

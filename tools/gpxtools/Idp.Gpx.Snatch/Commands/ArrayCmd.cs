@@ -110,6 +110,9 @@ namespace Idp.Gpx.Snatch.Commands
 
         [Argument(Required = false, Description = "Create tiny vector output.")]
         public bool Tiny { get; set; }
+
+        [Argument(Aliases = "ew", Required = false, Description = "Empty glyph width?")]
+        public int EmptyWidth { get; set; }
         #endregion // Command Line Arguments
 
         #region Properties
@@ -165,6 +168,8 @@ namespace Idp.Gpx.Snatch.Commands
             int exitCode = (int)export.Begin(this);
             if (exitCode != SUCCESS) return exitCode;
 
+            // Empty glyph width.
+            if (EmptyWidth == 0) EmptyWidth = GlyphWidth;
 
             int advancex = (GlyphWidth + HorizontalPadding), advancey = (GlyphHeight + VerticalPadding);
             for (int yc = y; yc + GlyphHeight - 1 <= maxy; yc += advancey)

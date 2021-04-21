@@ -41,22 +41,22 @@ namespace XYZ.Formats
         public Generation Generation;
 
         /// <summary>
-        /// Width in bytes for raster glyphs. This field is not used for vector glyphs.
-        /// </summary>
-        [FieldOffset(1)]
-        public byte LineWidthInBytes;
-
-        /// <summary>
         /// Width in pixels for fixed glyphs. Max width for proportional glyphs.
         /// </summary>
-        [FieldOffset(2)]
+        [FieldOffset(1)]
         public ushort Width; 
         
         /// <summary>
         /// Height in pixels.
         /// </summary>
-        [FieldOffset(4)]
+        [FieldOffset(3)]
         public ushort Height;
+
+        /// <summary>
+        /// Width in bytes for raster glyphs. This field is not used for vector glyphs.
+        /// </summary>
+        [FieldOffset(5)]
+        public byte LineWidthInBytes;
     }
 
     /// <summary>
@@ -70,9 +70,9 @@ namespace XYZ.Formats
         /// (first point of first stroke). For raster fonts it is not there.
         /// </summary>
         [FieldOffset(0)]
-        public ushort OriginX;
+        public byte OriginX;
 
-        [FieldOffset(2)]
-        public ushort OriginY;
+        [FieldOffset(1)]
+        public byte OriginY;
     }
 }

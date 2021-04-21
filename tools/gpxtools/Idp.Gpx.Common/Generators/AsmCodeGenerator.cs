@@ -102,6 +102,30 @@ namespace Idp.Gpx.Common.Generators
             return this;
         }
 
+        public AsmCodeGenerator AddWordTable(ushort[] tbl, int columns)
+        {
+            int index = 0;
+            StringBuilder sb = new StringBuilder();
+            while (index < tbl.Length)
+            {
+                if (index % columns == 0)
+                { // Row start.
+
+                    if (index!=0) // We have full string builder.
+                        AddDirective("dw", sb.ToString());
+
+                    // And reset string builder.
+                    sb = new StringBuilder();
+                    sb.AppendFormat("0x{0:X4}", tbl[index]);
+
+                }
+                else
+                    sb.AppendFormat(", 0x{0:X4}", tbl[index]);
+                index++;
+            }
+            return this;
+        }
+
         public AsmCodeGenerator NextLine()
         {
             _sb.AppendFormat("{0}", Environment.NewLine);

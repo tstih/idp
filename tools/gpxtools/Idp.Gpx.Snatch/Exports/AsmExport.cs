@@ -25,27 +25,39 @@ namespace Idp.Gpx.Snatch.Exports
 {
     public class AsmExport : Export
     {
+        #region Const(s)
+        private const int FONT_HEADER_SIZE = 8; // 6 bytes for font header.
+        #endregion // Const(s)
+
         #region Private(s)
-        private StringBuilder _internal;
-        private FontAsmCodeGenerator _asm;
+        private StringBuilder _headersInternal;
+        private FontAsmCodeGenerator _headers;
+        private StringBuilder _dataInternal;
+        private FontAsmCodeGenerator _data;
+        private ushort[] _widths;
+        private ushort[] _offs;
+        private ushort _off;
         #endregion // Private(s)
 
         #region Ctor
         public AsmExport()
         {
-            _internal = new StringBuilder();
+            _headersInternal = new StringBuilder();
+            _dataInternal = new StringBuilder();
         }
         #endregion // Ctor
 
         #region Export Implementation
         public override RetCode Begin(ArrayCmd cmd)
         {
-            _asm = new FontAsmCodeGenerator(_internal);
+            _off = 0;
+            _headers = new FontAsmCodeGenerator(_headersInternal);
+            _data = new FontAsmCodeGenerator(_dataInternal);
             byte bytesPerGlyphLine = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
             FontType targetType = 0;
             if (!cmd.Proportional) targetType |= FontType.Fixed;
             if (cmd.Tiny) targetType |= FontType.Tiny;
-            _asm.AddFontHeader(
+            _headers.AddFontHeader(
                 cmd.Output,
                 targetType,
                 (byte)cmd.GlyphWidth,
@@ -53,6 +65,9 @@ namespace Idp.Gpx.Snatch.Exports
                 bytesPerGlyphLine,
                 (byte)cmd.First,
                 (byte)cmd.Last);
+            _widths = new ushort[cmd.Last - cmd.First + 1];
+            _offs = new ushort[cmd.Last - cmd.First + 1];
+
             return RetCode.SUCCESS;
         }
 
@@ -64,10 +79,21 @@ namespace Idp.Gpx.Snatch.Exports
             if (cmd.Tiny)
             {
                 // Let's vectorize the shit ouf of it!
-                byte[] moves = gp.ToTiny();
-                _asm.AddTinyGlyph(
+                byte maxw=0;
+                byte[] moves = gp.ToTiny(ref maxw);
+                _data.AddTinyGlyph(
                     cmd.CurrentGlyphAscii,
                     moves);
+                // Remember glyph offset.
+                int index = cmd.CurrentGlyphAscii - cmd.First;
+                _offs[index] = _off;
+                if (moves != null)
+                    _widths[index] = (ushort)(maxw);
+                else 
+                    _widths[index] = (ushort)cmd.EmptyWidth;
+                int m;
+                if (moves != null) m = moves.Length; else m = 1;
+                _off = (ushort)(_off + m);
             }
             else
             {
@@ -75,7 +101,7 @@ namespace Idp.Gpx.Snatch.Exports
                 var bits = gp.ToBits();
 
                 // And generate as 0b const.
-                _asm.AddRasterFontGlyph(
+                _data.AddRasterFontGlyph(
                     cmd.CurrentGlyphAscii,
                     bits,
                     bytesPerGlyphLine,
@@ -87,11 +113,29 @@ namespace Idp.Gpx.Snatch.Exports
 
         public override RetCode End(ArrayCmd cmd)
         {
+            // Merge _data and _headers.
+            StringBuilder asm = new StringBuilder();
+            
+            // Table of width (if proportional).
+            if (cmd.Proportional)
+            {
+                _headers.TableOfWidths(_widths);
+            }
+
+            // Pointers to letters if tiny.
+            if (cmd.Tiny)
+            {
+                _headers.GlyphOffsets(_offs);
+            }
+
+            asm.Append(_headersInternal.ToString());
+            asm.Append(_dataInternal.ToString());
+
             // Write result to text file.
-            File.WriteAllText(cmd.Output + ".s", _internal.ToString());
+            File.WriteAllText(cmd.Output + ".s", asm.ToString());
 
             // And write result to std. output.
-            cmd.Std.Append(_internal.ToString());
+            cmd.Std.Append(asm.ToString());
 
             return RetCode.SUCCESS;
         }

@@ -47,8 +47,8 @@ namespace Idp.Gpx.Snatch.Generators
                 .AddLabel(id, true)
                 .AddComment("font header")
                 .AddDirective("db", (byte)generation, "font generation")
-                .AddDirective("db", width, "font width (max width for proportional)")
-                .AddDirective("db", height, "font height")
+                .AddDirective("dw", width, "font width (max width for proportional)")
+                .AddDirective("dw", height, "font height")
                 .AddDirective("db", lineWidthInBytes, "line width in bytes (unused for tiny)")
                 .AddDirective("db", firstAscii, "first ascii")
                 .AddDirective("db", lastAscii, "last ascii");
@@ -133,6 +133,20 @@ namespace Idp.Gpx.Snatch.Generators
             else glyphName = ((char)ascii).ToString();
             string glyphDesc = string.Format("ascii {0}: '{1}'", ascii, glyphName);
             return new Tuple<string, string>(glyphName, glyphDesc);
+        }
+
+        public void TableOfWidths(ushort[] widths, int perRow = 8)
+        {
+            AddComment("table of widths");
+            AddWordTable(widths, perRow);
+            NextLine();
+        }
+
+        public void GlyphOffsets(ushort[] offsets, int perRow = 8)
+        {
+            AddComment("glpyh offsets");
+            AddWordTable(offsets, perRow);
+            NextLine();
         }
 
         public void AddRasterFontGlyph(

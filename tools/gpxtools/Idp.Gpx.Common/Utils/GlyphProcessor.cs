@@ -58,10 +58,14 @@ namespace Idp.Gpx.Common.Utils
 
         #region Method(s)
 
-        public byte[] ToTiny()
+        public byte[] ToTiny(ref byte maxw)
         {
             // Get all pixels from image.
             Pixel[] pixels=Pixels(Color.Black); // TODO: Configure correct color.
+            if (pixels.Length == 0)
+                maxw = 0;
+            else
+                maxw = (byte)pixels.Select(p => p.X).Max(); // For proportional font, this is max width.
             if (pixels.Length <= 1) return null; // TODO: Differentiate between an empty glyph and a 1 px.
 
             Graph g = new Graph(pixels, _bmp.Width, _bmp.Height, 32); // TODO Configure correct color.

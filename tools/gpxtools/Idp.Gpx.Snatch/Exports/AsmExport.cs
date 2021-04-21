@@ -19,7 +19,7 @@ using XYZ.Formats;
 
 using Idp.Gpx.Snatch.Commands;
 using Idp.Gpx.Snatch.Generators;
-using Idp.Gpx.Common.Glyphs;
+using Idp.Gpx.Common.Utils;
 
 namespace Idp.Gpx.Snatch.Exports
 {
@@ -61,13 +61,13 @@ namespace Idp.Gpx.Snatch.Exports
             // First extract glyph to a separate bitmap.
             GlyphProcessor gp = new GlyphProcessor(cmd.SourceBitmap,cmd.CurrentGlyphRect);
 
-            
-
             if (cmd.Tiny)
             {
                 // Let's vectorize the shit ouf of it!
                 byte[] moves = gp.ToTiny();
-
+                _asm.AddTinyGlyph(
+                    cmd.CurrentGlyphAscii,
+                    moves);
             }
             else
             {
@@ -81,8 +81,6 @@ namespace Idp.Gpx.Snatch.Exports
                     bytesPerGlyphLine,
                     (byte)cmd.CurrentGlyphRect.Height, 0, 0);
             }
-
-           
 
             return RetCode.SUCCESS;
         }

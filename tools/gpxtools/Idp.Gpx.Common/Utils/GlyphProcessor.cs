@@ -19,7 +19,7 @@ using XYZ.Formats;
 using Idp.Gpx.Common.Ex;
 using System.Collections;
 
-namespace Idp.Gpx.Common.Glyphs
+namespace Idp.Gpx.Common.Utils
 {
     public struct Pixel
     {
@@ -62,11 +62,155 @@ namespace Idp.Gpx.Common.Glyphs
         {
             // Get all pixels from image.
             Pixel[] pixels=Pixels(Color.Black); // TODO: Configure correct color.
+            if (pixels.Length <= 1) return null; // TODO: Differentiate between an empty glyph and a 1 px.
 
-            // Create graph of pixel edges.
-            Tuple<int,int>[] edges = Edges(pixels);
+            Graph g = new Graph(pixels, _bmp.Width, _bmp.Height, 32); // TODO Configure correct color.
+            pixels=g.TSP2Opt(); // Optimize drawing.
 
-            return null;
+            // And extract path as moves.
+            List<byte> moves = new List<byte>();
+
+            if (pixels == null)
+            { // TODO: special case
+                moves.Add(0);
+            } else {
+
+                byte[] tinyLines = ToTinyLines(pixels);
+
+                // First byte is number of moves
+                moves.Add((byte)tinyLines.Length);
+
+                // Followed by 2 byte origin, which are added to the cursor.
+                moves.Add((byte)pixels[0].X);
+                moves.Add((byte)pixels[0].Y);
+
+                // Followed by lines.
+                moves.AddRange(tinyLines);
+            }
+
+            return moves.ToArray();
+        }
+
+        private byte Stroke(int prevdx, int prevdy, int line)
+        {
+            // Bottom 3 bytes.
+            int direction;
+            if (prevdx == 0 && prevdy == 0) direction = 0; else direction=Delta(prevdx, prevdy);
+            int dxstep = line * Math.Abs(prevdx), dystep = line * Math.Abs(prevdy);
+            int b =
+                0x80 // Bit 7=1 (small vector def)
+                | (dxstep << 5)
+                | (dystep << 3)
+                | direction;
+            return (byte)b;
+        }
+
+        private byte Control(bool pen, bool down)
+        {
+            int b =
+                0x00 // Bit 7 is not used.
+                | (down ? 1 : 0) // Bit 0 is pen down
+                | (pen ? 1 << 1 : 0) // Bit 1 is pen/eraser select
+                | 0x04; // high speed writing
+            return (byte)b;
+        }
+
+        private byte[] ToTinyLines(Pixel[] pixels)
+        {
+            List<byte> result=new List<byte>();
+            int dx=0, dy=0, prevdx, prevdy, line;
+            prevdx = prevdy = line = 0;
+            bool pen;
+
+            int curr = 0, next;
+            int len = pixels.Length;
+            while (curr < len)
+            {
+                // Get next pixel.
+                next = curr + 1;
+                if (next==len)
+                { // There is no next pixel. Finish previous stroke, and abort!
+                    result.Add(Stroke(dx, dy, line));
+                } else
+                { // There is next pixel.
+
+                    // Get delta to last pixel
+                    dx = pixels[next].X - pixels[curr].X;
+                    dy = pixels[next].Y - pixels[curr].Y;
+
+                    // Calc distance in absolute moves.
+                    int dist = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+                    if (dist > 1)
+                    { // To far way. Finish previous stroke, and move to the new position.
+                        result.Add(Stroke(prevdx, prevdy, line));
+
+                        // A pixel or a blank?
+                        pen = (SameColor(pixels[next].C, Color.Black));
+
+                        result.Add(Control(pen, false)); // Pen up.
+
+                        // Move to new position.
+                        Pixel currPix = pixels[curr];
+                        Pixel nextPix = pixels[next];
+                        while (!currPix.Match(nextPix.X, nextPix.Y))
+                        {
+                            // Move to the right direction.
+                            int dpx = 0, dpy = 0;
+                            if (currPix.X < nextPix.X) dpx = 1; else if (currPix.X > nextPix.X) dpx = -1;
+                            if (currPix.Y < nextPix.Y) dpy = 1; else if (currPix.Y > nextPix.Y) dpy = -1;
+                            currPix = new Pixel() { X = currPix.X + dpx, Y = currPix.Y + dpy, Move = true };
+                            if (!currPix.Match(nextPix.X, nextPix.Y)) // Not the last.
+                                result.Add(Stroke(dpx, dpy, 1));
+                        }
+
+                        // And pen down.
+                        result.Add(Control(pen, true));
+
+                        // No line.
+                        dx = dy = 0;
+                        line = 1;
+                    }
+                    else if (!SameColor(pixels[curr].C, pixels[next - 1].C))
+                    { // Finish previous stroke, move to new position and change pen.
+                        result.Add(Stroke(prevdx, prevdy, line));
+
+                        // A pixel or a blank?
+                        pen = (SameColor(pixels[next].C, Color.Black));
+
+                        // Pen up and change the color.
+                        result.Add(Control(pen, false));
+
+                        // Move to new position.
+                        result.Add(Stroke(dx, dy, 1));
+
+                        // Pen down.
+                        result.Add(Control(pen, true));
+
+                        // No line.
+                        line = 1;
+                    }
+                    else if (line == 4)
+                    { // That's long enough!
+                        result.Add(Stroke(prevdx, prevdy, line));
+                        line = 1;
+                    } else { // We've got at least two pixels!
+                        if (prevdx == dx && prevdy == dy)
+                            line++;
+                        else
+                        {
+                            if (prevdx != 0 || prevdy != 0)
+                                result.Add(Stroke(prevdx, prevdy, line));
+                            line = 1;
+                        }
+                    }
+                    prevdx = dx; prevdy = dy;
+                }
+                // Inc current pixe.
+                curr++;
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -302,12 +446,31 @@ namespace Idp.Gpx.Common.Glyphs
             return distance < threshold;
         }
 
+        public bool SameColor(Color c1, Color c2, byte threshold=32)
+        {
+            double distance = Math.Sqrt(Math.Pow(c1.R - c2.R, 2) + Math.Pow(c1.G - c2.G, 2) + Math.Pow(c1.B - c2.B, 2));
+            return distance < threshold;
+        }
+
         /// <summary>
         /// Calculate tiny delta between two adjacent points.
         /// </summary>
         public byte Delta(Pixel p1, Pixel p2)
         {
             int dx = p1.X - p2.X, dy = p1.Y - p2.Y;
+            if (dx == 1 && dy == 0) return 0; // right
+            else if (dx == 1 && dy == -1) return 1; // right, up.
+            else if (dx == 0 && dy == -1) return 2; // up.
+            else if (dx == -1 && dy == -1) return 3; // left, up.
+            else if (dx == 0 && dy == 1) return 4; // down.
+            else if (dx == 1 && dy == 1) return 5; // right, down.
+            else if (dx == -1 && dy == 0) return 6; // left.
+            else if (dx == -1 && dy == 1) return 7; // down, left.
+            else return 0xff; // Error!
+        }
+
+        public byte Delta(int dx, int dy)
+        {
             if (dx == 1 && dy == 0) return 0; // right
             else if (dx == 1 && dy == -1) return 1; // right, up.
             else if (dx == 0 && dy == -1) return 2; // up.
@@ -627,6 +790,40 @@ namespace Idp.Gpx.Common.Glyphs
         private Point GoLeft(Point p) => new Point(p.Y, -p.X);
         
         private Point GoRight(Point p) => new Point(-p.Y, p.X);
+
+        static IList<IList<T>> Permute<T>(T[] items)
+        {
+            var list = new List<IList<T>>();
+            return DoPermute(items, 0, items.Length - 1, list);
+        }
+
+        static IList<IList<T>> DoPermute<T>(T[] items, int start, int end, IList<IList<T>> list)
+        {
+            if (start == end)
+            {
+                // We have one of our possible n! solutions,
+                // add it to the list.
+                list.Add(new List<T>(items));
+            }
+            else
+            {
+                for (var i = start; i <= end; i++)
+                {
+                    Swap(ref items[start], ref items[i]);
+                    DoPermute(items, start + 1, end, list);
+                    Swap(ref items[start], ref items[i]);
+                }
+            }
+
+            return list;
+        }
+
+        static void Swap<T>(ref T a, ref T b)
+        {
+            var temp = a;
+            a = b;
+            b = temp;
+        }
         #endregion // Helper(s)
     }
 }

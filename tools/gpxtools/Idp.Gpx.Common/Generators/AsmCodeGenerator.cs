@@ -48,7 +48,7 @@ namespace Idp.Gpx.Common.Generators
             // Do we need to add notes?
             if (!string.IsNullOrEmpty(notes))
             {
-                _sb.AppendFormat("{0};;{1}", Tabs(_codeIdentTabs), Environment.NewLine); // Empty ;;
+                _sb.AppendFormat("{0};; {1}", Tabs(_codeIdentTabs), Environment.NewLine); // Empty ;;
                 _sb.AppendFormat("{0}notes: {1}{2}", hdrPrefix, notes, Environment.NewLine);
             }
 
@@ -60,7 +60,7 @@ namespace Idp.Gpx.Common.Generators
         {
             string dirVal = string.Format("{0}.{1}{2}", Tabs(_codeIdentTabs), directive, string.IsNullOrEmpty(val)?string.Empty:" "+val); // .directive
             if (!string.IsNullOrEmpty(comment))
-                _sb.AppendFormat("{0};{1}{2}", PadTabs(dirVal,_commentIdentTabs), comment, Environment.NewLine);
+                _sb.AppendFormat("{0}; {1}{2}", PadTabs(dirVal,_commentIdentTabs), comment, Environment.NewLine);
             else
                 _sb.AppendFormat("{0}{1}", dirVal, Environment.NewLine);
 
@@ -75,7 +75,7 @@ namespace Idp.Gpx.Common.Generators
         {
             string instVal = string.Format("{0}{1}", Tabs(_codeIdentTabs), inst); // instruction.
             if (!string.IsNullOrEmpty(comment))
-                _sb.AppendFormat("{0};{1}{2}", PadTabs(instVal, _commentIdentTabs), comment, Environment.NewLine);
+                _sb.AppendFormat("{0}; {1}{2}", PadTabs(instVal, _commentIdentTabs), comment, Environment.NewLine);
             else
                 _sb.AppendFormat("{0}{1}", instVal, Environment.NewLine);
 

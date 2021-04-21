@@ -14,6 +14,8 @@ using System.Text;
 
 using XYZ.Formats;
 using Idp.Gpx.Common.Generators;
+using System;
+using System.Collections.Generic;
 
 namespace Idp.Gpx.Snatch.Generators
 {
@@ -67,6 +69,72 @@ namespace Idp.Gpx.Snatch.Generators
             NextLine();
         }
 
+        public void AddTinyGlyph(int ascii, byte[] moves)
+        {
+            // Move direction.
+            Dictionary<int, string> dd = new Dictionary<int, string>()
+            {
+                { 0,"rigt" },
+                { 1,"rigt up" },
+                { 2,"up" },
+                { 3,"left up" },
+                { 4,"down" },
+                { 5,"right down" },
+                { 6,"left" },
+                { 7,"left down" }
+            };
+
+            // Add glyph comment.
+            string glyphName = GetGlyphNames(ascii).Item1;
+            string glyphDesc = GetGlyphNames(ascii).Item2;
+            AddComment(glyphDesc);
+
+            if (moves != null)
+            {
+                AddDirective("db", moves[0], "# moves");
+                AddDirective("db", moves[1], "origin x");
+                AddDirective("db", moves[2], "origin y");
+                // Finally, add them moves
+                for (int i = 3; i < moves.Length; i++)
+                {
+                    int m = moves[i];
+                    string comment;
+                    if ((m & 0x80) != 0)
+                    {
+                        int dx = m >> 5 & 0x03;
+                        int dy = m >> 3 & 0x03;
+                        int direction = m & 0x07;
+                        comment = string.Format("move dx={0}, dy={1}, direction={2}", dx,dy, dd[direction]);
+                    } 
+                    else
+                    {
+                        bool pen = (m & 0x01) != 0;
+                        bool color = (m & 0x02) != 0;
+                        if (!pen)
+                            comment = "pen up";
+                        else 
+                            comment = string.Format("pen {0}, point {1}",
+                                pen ? "down" : "up"
+                                , color ? "set" : "reset");
+                    }
+
+                    AddDirective("db", moves[i], comment);
+                }
+            }
+            else
+                AddDirective("db", 0, "# moves");
+        }
+
+        Tuple<string,string> GetGlyphNames(int ascii)
+        {
+            string glyphName;
+            if (ascii < 32) glyphName = "<control>";
+            else if (ascii > 126) glyphName = "<non standard>";
+            else glyphName = ((char)ascii).ToString();
+            string glyphDesc = string.Format("ascii {0}: '{1}'", ascii, glyphName);
+            return new Tuple<string, string>(glyphName, glyphDesc);
+        }
+
         public void AddRasterFontGlyph(
             int ascii,
             BitArray bits,
@@ -76,11 +144,8 @@ namespace Idp.Gpx.Snatch.Generators
             byte originy = 0)
         {
 
-            string glyphName;
-            if (ascii < 32) glyphName = "<control>";
-            else if (ascii > 126) glyphName = "<non standard>";
-            else glyphName = ((char)ascii).ToString();
-            string glyphDesc = string.Format("ascii {0}: '{1}'", ascii, glyphName);
+            string glyphName = GetGlyphNames(ascii).Item1;
+            string glyphDesc = GetGlyphNames(ascii).Item2;
 
             // First add glyph comment.
             AddComment(glyphDesc);

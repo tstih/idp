@@ -23,9 +23,9 @@
 #define GCLS_ANIMATION      3
 
 /* glyph drawing mode bits 4-3 of the generation flag */
-#define GDWM_TINY           0x00
-#define GDWM_RASTER         0x08
-#define GDWM_LINES          0x10
+#define GDWM_TINY           0
+#define GDWM_RASTER         1
+#define GDWM_LINES          2
 
 /* tiny glyph directions bits 2-0 */
 #define TDR_RIGHT           0

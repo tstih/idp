@@ -231,7 +231,7 @@ https://github.com/anchorz/jkcemu/tree/master/src/z80emu
 
 # Notes from 18. apr 2021
 
-# SIO initialization
+## SIO initialization in ROM
 
 Here's the SIO initialization code from IDP ROM.
 
@@ -324,3 +324,35 @@ wait4sent:
         jp z,wait4sent                  ; must be 1
         ret
 ~~~
+
+## Another SIO libraries
+
+Analysis of this and comparison with the ROM code showed similar traits.
+https://github.com/dattaway/Zilog-Z80-Projects/blob/master/SIO.ASM
+https://github.com/anchorz/z80-uart/tree/main/src
+https://github.com/durgadas311/MmsCpm3/blob/72e3ae10ada3d85a874fe2614ee0e7ea14c6d768/sys/kaypro/src/sio3kp.asm
+https://github.com/bienata/CA80/blob/5565ca7b8a0b7a48b9a37d0f5f72f0577ab1effc/calo4000.asm
+https://github.com/Soomiru/mame/blob/d1b98e6e1013fccbd80161f94edab198d0bffb57/src/devices/machine/z80dart.h
+
+# Notes from 19. apr 2021
+
+# Serial comms basics
+
+A device can act as a DTE or a DCE. The DTE is usually a PC, and the DCE a peripheral device. Following are pinouts on DB-25 for both. According to the standard the DTE usually has a male connector and the DTE a female.
+
+| name | purpose                                                                                                    | DTE | DCE | DB25 pin |
+|------|------------------------------------------------------------------------------------------------------------|-----|-----|----------|
+| DTR  | DTE is ready (Data Terminal Ready)                                                                         | out | in  | 20       |
+| DCE  | DCE is receiving a carrier (Data Carrier Detect)                                                           | in  | out | 8        |
+| DSR  | DCE is ready to receive and send (Data Set Ready)                                                          | in  | out | 6        |
+| RI   | DCE has detected incoming phone ring (Ring Indicator)                                                      | in  | out | 22       |
+| RTS  | DTE requests the DCE prepare to transmit data (Reaquest To Send)                                           | out | in  | 4        |
+| RTR  | DTE is ready to receive data from DCE. This is by convention i.e. uses same pin as RTS. (Ready to Receive) | out | in  | 4        |
+| CTS  | DCE is ready to accept data from DTE (Clear to Send)                                                       | in  | out | 5        |
+| TxD  | Transmit data                                                                                              | out | in  | 2        |
+| RxD  | Receive data                                                                                               | in  | out | 3        |
+| GND  | Zero voltage reference for pins above (Ground)                                                             | -   | -   | 7        |
+| PG   |  Protective ground, connected to the chassis ground                                                        | -   | -   | 1        |
+
+
+This means that to 

@@ -11,6 +11,8 @@
  */
 #include "gpx.h"
 
+extern void* zx6x8_font;
+
 void main() {
 
     /* initialize display */

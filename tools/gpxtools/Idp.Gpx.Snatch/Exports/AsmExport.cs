@@ -34,7 +34,7 @@ namespace Idp.Gpx.Snatch.Exports
         private FontAsmCodeGenerator _headers;
         private StringBuilder _dataInternal;
         private FontAsmCodeGenerator _data;
-        private ushort[] _widths;
+        private byte[] _widths;
         private ushort[] _offs;
         private ushort _off;
         #endregion // Private(s)
@@ -54,18 +54,20 @@ namespace Idp.Gpx.Snatch.Exports
             _headers = new FontAsmCodeGenerator(_headersInternal);
             _data = new FontAsmCodeGenerator(_dataInternal);
             byte bytesPerGlyphLine = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
-            FontType targetType = 0;
-            if (!cmd.Proportional) targetType |= FontType.Fixed;
-            if (cmd.Tiny) targetType |= FontType.Tiny;
+            int generation = (int)GenerationGlyphType.Font;
+            if (!cmd.Proportional)
+                generation |= (int)FontType.Fixed;
+            if (cmd.Tiny) 
+                generation |= (int)((int)GenerationDrawMode.Tiny<<3);
             _headers.AddFontHeader(
                 cmd.Output,
-                targetType,
+                (byte)generation,
                 (byte)cmd.GlyphWidth,
                 (byte)cmd.GlyphHeight,
                 bytesPerGlyphLine,
                 (byte)cmd.First,
                 (byte)cmd.Last);
-            _widths = new ushort[cmd.Last - cmd.First + 1];
+            _widths = new byte[cmd.Last - cmd.First + 1];
             _offs = new ushort[cmd.Last - cmd.First + 1];
 
             return RetCode.SUCCESS;
@@ -88,9 +90,9 @@ namespace Idp.Gpx.Snatch.Exports
                 int index = cmd.CurrentGlyphAscii - cmd.First;
                 _offs[index] = _off;
                 if (moves != null)
-                    _widths[index] = (ushort)(maxw);
+                    _widths[index] = (byte)(maxw);
                 else 
-                    _widths[index] = (ushort)cmd.EmptyWidth;
+                    _widths[index] = (byte)cmd.EmptyWidth;
                 int m;
                 if (moves != null) m = moves.Length; else m = 1;
                 _off = (ushort)(_off + m);
@@ -115,17 +117,18 @@ namespace Idp.Gpx.Snatch.Exports
         {
             // Merge _data and _headers.
             StringBuilder asm = new StringBuilder();
-            
-            // Table of width (if proportional).
-            if (cmd.Proportional)
-            {
-                _headers.TableOfWidths(_widths);
-            }
 
             // Pointers to letters if tiny.
             if (cmd.Tiny)
             {
                 _headers.GlyphOffsets(_offs);
+            }
+
+
+            // Table of width (if proportional).
+            if (cmd.Proportional)
+            {
+                _headers.TableOfWidths(_widths);
             }
 
             asm.Append(_headersInternal.ToString());

@@ -26,10 +26,11 @@ namespace Idp.Gpx.Common.Generators
         #endregion // Protected(s)
 
         #region Ctor
-        public AsmCodeGenerator(StringBuilder sb, int codeIdentTabs = 3, int commentIdentTabs=8) { 
+        public AsmCodeGenerator(StringBuilder sb, int codeIdentTabs = 2, int commentIdentTabs=10) { 
             _sb = sb;
             _codeIdentTabs = codeIdentTabs;
             _commentIdentTabs = commentIdentTabs;
+            TabSize = 4;
         }
         #endregion // Ctor
 
@@ -40,17 +41,20 @@ namespace Idp.Gpx.Common.Generators
             string hdrPrefix = PadTabs(string.Format("{0};;", Tabs(_codeIdentTabs)), 3);
 
             // First the file name.
-            _sb.AppendFormat("{0}{1}{2}{3}", hdrPrefix, name, ext, Environment.NewLine);
+            _sb.AppendFormat("{0}{1}{2}{3}{0}{3}", hdrPrefix, name, ext, Environment.NewLine);
 
             // File description.
-            _sb.AppendFormat("{0}{1}.s{2}", hdrPrefix, string.IsNullOrEmpty(desc)? name : desc, Environment.NewLine);
+            _sb.AppendFormat("{0}{1}{2}", hdrPrefix, string.IsNullOrEmpty(desc)? name : desc, Environment.NewLine);
 
             // Do we need to add notes?
             if (!string.IsNullOrEmpty(notes))
             {
                 _sb.AppendFormat("{0};; {1}", Tabs(_codeIdentTabs), Environment.NewLine); // Empty ;;
-                _sb.AppendFormat("{0}notes: {1}{2}", hdrPrefix, notes, Environment.NewLine);
+                _sb.AppendFormat("{0}notes: {1}{2}{0}{2}", hdrPrefix, notes, Environment.NewLine);
             }
+
+            _sb.AppendFormat("{0}MIT License (see: LICENSE){1}{0}copyright(c) 2021 tomaz stih{1}{0}{1}", hdrPrefix, Environment.NewLine);
+            _sb.AppendFormat("{0}{1}   tstih{2}",hdrPrefix,DateTime.Today.ToString("dd.MM.yyyy"),Environment.NewLine);
 
             // Fluent insert.
             return this;
@@ -125,6 +129,31 @@ namespace Idp.Gpx.Common.Generators
             }
             return this;
         }
+
+        public AsmCodeGenerator AddByteTable(byte[] tbl, int columns)
+        {
+            int index = 0;
+            StringBuilder sb = new StringBuilder();
+            while (index < tbl.Length)
+            {
+                if (index % columns == 0)
+                { // Row start.
+
+                    if (index != 0) // We have full string builder.
+                        AddDirective("dw", sb.ToString());
+
+                    // And reset string builder.
+                    sb = new StringBuilder();
+                    sb.AppendFormat("0x{0:X2}", tbl[index]);
+
+                }
+                else
+                    sb.AppendFormat(", 0x{0:X2}", tbl[index]);
+                index++;
+            }
+            return this;
+        }
+
 
         public AsmCodeGenerator NextLine()
         {

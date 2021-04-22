@@ -17,8 +17,7 @@ namespace XYZ.Formats
     /// <summary>
     /// Extending glyph type to add font specific data to upper nibble of generation flag.
     /// </summary>
-    [Flags]
-    public enum FontType : byte { Tiny = Generation.Tiny, Raster = Generation.Raster, Fixed = 0x10, Typo = 0x20  };
+    public enum FontType : byte { Fixed = 0x40 };
 
     /// <summary>
     /// Font header is the same for each font.
@@ -43,31 +42,5 @@ namespace XYZ.Formats
         /// </summary>
         [FieldOffset(7)]
         public byte LastAscii;
-    };
-
-
-    /// <summary>
-    /// Typography font header.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit)]
-    public struct TypoFontHeader
-    {
-        /// <summary>
-        /// Start with standard font header.
-        /// </summary>
-        [FieldOffset(0)]
-        public FontHeader FontHeader;
-
-        // Typo font specific, for explanation see: https://en.wikipedia.org/wiki/Typeface
-        [FieldOffset(8)]
-        public byte Cap;
-        [FieldOffset(9)]
-        public byte Ascent;
-        [FieldOffset(10)] 
-        public byte Descent;
-        [FieldOffset(11)]
-        public byte Median;
-        [FieldOffset(12)]
-        public byte Baseline;
     };
 }

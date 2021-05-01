@@ -67,9 +67,9 @@ typedef struct graphics_s {
 #define GCLS_ANIMATION      3
 
 /* glyph drawing mode bits 4-3 of the generation flag */
-#define GDWM_TINY           0x00
-#define GDWM_RASTER         0x08
-#define GDWM_LINES          0x10
+#define GDWM_TINY           0
+#define GDWM_RASTER         1
+#define GDWM_LINES          2
 
 /* tiny glyph directions bits 2-0 */
 #define TDR_RIGHT           0
@@ -82,6 +82,7 @@ typedef struct graphics_s {
 #define TDR_LEFT_DOWN       7
 
 /* tiny move values bits 4-3 */
+#define TPV_MASK            0x18        /* bits 4 and 3 */
 #define TPV_SET             0x00        /* set pixel */
 #define TPV_RESET           0x08        /* reset pixel */
 #define TPV_MOVE            0x10        /* just move */

@@ -2,9 +2,6 @@
  * hello.c
  * hello partner program  
  *
- * notes:
- *  for bdos calls see: https://www.seasip.info/Cpm/bdos.html
- *
  * tomaz stih tue mar 23 2021
  */
 void hello_world() __naked { 

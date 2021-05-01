@@ -1,6 +1,30 @@
 # idp
 
-Iskra Delta Partner code samples.
+Welcome to the Iskra Delta Partner development repository. Here you'll find the tools and manuals for Iskra Delta Partner development. 
+
+What are you after?
+
+Just looking for cool Iskra Delta Partner Software
+I want to develop for the original Iskra Delta Partner (CP/M)
+I want to development for the yos/zwin OS for Iskra Delta Partner
+
+# Software
+
+## Games
+
+| file         | description                                               |
+|--------------|-----------------------------------------------------------|
+| KONTRA.COM   | Kontrabant is a port of known Slovenian ZX Spectrum game. |
+| AIDS.COM     | The Asteroids game.                                       |
+| TETRIS.COM   | The game of Tetris.                                       |
+| BREAKOUT.COM | Break out game.                                           |
+| PONG.COM     | A port of Atari Pong game.                                |
+
+## Utilities
+
+| file         | description                                               |
+|--------------|-----------------------------------------------------------|
+| KONTRA.COM   | Kontrabant is a port of known Slovenian ZX Spectrum game. |
 
 # Building code samples 
 
@@ -72,6 +96,10 @@ the the `scripts\diskdefs` file.
  And, voila...
 
  ![Test in emulator](doc/test.jpg)
+
+# Links
+
+http://cpmarchives.classiccmp.org/
 
  # Thank you
 

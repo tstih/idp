@@ -10,18 +10,19 @@ K := $(foreach exec,$(REQUIRED),\
 
 # Global settings: folders.
 ROOT = $(realpath .)
-export BUILD_DIR=	$(ROOT)/build
-export BIN_DIR	=	$(ROOT)/bin
-export INC_DIR	=	$(ROOT)/include
-export SCR_DIR	=	$(ROOT)/scripts
+export BUILD_DIR	=	$(ROOT)/build
+export BIN_DIR		=	$(ROOT)/bin
+export INC_DIR		=	$(ROOT)/include 
+export STD_LIB_INC	=	$(ROOT)/include/clib
+export SCR_DIR		=	$(ROOT)/scripts
 
 # Globa settings: tools.
-export CC		=	sdcc
-export CFLAGS	=	--std-sdcc99 -mz80 -I. -I$(INC_DIR) --no-std-crt0 -D__ID_PARTNER__ --debug
-export AS		=	sdasz80
-export ASFLAGS	=	-xlos -g
-export AR		=	sdar
-export ARFLAGS	=	-rc
+export CC			=	sdcc
+export CFLAGS		=	--std-c11 -mz80 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib -D__ID_PARTNER__ --debug
+export AS			=	sdasz80
+export ASFLAGS		=	-xlos -g
+export AR			=	sdar
+export ARFLAGS		=	-rc
 
 # Subfolders for make.
 SUBDIRS = tools lib src

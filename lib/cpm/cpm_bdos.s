@@ -1,0 +1,84 @@
+        ;; cpm_bdos.s
+        ;; 
+        ;; cp/m bdos and extended bdos calls
+		;;
+        ;; NOTES:
+        ;;  based on https://github.com/dmo9000/cpmlibc
+        ;;
+        ;; MIT License (see: LICENSE)
+        ;; copyright (c) 2021 tomaz stih
+        ;;
+		;; 26.04.2021   tstih
+        .module bdos
+
+        .globl _cpmbdos
+        .globl _cpmbdos_extn
+
+        .equ    BDOS, 5
+
+        .area _CODE
+
+
+        ;; --------------------------------
+        ;; uint8_t cpmbdos(bdos_call_t *p);
+        ;; --------------------------------
+        ;; calls cp/m bdos
+        ;; input:	bdos_call_t struct on stack
+        ;; affect:  af, bc, de, hl
+_cpmbdos::
+        push ix                         ; store ix
+		call rawbdos                    ; raw bdos fn call
+		pop ix                          ; restore ix
+		ret
+
+
+        ;; -------------------------------------------------------------------------
+        ;; uint8_t cpmbdos_extn(bdos_call_t *p, uint16_t* ret_ba, uint16_t *ret_hl);
+        ;; -------------------------------------------------------------------------
+        ;; calls cp/m bdos and store result to variables
+        ;; input:	bdos_call_t struct on stack, pointer to ba and hl structures
+        ;; output: a, b, hl populated with ret. values
+        ;; affect:  af, bc, de, hl
+_cpmbdos_extn::
+        ;; classic bdos call!
+        push ix
+        call rawbdos
+
+		;; store ret value.
+		push hl
+
+        ;; get ptr to ret_ba (ix still points to stack)
+        ;; and store a and b values into it
+		ld l,6(ix)
+		ld h,7(ix) 
+		ld (hl),b
+		inc hl
+		ld (hl),a
+
+        ;; get ptr to ret_hl and store hl into it
+		ld l,8(ix)
+		ld h,9(ix)
+		pop bc		                    ; recover the HL we have pushed
+		ld (hl),b
+		inc hl
+		ld (hl),c
+		pop ix                          ; restore ix
+		ret
+
+
+        ;; raw bdos call
+        ;; input:	bdos_call_t struct pointer on stack
+        ;; output:  ix=stack, (a,b,de)=potential result
+        ;; affect:  af, bc, de, hl, ix
+rawbdos:
+        ld ix,#0
+		add ix,sp                       ; ix=sp
+		ld l,4(ix)                      ; load bdos struct into hl
+		ld h,5(ix)
+		ld c,(hl)                       ; and bdos function into c.
+		inc hl
+		ld e,(hl)                       ; load bdos parameter into de
+		inc hl
+		ld d,(hl)
+		call BDOS                       ; make BDOS call!
+        ret

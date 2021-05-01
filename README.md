@@ -1,5 +1,7 @@
 # idp
 
+ > This repository is undergoing reconstruction. Please visit in a week.
+
 Welcome to the Iskra Delta Partner development repository. Here you'll find the tools and manuals for Iskra Delta Partner development. 
 
 What are you after?

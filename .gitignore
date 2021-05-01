@@ -35,6 +35,14 @@
 *.i*86
 *.x86_64
 *.hex
+*.lst
+*.map
+*.cdb
+*.ihx
+*.bin
+*.com
+bin/
+build/
 
 # Debug files
 *.dSYM/

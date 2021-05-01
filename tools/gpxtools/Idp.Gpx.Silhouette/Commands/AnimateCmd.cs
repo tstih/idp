@@ -26,10 +26,10 @@ using System.Drawing.Imaging;
 using XYZ.Ex;
 using XYZ.Formats;
 using Idp.Gpx.Common.CmdLine;
-using Idp.Gpx.Common.Glyphs;
 using System.IO;
 using Idp.Gpx.Common.Generators;
 using System;
+using Idp.Gpx.Common.Utils;
 
 namespace Idp.Gpx.Silhouette.Commands {
 
@@ -91,7 +91,7 @@ namespace Idp.Gpx.Silhouette.Commands {
             {
                 GlyphHeader = new GlyphHeader()
                 {
-                    Generation=Generation.Line,
+                    Generation= (byte)((int)GenerationGlyphType.Animation|((int)GenerationDrawMode.Lines<<3)),
                     LineWidthInBytes=0
                 }
             };
@@ -131,9 +131,9 @@ namespace Idp.Gpx.Silhouette.Commands {
 
                 // Export glyph header first.
                 cgen.CommentedByte((byte)a.GlyphHeader.Generation, "Lines animation format.", true);
-                cgen.CommentedByte((byte)0, "Reserved byte. Only used for raster graphics.");
                 cgen.CommentedShort((ushort)a.GlyphHeader.Width, string.Format("Glyph width={0}.", a.GlyphHeader.Width));
                 cgen.CommentedShort((ushort)a.GlyphHeader.Height, string.Format("Glyph height={0}.", a.GlyphHeader.Height));
+                cgen.CommentedByte((byte)0, "Reserved byte. Only used for raster graphics.");
                 cgen.CommentedByte((byte)frames.Count, string.Format("# animation frames={0}.", frames.Count));
 
                 // And now frames.

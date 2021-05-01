@@ -22,15 +22,15 @@ namespace Idp.Gpx.Snatch.Generators
     public class FontAsmCodeGenerator : AsmCodeGenerator
     {
         #region Ctor
-        public FontAsmCodeGenerator(StringBuilder sb, int codeIdentTabs = 2, int commentIdentTabs = 5)
-            : base(sb,2,5)
+        public FontAsmCodeGenerator(StringBuilder sb, int codeIdentTabs = 2, int commentIdentTabs = 8)
+            : base(sb,2,8)
         { }
         #endregion // Ctor
 
         #region Method(s)
         public void AddFontHeader(
             string name,
-            FontType generation,
+            byte generation,
             byte width,
             byte height,
             byte lineWidthInBytes,
@@ -42,9 +42,9 @@ namespace Idp.Gpx.Snatch.Generators
             // Generate standard header.
             AddHeader(name, id, ".s", "see font.h for format details")
                 .AddDirective("module", id).NextLine()
-                .AddDirective("globl", id).NextLine()
+                .AddDirective("globl", "_"+id).NextLine()
                 .AddDirective("area", "_CODE")
-                .AddLabel(id, true)
+                .AddLabel("_"+id, true)
                 .AddComment("font header")
                 .AddDirective("db", (byte)generation, "font generation")
                 .AddDirective("dw", width, "font width (max width for proportional)")
@@ -52,18 +52,6 @@ namespace Idp.Gpx.Snatch.Generators
                 .AddDirective("db", lineWidthInBytes, "line width in bytes (unused for tiny)")
                 .AddDirective("db", firstAscii, "first ascii")
                 .AddDirective("db", lastAscii, "last ascii");
-
-            // Typo font?
-            if (generation.HasFlag(FontType.Typo))
-            {
-                // TODO: One fine day.
-                AddComment("typo font (header extension)")
-                    .AddDirective("db", 0, "cap")
-                    .AddDirective("db", 0, "ascent")
-                    .AddDirective("db", 0, "descent")
-                    .AddDirective("db", 0, "median")
-                    .AddDirective("db", 0, "baseline");
-            }
 
             // And separate from glyphs.
             NextLine();
@@ -135,10 +123,10 @@ namespace Idp.Gpx.Snatch.Generators
             return new Tuple<string, string>(glyphName, glyphDesc);
         }
 
-        public void TableOfWidths(ushort[] widths, int perRow = 8)
+        public void TableOfWidths(byte[] widths, int perRow = 8)
         {
             AddComment("table of widths");
-            AddWordTable(widths, perRow);
+            AddByteTable(widths, perRow);
             NextLine();
         }
 

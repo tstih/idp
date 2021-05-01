@@ -19,8 +19,21 @@ namespace XYZ.Formats
     /// Delta Partner machine), Raster (standard raster format) or
     /// Line (a group of lines).
     /// </summary>
-    [Flags]
-    public enum Generation : byte { Tiny = 0x01, Raster = 0x02, Line=0x04};
+    public enum GenerationGlyphType : byte
+    { // Bits 0-2
+        Bmp = 0,
+        MouseCursor = 1,
+        Font = 2,
+        Animation = 3
+    }
+
+    // Bits 3-4
+    public enum GenerationDrawMode : byte
+    {
+        Tiny=0,
+        Raster=1,
+        Lines= 2
+    }
 
     /// <summary>
     /// Glyph header. All glyphs (fons, and sprites) share the same
@@ -38,7 +51,7 @@ namespace XYZ.Formats
         /// Glyph generation.
         /// </summary>
         [FieldOffset(0)]
-        public Generation Generation;
+        public byte Generation;
 
         /// <summary>
         /// Width in pixels for fixed glyphs. Max width for proportional glyphs.

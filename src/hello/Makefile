@@ -1,6 +1,8 @@
 # Special tools.
 LD		= sdcc
-LDFLAGS	= -mz80 --no-std-crt0 --nostdlib --code-loc 0x100 -Wl -y 
+LDFLAGS	= -mz80 -Wl -y \
+	--code-loc 0x100 --no-std-crt0 --nostdlib --nostdinc \
+	-L$(BUILD_DIR) -llibcpm
 
 # Source files.
 CRT0	=	cpm0

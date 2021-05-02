@@ -50,12 +50,10 @@ clean:
 install: all
 	# Make .COM files (for CP/M).
 	$(BUILD_DIR)/load $(BUILD_DIR)/hello
-	$(BUILD_DIR)/load $(BUILD_DIR)/zwin
 	# Make CP/M floppy.
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hello.com 0:hello.com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/zwin.com 0:zwin.com
 	rm -f diskdefs
 	# And copy binaries to bin dir.
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)

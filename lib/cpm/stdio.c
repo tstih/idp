@@ -26,11 +26,22 @@
  * 28.04.2021   tstih
  *
  */
-#include <stdio.h>
 #include <errno.h>
+#include <cpm_sysfunc.h>
+#include <sys/stat.h>
 #include <fcntl.h>
-#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
+extern int open(const char *pathname, int flags);
+extern int close(int fd);
+extern ssize_t read(int fd, void *buf, size_t count);
+extern ssize_t write(int fd, void *buf, size_t count);
+extern off_t lseek(int fd, off_t offset, int whence);
+
+extern int  _find_free_filehandle();
+extern FILE filehandles[FILES_MAX];
 
 FILE *fopen(const char *path, const char *mode)
 {
@@ -91,7 +102,6 @@ FILE *fopen(const char *path, const char *mode)
     return (FILE *)myfhptr;
 }
 
-
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
     ssize_t ritems = 0;
@@ -148,10 +158,10 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
         eofptr = memchr((const char *)ptr, 0x1A, size * nmemb);
         if (eofptr)
         {
-            stream->_limit = CFD[stream->_file].offset + (eofptr - ptr);
+            stream->_limit = cfd[stream->_file].offset + (eofptr - ptr);
             stream->_eof = true;
-            CFD[stream->_file].offset -= (SSIZE_MAX - (eofptr - ptr));
-            stream->_limit = CFD[stream->_file].offset;
+            cfd[stream->_file].offset -= (SSIZE_MAX - (eofptr - ptr));
+            stream->_limit = cfd[stream->_file].offset;
         }
         else
         {
@@ -160,7 +170,6 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
     errno = 0;
     return ritems;
 }
-
 
 size_t fwrite(void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
@@ -189,12 +198,10 @@ size_t fwrite(void *ptr, size_t size, size_t nmemb, FILE *stream)
     return i;
 }
 
-
 long ftell(FILE *stream)
 {
-    return CFD[stream->_file].offset;
+    return cfd[stream->_file].offset;
 }
-
 
 int fseek(FILE *stream, long offset, int whence)
 {
@@ -213,7 +220,6 @@ int fseek(FILE *stream, long offset, int whence)
     return 0;
 }
 
-
 int feof(FILE *stream)
 {
     errno = 0;
@@ -228,7 +234,6 @@ int feof(FILE *stream)
     }
     return 0;
 }
-
 
 int fclose(FILE *stream)
 {

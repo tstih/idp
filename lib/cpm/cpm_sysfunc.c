@@ -18,16 +18,13 @@
 #include "string.h"
 
 #include "cpm_sysfunc.h"
-#include "cpmbdos.h"
+#include "cpm_bdos.h"
 
 #define READLINE_BUF_SIZE 80
 
 static bdos_call_t bdos_readstr;
 static rs_buffer_t rs_buf;
-
 static uint16_t ret_ba, ret_hl;
-extern int rtargc;
-extern uint16_t heapaddr;
 
 uint16_t get_ret_ba()
 {
@@ -127,7 +124,7 @@ char cpm_getchar_nonblock(void) {
 
 void cpm_putchar(char c) {
     bdos_call_t cwrite = { C_WRITE, { (uint16_t)c } };
-    cpmbdos_extn(&cwrite, &ret_ba, &ret_hl);
+    cpmbdos(&cwrite);
 }
 
 void cpm_set_dma_addr(uint16_t addr) {
@@ -183,7 +180,7 @@ void cpm_set_fcb_name(char *fname, char *ftype, fcb_t *cb) {
     }
 }
 
-uint8_t cpm_performFileOp(file_operation fop, fcb_t *cb) {
+uint8_t cpm_perform_file_op(file_operation fop, fcb_t *cb) {
     bdos_call_t call = { 0, {(uint16_t)cb} };
 
     switch (fop) {

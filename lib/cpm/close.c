@@ -15,7 +15,10 @@
 #include <errno.h>
 #include <cpm_sysfunc.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 int close(int fd)
 {
@@ -30,10 +33,10 @@ int close(int fd)
         return -1;
     }
     /* errno should be set appropriately */
-    if (CFD[fd].id != -1) {
-        fcb_ptr = &CFD[fd].fcb;
-        rval = cpm_performFileOp(fop_close, fcb_ptr);
-        CFD[fd].id = -1;
+    if (cfd[fd].id != -1) {
+        fcb_ptr = &cfd[fd].fcb;
+        rval = cpm_perform_file_op(fop_close, fcb_ptr);
+        cfd[fd].id = -1;
         errno = 0;
         return 0;
     }

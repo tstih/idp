@@ -70,26 +70,26 @@ typedef enum {
 extern int rtargc;
 extern uint16_t heapaddr;
 
-void cpm_sysfunc_init();
-void cpm_reset(void);
-char *cpm_gets(char *p);
-char cpm_getchar(void);
-void cpm_putchar(char c);
-char cpm_getchar_nonblock(void);
-uint8_t cpm_perform_file_pp(file_operation fop, fcb_t *cb);
-uint8_t cpm_delete_file(fcb_t *cb);
-uint8_t cpm_set_file_attribs(fcb_t *cb);
-void cpm_set_dma_addr(uint16_t addr);
-uint8_t cpm_get_cur_drive(void);
-uint8_t cpm_set_cur_drive(uint8_t drive);
-uint8_t cpm_reset_drives(void);
-void cpm_set_fcb_name(char *fname, char *ftype, fcb_t *cb);
+extern void cpm_sysfunc_init();
+extern void cpm_reset(void);
+extern char *cpm_gets(char *p);
+extern char cpm_getchar(void);
+extern void cpm_putchar(char c);
+extern char cpm_getchar_nonblock(void);
+extern uint8_t cpm_perform_file_op(file_operation fop, fcb_t *cb);
+extern uint8_t cpm_delete_file(fcb_t *cb);
+extern uint8_t cpm_set_file_attribs(fcb_t *cb);
+extern void cpm_set_dma_addr(uint16_t addr);
+extern uint8_t cpm_get_cur_drive(void);
+extern uint8_t cpm_set_cur_drive(uint8_t drive);
+extern uint8_t cpm_reset_drives(void);
+extern void cpm_set_fcb_name(char *fname, char *ftype, fcb_t *cb);
 
 /* return saved values of BA or HL */
-uint16_t get_ret_ba();
-uint16_t get_ret_hl();
-uint16_t get_stktop();
+extern uint16_t get_ret_ba();
+extern uint16_t get_ret_hl();
+extern uint16_t get_stktop();
 
-bool continue_or_exit ();
+extern bool continue_or_exit ();
 
 #endif /* __CPM_SYSFUNC_H__ */

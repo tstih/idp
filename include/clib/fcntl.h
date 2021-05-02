@@ -45,4 +45,9 @@ typedef struct cfd_s {
     fcb_t fcb;
 } cfd_t;
 
+extern void _fds_init();
+extern bool _fds_init_done;
+extern cfd_t cfd[FILES_MAX];
+extern uint8_t dma_buffer[SSIZE_MAX];
+
 #endif /* __FCNTL_H__ */

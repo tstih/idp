@@ -49,8 +49,8 @@ _cpmbdos_extn::
 
         ;; get ptr to ret_ba (ix still points to stack)
         ;; and store a and b values into it
-		ld l,6(ix)
-		ld h,7(ix) 
+		ld l,2(ix)
+		ld h,3(ix) 
 		ld (hl),b
 		inc hl
 		ld (hl),a
@@ -71,10 +71,10 @@ _cpmbdos_extn::
         ;; output:  ix=stack, (a,b,de)=potential result
         ;; affect:  af, bc, de, hl, ix
 rawbdos:
-        ld ix,#0
+        ld ix,#6
 		add ix,sp                       ; ix=sp
-		ld l,4(ix)                      ; load bdos struct into hl
-		ld h,5(ix)
+		ld l,(ix)                      ; load bdos struct into hl
+		ld h,1(ix)
 		ld c,(hl)                       ; and bdos function into c.
 		inc hl
 		ld e,(hl)                       ; load bdos parameter into de

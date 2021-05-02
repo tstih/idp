@@ -13,8 +13,12 @@
  *
  */
 #include <errno.h>
-#include <fcntl.h>
 #include <cpm_sysfunc.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 off_t lseek(int fd, off_t offset, int whence)
 {
@@ -23,18 +27,16 @@ off_t lseek(int fd, off_t offset, int whence)
     }
     /* here we just verify offsets and tweak the pointer around. the real 
        magic happens in read/write */
-    if (CFD[fd].id == -1) {
+    if (cfd[fd].id == -1) {
         errno = EBADF;
         return -1;
     }
     if (whence == SEEK_SET) {
-        CFD[fd].offset = (uint32_t) offset;
+        cfd[fd].offset = (uint32_t) offset;
         errno = 0;
         return 0;
     }
     errno = EINVAL;
     return -1;
 }
-
-
 

@@ -67,8 +67,7 @@ typedef enum {
 } file_operation;
 
 /* required externs */
-extern int rtargc;
-extern uint16_t heapaddr;
+extern uint16_t heap;
 
 extern void cpm_sysfunc_init();
 extern void cpm_reset(void);

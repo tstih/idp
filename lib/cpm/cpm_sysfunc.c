@@ -21,6 +21,7 @@
 #include "cpm_bdos.h"
 
 #define READLINE_BUF_SIZE 80
+#define TBUFF 0x0080
 
 static bdos_call_t bdos_readstr;
 static rs_buffer_t rs_buf;
@@ -38,50 +39,52 @@ uint16_t get_ret_hl()
 
 uint16_t get_stktop()
 {
-    return heapaddr;
+    return heap;
 }
 
+extern uint16_t argc;
+extern uint16_t argv;
+extern uint16_t filename;
+
 void _cpm_sysfunc_init() {
-    /* standard CP/M command buffer at 0x0080 */
-    /* this function returns the correct value for argc */
-    /* FIXME: this is such a hack right now - we save the argv pointers in the "UNUSED" section at 0x0050*/
-    char *argptr = (char *) 0x0080;
-    unsigned char _argbytes;
+
+    /* standard CP/M command buffer */
+    char *argptr = (char *) TBUFF; 
+    unsigned char abytes;
     int i = 0;
     bool within_arg = false;
-    int _argc = 1;
-    /* first word is argv0, which we don't have,
-       but we'll fill it with NULL anyway */
-    uint16_t *argv_ptr = (uint16_t*) 0x0052;    
-    /* this is apparently unused in CP/M 2.2 so we will use it 
-       as pointers for argv */
-    memset((void *) 0x50, 0, 0x10);
-    _argbytes=argptr[0];
-    for (i = 1; i < (_argbytes+2 ); i++) {
+    int acount = 1;
+    uint16_t *pcount=(uint16_t *)&argc;
+
+    /* first argv is filename, populated by crt0.s */
+    uint16_t *argv_ptr = (uint16_t*)&argv;
+    memset((void *)argv_ptr, 0, 0x10);
+    argv_ptr[0]=NULL;
+    argv_ptr++;    
+    abytes=argptr[0];
+    for (i = 1; i < (abytes+2 ); i++) {
         switch(argptr[i]) {
         case '\0':
             if (within_arg) 
-                _argc++;
-            /* end of argument string */
+                acount++;
             within_arg = false;
-            if (_argc >= MAX_ARGS) {
+            if (acount >= MAX_ARGS) {
                 goto args_done;
             }
             break;
         case ' ':
             argptr[i] = '\0';
             if (within_arg)
-                _argc++;
-            if (_argc >= MAX_ARGS) {
+                acount++;
+            if (acount >= MAX_ARGS) {
                 goto args_done;
             }
             within_arg = false;
             break;
         default:
             if (!within_arg) {
-                /* very hacky */
-                argv_ptr[0] = 0x80+i;
-                argv_ptr[1] = 0x00;
+                argv_ptr[0] = 0x80+i; 
+                argv_ptr[1] = 0x00;  
                 argv_ptr++;
                 within_arg = true;
             } 
@@ -89,12 +92,12 @@ void _cpm_sysfunc_init() {
         }
     }
 
-    // Initialize READSTR BDOS call
+    /* Initialize READSTR BDOS call */
     bdos_readstr.func8 = C_READSTR;
     bdos_readstr.parm16 = (uint16_t)&rs_buf;
 
 args_done:
-    rtargc = (int )_argc;
+    *pcount = acount;
 }
 
 char *cpm_gets(char *p) {

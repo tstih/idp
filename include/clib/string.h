@@ -5,6 +5,7 @@
  * 
  * NOTES:
  *  Based on https://github.com/dmo9000/cpmlibc
+ *  Uses libiberty https://code.woboq.org/gcc/libiberty/
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -28,15 +29,15 @@ extern int memcmp(const void *s1, const void *s2, size_t n);
 
 extern size_t strlen(const char *s);
 extern char *strcpy(char *dest, const char *src);
-extern int strncmp(const char *s1, const char *s2, size_t n);
+extern char* strncpy(char* dst, const char* src, size_t num);
 extern int strcmp(const char *s1, const char *s2);
-extern char *strcpy(char *dest, const char *src);
-extern char *strncpy(char *dest, const char *src, size_t n);
+extern int strncmp(const char *s1, const char *s2, register size_t n);
 extern char *strchr(const char *s, int c);
-extern char *strerror(int errnum);
-extern char *strstr(const char *haystack, const char *needle);
-extern char *strsep(char **stringp, const char *delim);
 extern char *strrchr(const char *s, int c);
-extern char *strcat(char *dest, const char *src);
+extern char *strsep(char **stringp, const char *delim);
+extern size_t strcspn(const char *s1, const char *s2); 
+extern char *strtok(char *s, const char *delim);
+
+extern char *strerror(int errnum);
 
 #endif /* __STRING_H__ */

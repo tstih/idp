@@ -2,37 +2,17 @@
 		;; cp/m app startup code
 		;;
 		;; tomaz stih, fri mar 26 2021
-		.module cpm0
+		.module crt0
 
        	.globl  _main
-        .globl  _heapaddr
-        .globl  _rtargc
-        .globl  _rtargv
-        .globl  _stktop
+        .globl  _argc
+        .globl  _argv
+        .globl  _heap
         .globl  __cpm_sysfunc_init
-	    
-        .area	_CODE
-init:
-        ;; define a stack   
-        ld	sp,#_stktop
 
-        ;; SDCC init global variables
-        ;; no need to copy data seg. in this scenario
-        call gsinit
-        call __cpm_sysfunc_init
-
-        ;; cmd line args to the stack
-        ld hl,#0x0050
-        push hl
-        ld hl,(_rtargc)
-        push hl
-
-	    ;; call the main
-	    call _main
-
-        ;; BDOS exit.
-        ld c,#0
-	    call 0x0005
+        ;; consts.
+        .equ    TBUFF,  0x80
+        .equ    TFCB,   0x5c
 
         ;; Ordering of segments for the linker.
 		.area   _HOME
@@ -47,21 +27,51 @@ init:
         .area   _STACK
 	    .area   _HEAP
 
+
+        .area	_CODE
+start:
+        ;; define a stack   
+        ld	sp,#stack
+
+        ;; SDCC init global variables
+        ;; no need to copy data seg. in this scenario
+        call gsinit
+
+        ;; load argc and argv to stack for the main function
+        ld hl, #_argv
+        push hl
+        ld hl, (#_argc)
+        push hl
+
+        ;; call the main
+	    call _main
+
+        ;; BDOS exit.
+        ld c,#0
+	    call 0x0005
+
+
+        ;; init code for functions/var.
+        .area   _GSINIT
+gsinit::        
+        ;; and call initialize function
+        call __cpm_sysfunc_init
+
+        .area   _GSFINAL
+        ret
+
+
         .area   _DATA
-_rtargc::
-        .dw 0xFFFF
-_rtargv::
-        .ds 16
+_argc::
+        .dw 1                           ; default argc is 1 (filename!)
+_argv::
+        .ds 16                          ; max 8 argv arguments
+
 
         .area	_STACK
 	    .ds	512
-_stktop::
+stack:
 
-        .area   _GSINIT
-gsinit::
-        .area   _GSFINAL
-        ret
-	    .db	0xe5                        ;; but why?
 
-_heapaddr::
-        .db 0x00
+        .area   _HEAP
+_heap::                                 ; start of our heap.

@@ -16,11 +16,11 @@
 #ifndef __CTYPE_H__
 #define __CTYPE_H__
 
-extern int isprint(int c);
-extern int isspace(int c);
-extern int isdigit(int c);
-extern int isgraph(int c);
-extern int toupper(int c);
+#include <stdbool.h>
+
+extern bool isalpha(int c);
+extern bool isspace(int c);
+extern bool ispunct(int c);
 extern int tolower(int c);
 
 #endif /* __CTYPE_H__ */

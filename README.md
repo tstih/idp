@@ -1,38 +1,11 @@
 # idp
 
- > This repository is undergoing reconstruction. Please visit in a week.
+Welcome to the (Iskra) Delta Partner development repository. Here you'll find the tools and manuals for Iskra Delta Partner development.
 
-Welcome to the Iskra Delta Partner development repository. Here you'll find the tools and manuals for Iskra Delta Partner development. 
+> This repository is currently under initial development. Things change. 
 
-What are you after?
 
-Just looking for cool Iskra Delta Partner Software
-I want to develop for the original Iskra Delta Partner (CP/M)
-I want to development for the yos/zwin OS for Iskra Delta Partner
-
-# Software
-
-## Games
-
-| file         | description                                               |
-|--------------|-----------------------------------------------------------|
-| KONTRA.COM   | Kontrabant is a port of known Slovenian ZX Spectrum game. |
-| AIDS.COM     | The Asteroids game.                                       |
-| TETRIS.COM   | The game of Tetris.                                       |
-| BREAKOUT.COM | Break out game.                                           |
-| PONG.COM     | A port of Atari Pong game.                                |
-
-## Utilities
-
-| file         | description                                               |
-|--------------|-----------------------------------------------------------|
-| KONTRA.COM   | Kontrabant is a port of known Slovenian ZX Spectrum game. |
-
-# Building code samples 
-
-## On Windows
-
-Sorry, only Linux is supported at this time.
+# Building
 
 ## On Linux
 
@@ -80,34 +53,31 @@ the the `scripts\diskdefs` file.
 
 `cpmrm -f idpfdd fddb.img 0:test.com`
 
- # Iskra Delta Partner emulator
 
- You can find the emulator here.
+# The Emulator
 
- http://matejhorvat.si/sl/slorac/delta/partner/index.htm
+You can download the emulator from here.
 
- Once you are in the emulator, press Alt+O and select the `build\fddb.img` file.
- This will create `B:` drive. Finally, type...
+http://matejhorvat.si/sl/slorac/delta/partner/index.htm
 
- ~~~
- B:
- DIR
- HELLO
- ~~~
+Once you are in the emulator, press Alt+O and select the `build\fddb.img` file. This will create `B:` drive. Finally, type...
 
- And, voila...
+~~~
+B:
+DIR
+HELLO
+~~~
 
- ![Test in emulator](doc/test.jpg)
+And, voila...
 
-# Links
+![Test in emulator](doc/test.jpg)
 
-http://cpmarchives.classiccmp.org/
 
- # Thank you
+# Thank you
 
- Matej Horvat for kindly sharing technical details about his emulator and functioning of a Partner, and complex code samples.
+**Matej Horvat** for kindly sharing technical details about his emulator and functioning of a Partner, and complex code samples.
 
- Miha Grcar for keeping a Partner Revival Slack and sharing his findings there.
+**Miha Grcar** for keeping a Partner Revival Slack and sharing his findings there.
 
 Cheers,
 Tomaz Stih

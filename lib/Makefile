@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = gpx cpm
+SUBDIRS = sdcc cpm
 
 # Rules.
 .PHONY: all

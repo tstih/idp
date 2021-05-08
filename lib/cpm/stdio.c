@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 
 extern int open(const char *pathname, int flags);
 extern int close(int fd);
@@ -51,10 +52,6 @@ FILE *fopen(const char *path, const char *mode)
     int oflags = 0;
     FILE *myfhptr = NULL;   
     ssize_t initial_size = 0;
-    if (!_fds_init_done)
-    {
-        _fds_init();
-    }
 
     if (strncmp(mode, "r", 1) == 0)
     {
@@ -126,8 +123,6 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 
         if (rd == -1)
         {
-            printf("fread() error; errno = %d [%s]\n",
-                   errno, strerror(errno));
             /* fread() returns 0 on error (or a short item count) 
                and leaves it to the caller to determine what happened */
             return (0);

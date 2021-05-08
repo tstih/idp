@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 
 ssize_t write(int fd, void *buf, size_t count)
 {
@@ -32,12 +33,8 @@ ssize_t write(int fd, void *buf, size_t count)
     uint16_t required_module = 0;
     uint16_t required_extent = 0;
     uint16_t required_block = 0;
-
-    errno =0;
-
-    if (!_fds_init_done) {
-        _fds_init();
-    }
+    /* assume success */
+    errno = 0;
     if ((fd < 0 || fd >= FILES_MAX) || cfd[fd].id == -1) {
         errno = EBADF;
         return -1;
@@ -47,7 +44,6 @@ ssize_t write(int fd, void *buf, size_t count)
     if (count > SSIZE_MAX) {
         /* apparently behaviour is supposed to be undefined here, 
            but we will return I/O error */
-        printf("Xcount = %d, SSIZE_MAX = %d\n", count, SSIZE_MAX);
         errno = EIO;
         return -1;
     }

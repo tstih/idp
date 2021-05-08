@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
+#include <io.h>
 
 /* fwd definition */
 extern ssize_t seq_read(int fd, void *buf, size_t count);
@@ -42,10 +43,6 @@ ssize_t seq_read(int fd, void *buf, size_t count)
     uint16_t required_resv = 0;
     bool flag_reopen = false;
     uint8_t i = 0, j = 0;
-
-    if (!_fds_init_done) {
-        _fds_init();
-    }
 
     if ((fd < 0 || fd >= FILES_MAX) || cfd[fd].id == -1) {
         errno = EBADF;

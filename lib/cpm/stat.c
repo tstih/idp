@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <io.h>
 
 int stat(char *pathname, struct stat *buf)
 {
@@ -32,10 +33,6 @@ int stat(char *pathname, struct stat *buf)
     uint8_t current_extent = 0; /* 16K block index */
     uint8_t module_number = 0;  /* 512K block index */
     uint16_t num_records = 0;   /* number of 128 byte blocks */
-
-    if (!_fds_init_done) {
-        _fds_init();
-    }
 
     memset(&statfcb, 0, sizeof(fcb_t));
     memset(&_filename, 0, 9);

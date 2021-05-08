@@ -15,7 +15,6 @@
 #ifndef __FNCTL_H__
 #define __FNCTL_H__
 
-#include <cpm_sysfunc.h>
 #include <limits.h>
 
 #define O_ACCMODE    0003
@@ -30,24 +29,5 @@
 #define SEEK_SET    0
 #define SEEK_CUR    1
 #define SEEK_END    2
-
-#define FILES_BASE                  0x03
-#define FILES_MAX                   4 
-#define MODULE_SIZE                 524288
-#define EXTENTS_PER_MODULE          32
-#define KILOBYTE                    1024
-#define EXTENT_SIZE                 (16 * KILOBYTE)
-
-typedef struct cfd_s {
-    int id;
-    int oflags;                         /* FIXME: should be off_t ? */
-    uint32_t offset;
-    fcb_t fcb;
-} cfd_t;
-
-extern void _fds_init();
-extern bool _fds_init_done;
-extern cfd_t cfd[FILES_MAX];
-extern uint8_t dma_buffer[SSIZE_MAX];
 
 #endif /* __FCNTL_H__ */

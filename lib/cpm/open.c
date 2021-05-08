@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 
 int open(const char *pathname, int flags)
 {
@@ -32,10 +33,6 @@ int open(const char *pathname, int flags)
     char *filename = NULL;
     char *filetype = NULL;
     int length = 0;
-
-    if (!_fds_init_done) {
-        _fds_init();
-    }
 
     memset(&_filename, 0, 9);
     memset(&_filetype, 0, 4);
@@ -58,6 +55,7 @@ int open(const char *pathname, int flags)
     fd = (int) _find_free_fd();
 
     if (fd < -1 || fd >= FILES_MAX) {
+        errno = ENFILE; /* File table overflow */
         return -1;
     }
 

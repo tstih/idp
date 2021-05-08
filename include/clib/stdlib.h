@@ -17,11 +17,17 @@
 
 #include <stddef.h>
 
+/* TODO:
+extern int atoi(const char *nptr);
+*/
+
+extern void exit(int status);
+
 extern long strtol(char *nptr, char **endptr, int base);
 extern unsigned long int strtoul(const char *nptr, char **endptr, int base);
-extern void exit(int status);
-extern int atoi(const char *nptr);
-extern int abs(int j);
+
+extern int abs (int i);
+
 extern long int random(void);
 extern void srandom(unsigned int seed);
 

@@ -19,15 +19,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 
 int close(int fd)
 {
     fcb_t *fcb_ptr = NULL;
     int rval = 0 ;
-    if (!_fds_init_done) {
-        _fds_init();
-    }
-
     if (fd < 0) {
         errno = EBADF;
         return -1;

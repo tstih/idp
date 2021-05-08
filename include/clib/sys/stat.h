@@ -44,7 +44,10 @@ struct stat
 #define S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
 #define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
 
-extern int stat(char *path, struct stat *buf);
+/* TODO:
 extern int chmod(const char *path, mode_t mode);
+*/
+
+extern int stat(char *path, struct stat *buf);
 
 #endif /* __SYS_STAT_H__ */

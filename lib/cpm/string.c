@@ -231,7 +231,7 @@ char *strerror(int en)
         return (const char *) "Illegal address";
         break;
     case ENFILE:
-        return (const char *) "Too many open files";
+        return (const char *) "File table overflow";
         break;
     case ENOTTY:
         return (const char *) "Not a typewriter";

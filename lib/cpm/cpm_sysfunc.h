@@ -69,7 +69,6 @@ typedef enum {
 /* required externs */
 extern uint16_t heap;
 
-extern void cpm_sysfunc_init();
 extern void cpm_reset(void);
 extern char *cpm_gets(char *p);
 extern char cpm_getchar(void);

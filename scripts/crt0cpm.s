@@ -2,13 +2,14 @@
 		;; cp/m app startup code
 		;;
 		;; tomaz stih, fri mar 26 2021
-		.module crt0
+		.module crt0cpm
 
        	.globl  _main
         .globl  _argc
         .globl  _argv
         .globl  _heap
-        .globl  __cpm_sysfunc_init
+        .globl  _exit
+        .globl  __stdlib_init
 
         ;; consts.
         .equ    TBUFF,  0x80
@@ -46,6 +47,10 @@ start:
         ;; call the main
 	    call _main
 
+        ;; exit (also a place for the exit() function
+        ;; we ignore the return code AND the stack as reset
+        ;; will handle both...
+_exit::
         ;; BDOS exit.
         ld c,#0
 	    call 0x0005
@@ -55,7 +60,7 @@ start:
         .area   _GSINIT
 gsinit::        
         ;; and call initialize function
-        call __cpm_sysfunc_init
+        call __stdlib_init
 
         .area   _GSFINAL
         ret

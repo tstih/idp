@@ -25,7 +25,6 @@
 #define SEEK_SET    0
 #define SEEK_CUR    1
 #define SEEK_END    2
-#define LONG_MAX    2147483647
 
 #define uchar unsigned char
 
@@ -44,10 +43,18 @@ typedef struct _iobuf FILE;
 #define stdout          (&filehandles[1])
 #define stderr          (&filehandles[2])
 
+/* TODO:
 extern int printf(const char *fmt, ...);
 extern int fprintf(FILE *stream, const char *format, ...);
 extern int sprintf(const char *str, const char *fmt, ...);
 extern int snprintf(char *str, size_t size, const char *format, ...);
+extern char *getenv(const char *name);
+extern int fflush(FILE *stream);
+extern void perror(const char *s);
+extern int ferror(FILE *stream);
+extern int getchar(void);
+extern void cpm_putchar(char c);
+*/
 extern FILE *fopen(const char *path, const char *mode);
 extern int fseek(FILE *stream, long offset, int whence);
 extern size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
@@ -59,12 +66,6 @@ extern size_t fwrite(
     size_t size, 
     size_t nmemb, 
     FILE *stream);
-extern char *getenv(const char *name);
-extern int fflush(FILE *stream);
 extern int puts(const char *s);
-extern void perror(const char *s);
-extern int ferror(FILE *stream);
-extern int getchar(void);
-extern void cpm_putchar(char c);
 
 #endif /* __STDIO_H__ */

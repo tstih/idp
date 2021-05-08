@@ -19,12 +19,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 
 off_t lseek(int fd, off_t offset, int whence)
 {
-    if (!_fds_init_done) {
-        _fds_init();
-    }
     /* here we just verify offsets and tweak the pointer around. the real 
        magic happens in read/write */
     if (cfd[fd].id == -1) {

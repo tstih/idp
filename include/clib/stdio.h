@@ -17,6 +17,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdarg.h>
 
 #define BUFSIZ      512
 #define _NFILE      8
@@ -44,9 +45,7 @@ typedef struct _iobuf FILE;
 #define stderr          (&filehandles[2])
 
 /* TODO:
-extern int printf(const char *fmt, ...);
 extern int fprintf(FILE *stream, const char *format, ...);
-extern int sprintf(const char *str, const char *fmt, ...);
 extern int snprintf(char *str, size_t size, const char *format, ...);
 extern char *getenv(const char *name);
 extern int fflush(FILE *stream);
@@ -67,5 +66,8 @@ extern size_t fwrite(
     size_t nmemb, 
     FILE *stream);
 extern int puts(const char *s);
+extern int vsprintf(char **out, char *format, va_list ap);
+extern int printf(char *fmt, ...);
+extern int sprintf(char *buf, char *fmt, ...);
 
 #endif /* __STDIO_H__ */

@@ -16,10 +16,8 @@
 #define __STDARG_H__
 
 #define va_list                 unsigned char *
-#define va_start(ap,last)       ap=(getarg()*2)+&last-5
-#define va_arg(ap,type)         (*(type*)(ap-=sizeof(type),ap+1))
-#define va_copy(dst, src)       dst = src
-#define va_end(ap)
-#define va_ptr(ap,type)         (*(type*)(ap+1))
+#define va_start(marker, last)  { marker = (va_list)&last + sizeof(last); }
+#define va_arg(marker, type)    *((type *)((marker += sizeof(type)) - sizeof(type)))
+#define va_end(marker)          marker = (va_list) 0;
 
 #endif /* __STDARG_H__ */

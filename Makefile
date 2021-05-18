@@ -18,7 +18,7 @@ export SCR_DIR		=	$(ROOT)/scripts
 
 # Globa settings: tools.
 export CC			=	sdcc
-export CFLAGS		=	--std-c11 -mz80 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib -D__ID_PARTNER__ --debug
+export CFLAGS		=	--std-c11 -mz80 --max-allocs-per-node 25000 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib -D__ID_PARTNER__ --debug
 export AS			=	sdasz80
 export ASFLAGS		=	-xlos -g
 export AR			=	sdar
@@ -33,7 +33,11 @@ all:	$(BUILD_DIR) $(SUBDIRS)
 
 .PHONY: $(BUILD_DIR)
 $(BUILD_DIR):
+	# Create build dir.
 	mkdir -p $(BUILD_DIR)
+	# Remove bin dir (we are going to write again).
+	rm -f -r $(BIN_DIR)
+	# And re-create!
 	mkdir -p $(BIN_DIR)
 
 .PHONY: $(SUBDIRS)
@@ -43,7 +47,6 @@ $(SUBDIRS):
 .PHONY: clean
 clean:
 	rm -f -r $(BUILD_DIR)
-	rm -f -r $(BIN_DIR)
 	rm -f diskdefs
 
 .PHONY: install
@@ -56,6 +59,7 @@ install: all
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hello.com 0:hello.com
 	rm -f diskdefs
 	# And copy binaries to bin dir.
+	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)
 	cp $(BUILD_DIR)/fddb.img $(BIN_DIR)
 	

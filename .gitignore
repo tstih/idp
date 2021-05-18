@@ -40,8 +40,6 @@
 *.cdb
 *.ihx
 *.bin
-*.com
-bin/
 build/
 
 # Debug files

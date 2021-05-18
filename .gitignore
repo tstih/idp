@@ -16,8 +16,7 @@
 *.gch
 *.pch
 
-# Libraries
-*.lib
+# Libraries, except lib
 *.a
 *.la
 *.lo

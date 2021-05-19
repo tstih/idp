@@ -1,6 +1,12 @@
-# idp
+# idp-dev
 
-Iskra Delta Partner code samples.
+Welcome to **idp-dev**, a repository, dedicated to the 
+Iskra Delta Partner development.
+
+We are providing tools and guides for you to start developing for the
+Iskra Delta Partner computer.
+
+ ![Iskra Delta Partner](doc/img/partner.jpg)
 
 # Building code samples 
 

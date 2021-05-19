@@ -1,3 +1,5 @@
+![status.badge] [![language.badge]][language.url] [![standard.badge]][standard.url] [![license.badge]][license.url]
+
 # idp-dev
 
 Welcome to **idp-dev**, a repository, dedicated to the 
@@ -8,11 +10,10 @@ Iskra Delta Partner computer.
 
  ![Iskra Delta Partner](doc/img/partner.jpg)
 
-# Building code samples 
+> This repository is currently under initial development. Things change. 
 
-## On Windows
 
-Sorry, only Linux is supported at this time.
+# Building
 
 ## On Linux
 
@@ -60,30 +61,43 @@ the the `scripts\diskdefs` file.
 
 `cpmrm -f idpfdd fddb.img 0:test.com`
 
- # Iskra Delta Partner emulator
 
- You can find the emulator here.
+# The Emulator
 
- http://matejhorvat.si/sl/slorac/delta/partner/index.htm
+You can download the emulator from here.
 
- Once you are in the emulator, press Alt+O and select the `build\fddb.img` file.
- This will create `B:` drive. Finally, type...
+http://matejhorvat.si/sl/slorac/delta/partner/index.htm
 
- ~~~
- B:
- DIR
- HELLO
- ~~~
+Once you are in the emulator, press Alt+O and select the `build\fddb.img` file. This will create `B:` drive. Finally, type...
 
- And, voila...
+~~~
+B:
+DIR
+HELLO
+~~~
 
- ![Test in emulator](doc/test.jpg)
+And, voila...
 
- # Thank you
+![Test in emulator](doc/test.jpg)
 
- Matej Horvat for kindly sharing technical details about his emulator and functioning of a Partner, and complex code samples.
 
- Miha Grcar for keeping a Partner Revival Slack and sharing his findings there.
+# Thank you
+
+**Matej Horvat** for kindly sharing technical details about his emulator and functioning of a Partner, and complex code samples.
+
+**Miha Grcar** for keeping a Partner Revival Slack and sharing his findings there.
 
 Cheers,
 Tomaz Stih
+
+
+[language.url]:   https://en.wikipedia.org/wiki/ANSI_C
+[language.badge]: https://img.shields.io/badge/language-C-blue.svg
+
+[standard.url]:   https://en.wikipedia.org/wiki/C89/
+[standard.badge]: https://img.shields.io/badge/standard-C89-blue.svg
+
+[license.url]:    https://github.com/tstih/nice/blob/master/LICENSE
+[license.badge]:  https://img.shields.io/badge/license-MIT-blue.svg
+
+[status.badge]:  https://img.shields.io/badge/status-unstable-red.svg

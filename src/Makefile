@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = hello zwin
+SUBDIRS = hello
 
 # Rules.
 .PHONY: all

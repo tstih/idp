@@ -5,7 +5,7 @@
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2021 tomaz stih
         ;;
-		;; 04.04.2021   tstih
+		;; 04.04.2021    tstih
 		.module ef9367
 
 		.globl	_gdp_init
@@ -91,9 +91,9 @@ _gdp_xy::
 		ret
 
 
-        ;; ---------------------------------
+        ;; ---------------------------------------
 		;; void gdp_setpixel(int16_t x, int16_t y)
-        ;; ---------------------------------
+        ;; ---------------------------------------
         ;; draws a pixel at x,y
         ;; input:	-
 		;; output:	-

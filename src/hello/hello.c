@@ -1,24 +1,19 @@
 /*
  * hello.c
- * hello partner program  
  *
- * notes:
- *  for bdos calls see: https://www.seasip.info/Cpm/bdos.html
+ * Prints 'Hello Partner!'
+ * 
+ * MIT License (see: LICENSE)
+ * copyright (c) 2021 tomaz stih
  *
- * tomaz stih tue mar 23 2021
+ * 02.05.2021   tstih
+ *
  */
-void hello_world() __naked { 
-    __asm
-        ld de, #msg
-        ld c, #0x09
-        call 5
-        ret
-msg::
-        .ascii "Hello Partner.$"
-    __endasm;
-}
+#include <stdio.h>
 
-int main() {
-    hello_world();
+int main(int argc, char * argv[]) {
+
+    printf("Hello world!\n");
+
     return 0;
 }

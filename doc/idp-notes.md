@@ -340,7 +340,7 @@ wait4sent:
         ret
 ~~~
 
-## Another SIO libraries
+## Other SIO libraries
 
 Analysis of this and comparison with the ROM code showed similar traits.
 https://github.com/dattaway/Zilog-Z80-Projects/blob/master/SIO.ASM
@@ -372,3 +372,23 @@ A device can act as a DTE or a DCE. The DTE is usually a PC, and the DCE a perip
 | RxD  | Receive data                                                                                               | in  | out | 3        |
 | GND  | Zero voltage reference for pins above (Ground)                                                             | -   | -   | 7        |
 | PG   |  Protective ground, connected to the chassis ground                                                        | -   | -   | 1        |
+
+# Notes from 22. May 2021
+
+Porting plans:
+
+| file         | description                                               |
+|--------------|-----------------------------------------------------------|
+| KONTRA.COM   | Kontrabant is a port of known Slovenian ZX Spectrum game. |
+| AIDS.COM     | The Asteroids game.                                       |
+| TETRIS.COM   | The game of Tetris.                                       |
+| BREAKOUT.COM | Break out game.                                           |
+| PONG.COM     | A port of Atari Pong game.                                |
+
+| file         | description                                               |
+|--------------|-----------------------------------------------------------|
+| KONTRA.COM   | Kontrabant is a port of known Slovenian ZX Spectrum game. |
+
+
+CPM softwre galore - http://cpmarchives.classiccmp.org/
+

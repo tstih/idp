@@ -1,7 +1,7 @@
 /*
- * zmain.c
+ * gpx-test.c
  *
- * entry, exit and loop functions z windows 
+ * Tests of graphical functions. 
  *
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -19,10 +19,9 @@ void main() {
     graphics_t* g;
     g=graphics_init();
 
-    /* do some drawing */
+    /* fill the screen with lines */
     int y;
-    for (y=0;y<SCREEN_HEIGHT-1;y+=16)
+    for (y=0;y<SCREEN_HEIGHT-1;y+=64)
         draw_line(g,0,y,SCREEN_WIDTH-1,y, 0, 0xaa);
 
-    /* and exit */
 }

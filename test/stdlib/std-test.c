@@ -1,5 +1,5 @@
 /*
- * test.c
+ * std-test.c
  *
  * Standard C library tests.
  * 
@@ -11,7 +11,8 @@
  */
 #include <stdio.h>
 
-int main(int argc, char * argv[]) {
+#include "../test.h"
 
+int main(int argc, char * argv[]) {
     return 0;
 }

@@ -7,7 +7,7 @@ CRT0	=	crt0cpm
 C_SRCS	=	$(wildcard *.c)
 S_SRCS	=	$(wildcard *.s)
 OBJS	=	$(BUILD_DIR)/$(CRT0).rel $(patsubst %.c,$(BUILD_DIR)/%.rel,$(C_SRCS)) $(patsubst %.s,$(BUILD_DIR)/%.rel,$(S_SRCS))
-TARGET	=	zwin
+TARGET	=	gpx-test
 
 # Rules.
 .PHONY: all

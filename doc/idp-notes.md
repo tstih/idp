@@ -30,6 +30,8 @@ Due to the emulator shortcomings you should avoid addresses between 0xb00 and 0x
 ## Understanding the AVDC 
 
 Here is complete AVDC initialization routine.
+
+~~~
 AVDCInit1::
 		ld	a,#0x00
 		out	(#0x39),a					;; master reset!
@@ -133,19 +135,24 @@ AVDCInit2::
 		out	(#0x39),a
 		
 		ret
-		
+~~~
+
 ## Links
 
 ### Xebecorama 
 
 http://ftpmirror.your.org/pub/misc/bitsavers/pdf/xebec/
+
 https://github.com/Anamon/pcem/blob/0a8b0ac50de7a089ac23007acbad2dfdffc75228/src/mfm_xebec.c
+
 https://github.com/WildfireDEV/android_kernel_htc_m7/blob/25d8fee0f898d41eee3e57db47c184ccbaa0647d/drivers/block/xd.h
+
 https://github.com/eunuchs/unix-archive/blob/a80c800a6288d8e613e057fae8313d532836598f/PDP-11/Trees/2.11BSD/usr/src/sys/OTHERS/scsi2/README
+
 https://github.com/eunuchs/unix-archive/blob/a80c800a6288d8e613e057fae8313d532836598f/PDP-11/Trees/2.11BSD/usr/src/sys/OTHERS/scsi2/xe.c
 
 ## Floppy dissasembly
-
+~~~
 		push af
 wait:
 		in a,(#0xf0)					; disk controller read port 0
@@ -155,12 +162,13 @@ wait:
 		pop af
 		out (#0xf1),a					; disk controler write port 1 (reset pulse!), a=irelevant
 		ret 
-
+~~~
 
 # Notes from 06. apr 2021
 
 ## Thomson code analysis in bios
 
+~~~
 pio_init::
         ;; interrupt control word (0x0111)
         ;; bit 7: interrupt enable (0)
@@ -217,16 +225,23 @@ reset:
 	    xor a
 	    out	(#0x39),a                     ; master reset?! text
 	    out	(#0x30),a                     ; resolution to 0 thomson
+~~~
 
 ## Z80 SIO galore
 
 https://github.com/dcollens/ZED-80/blob/523859c66f22f01e962289b1a9ae0e3ca3ac6167/emulator/src/io_sio.mm
+
 https://github.com/BirchJD/advancemame-0.106.1-RPi/blob/43064d73e5e7a28dc6a76922969adfd0ca5b6c86/src/machine/z80sio.h
+
 https://github.com/SHARPENTIERS/EmuZ-700-1500/blob/19ede7e09588ab368312abb08559b2beb84f473a/source/src/vm/z80sio.cpp
 https://github.com/KailoKyra/Clay/tree/faa3142fb87a76f54cedc509b8e02e306cea1c39/rom
+
 https://github.com/pdzion/fc-100/blob/a29f1a048c1cee65c18519bbf5290c45cd86d88b/source/src/vm/mz2500/mouse.cpp
+
 https://github.com/DSkywalk/gmame-custom-0.178/blob/bdeba7e98124d5ba19b8e119419bbd6f203986d0/src/devices/machine/z80sio.cpp
+
 https://github.com/anchorz/z80-uart/tree/main/src
+
 https://github.com/anchorz/jkcemu/tree/master/src/z80emu
 
 # Notes from 18. apr 2021
@@ -329,9 +344,13 @@ wait4sent:
 
 Analysis of this and comparison with the ROM code showed similar traits.
 https://github.com/dattaway/Zilog-Z80-Projects/blob/master/SIO.ASM
+
 https://github.com/anchorz/z80-uart/tree/main/src
+
 https://github.com/durgadas311/MmsCpm3/blob/72e3ae10ada3d85a874fe2614ee0e7ea14c6d768/sys/kaypro/src/sio3kp.asm
+
 https://github.com/bienata/CA80/blob/5565ca7b8a0b7a48b9a37d0f5f72f0577ab1effc/calo4000.asm
+
 https://github.com/Soomiru/mame/blob/d1b98e6e1013fccbd80161f94edab198d0bffb57/src/devices/machine/z80dart.h
 
 # Notes from 19. apr 2021
@@ -353,6 +372,3 @@ A device can act as a DTE or a DCE. The DTE is usually a PC, and the DCE a perip
 | RxD  | Receive data                                                                                               | in  | out | 3        |
 | GND  | Zero voltage reference for pins above (Ground)                                                             | -   | -   | 7        |
 | PG   |  Protective ground, connected to the chassis ground                                                        | -   | -   | 1        |
-
-
-This means that to 

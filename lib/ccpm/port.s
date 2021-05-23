@@ -23,7 +23,7 @@
 __port_read::
         push af                 ; store context
         push bc                 ; -"-
-        ld hl,#2                ; skip ret address
+        ld hl,#6                ; skip ret address
         add hl,sp               ; hl points to first arg
         ld c,(hl)               ; port to c
         in a,(c)                ; read value to a
@@ -43,7 +43,7 @@ __port_write::
         push af                 ; store context
         push bc                 ; -"-
         push hl                 ; -"-
-        ld hl,#2                ; skip ret address
+        ld hl,#8                ; skip ret address
         add hl,sp               ; hl points to first arg.
         ld c,(hl)               ; port to c
         inc hl                  ; next byte arg.

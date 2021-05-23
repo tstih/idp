@@ -44,6 +44,10 @@ extern off_t lseek(int fd, off_t offset, int whence);
 extern int  _find_free_filehandle();
 extern FILE filehandles[FILES_MAX];
 
+void putchar(int c) {
+    cpm_putchar(c);
+}
+
 FILE *fopen(const char *path, const char *mode)
 {
     static struct stat statbuf;

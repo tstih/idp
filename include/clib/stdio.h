@@ -69,5 +69,6 @@ extern int puts(const char *s);
 extern int vsprintf(char **out, char *format, va_list ap);
 extern int printf(char *fmt, ...);
 extern int sprintf(char *buf, char *fmt, ...);
+extern void putchar(int c);
 
 #endif /* __STDIO_H__ */

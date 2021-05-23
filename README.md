@@ -12,7 +12,30 @@ writing software for the Iskra Delta Partner computer.
 
 > The repository is currently under construction. Things change. 
 
-# Our Projects
+# Tabele of Contents
+
+- [Projects](#projects)
+  * [The C Runtime](#the-c-runtime)
+    + [Startup Code](#startup-code)
+    + [SDCC Auxiliary Library](#sdcc-auxiliary-library)
+    + [Standard C Library](#standard-c-library)
+      - [Tests](#tests)
+    + [Hello Partner Project](#hello-partner-project)
+  * [GPX](#gpx)
+  * [xyz](#xyz)
+  * [TETRIS](#tetris)
+- [Building](#building)
+  * [On Linux](#on-linux)
+- [Internals](#internals)
+- [Creating disks](#creating-disks)
+  * [Create hard drive](#create-hard-drive)
+  * [Create floppy drive](#create-floppy-drive)
+  * [Add local files to disk](#add-local-files-to-disk)
+  * [Remove files from disk](#remove-files-from-disk)
+- [The Emulator](#the-emulator)
+- [Thank you](#thank-you)
+
+# Projects
 
 ## The C Runtime
 
@@ -39,7 +62,7 @@ use Partner defaults instead. Following switches should be used.
    standard library headers `-I /include/clib` instead.
  * `--nostdlib`. This will tell the SDCC linker no to link the SDCC standard
    library. You can replace it by instructing the linker to search the `build/`
-   folder for `libsdcc`, and `libcpm`, like this `-Lbuild -llibsdcc -llibcpm`  
+   folder for `libsdcc`, and `libccpm`, like this `-Lbuild -llibsdcc -llibcpm`  
 
 Consult the `hello` chapter for complete command line to use to compile your
 C source code to Iskra Delta Partner binary.
@@ -136,6 +159,22 @@ Create disk image for the emulator with
 All output will go to the build folder. Disk image that you 
 can import into Partner emulator (using Alt+O) is called `fddb.img`.
 
+# Internals
+
+While reverse engineering the Partner and writing code, we keep notes 
+on its internal functioning. While these are not well structured,
+they are a rich source of information about inner functioning of
+Iskra Delta Partner and the softwares.
+
+ * [Computer and OS start up process](doc/notes/startup-notes.md)
+ * [Text (&terminal)](doc/notes/avdc-notes.md)
+ * [Graphics](doc/notes/gdp-notes.md)
+ * [Hard disk](doc/notes/hdd-notes.md)
+ * [Floppy disk](doc/notes/fdd-notes.md)
+ * [Serial communication (Z80 SIO)](doc/notes/z80sio-notes.md)
+ * [Real time clock](doc/notes/rtclock-notes.md)
+ * [Porting software plans](doc/notes/porting-notes.md)
+
 # Creating disks
 
 Use cpmtools to create your own disks for the emulator.
@@ -187,11 +226,11 @@ And, voila...
 
 # Thank you
 
-**Matej Horvat** for kindly sharing technical details about his emulator and functioning of a Partner, and complex code samples.
+**Miha Grcar** for keeping a Partner Revival Slack, testing, and sharing his findings.
 
-**Miha Grcar** for keeping a Partner Revival Slack and sharing his findings there.
+**Matej Horvat** for sharing technical details about his emulator and code samples.
 
-Tomaz Stih, 22.05.2021
+**Tomaz Stih**, 22.05.2021
 
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C

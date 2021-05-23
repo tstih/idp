@@ -31,7 +31,7 @@ extern size_t strlen(const char *s);
 extern char *strcpy(char *dest, const char *src);
 extern char* strncpy(char* dst, const char* src, size_t num);
 extern int strcmp(const char *s1, const char *s2);
-extern int strncmp(const char *s1, const char *s2, register size_t n);
+extern int strncmp(const char *s1, const char *s2, size_t n);
 extern char *strchr(const char *s, int c);
 extern char *strrchr(const char *s, int c);
 extern char *strsep(char **stringp, const char *delim);

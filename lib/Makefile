@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = sdcc cpm
+SUBDIRS = sdcc ccpm
 
 # Rules.
 .PHONY: all

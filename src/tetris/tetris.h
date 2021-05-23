@@ -1,7 +1,9 @@
-/* Micro Tetris, based on an obfuscated tetris, 1989 IOCCC Best Game
+/*
+ * tetris.h
  *
- * Copyright (c) 1989  John Tromp <john.tromp@gmail.com>
- * Copyright (c) 2009, 2010, 2017  Joachim Nilsson <troglobit@gmail.com>
+ * Partner Terminal Micro Tetris header file. 
+ * 
+ * Based on Micro Tetris.
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,11 +15,28 @@
  * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. 
+ *
+ * copyright (c) 1989 IOCCC Best Game
+ * copyright (c) 1989  John Tromp <john.tromp@gmail.com>
+ * copyright (c) 2009, 2010, 2017  Joachim Nilsson <troglobit@gmail.com>
+ * copyright (c) 2021 tomaz stih
+ *
+ * 23.05.2021   tstih
+ *
  */
+#ifndef __TETRIS_H__
+#define __TETRIS_H__
 
-/* the board */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <conio.h>
+
 #define      B_COLS 12
 #define      B_ROWS 23
 #define      B_SIZE (B_ROWS * B_COLS)
+
+#endif /* __TETRIS_H__ */
 

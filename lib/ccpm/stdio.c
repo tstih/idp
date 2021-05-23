@@ -13,7 +13,7 @@
  *  EX, S2, and CR. Some programs (such as the Digital 
  *  Research linker, LINK.COM) manipulate these bytes 
  *  to perform "seek" operations in files without using 
- *  the random-access calls.
+ *  the rand-access calls.
  *  - CR = current record,   ie (file pointer % 16384)  / 128
  *  - EX = current extent,   ie (file pointer % 524288) / 16384
  *  - S2 = extent high byte, ie (file pointer / 524288). 

@@ -53,12 +53,14 @@ clean:
 install: all
 	# Make .COM files (for CP/M).
 	$(BUILD_DIR)/load $(BUILD_DIR)/hello
+	$(BUILD_DIR)/load $(BUILD_DIR)/tetris
 	$(BUILD_DIR)/load $(BUILD_DIR)/std-test
 	$(BUILD_DIR)/load $(BUILD_DIR)/hw-test
 	# Make CP/M floppy.
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hello.com 0:hello.com
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/tetris.com 0:tetris.com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/std-test.com 0:std-test.com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hw-test.com 0:hw-test.com
 	rm -f diskdefs

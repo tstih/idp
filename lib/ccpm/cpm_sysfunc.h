@@ -35,8 +35,8 @@ typedef struct fcb_s {
 	uint8_t rc;                 /* records used in extent */
 	uint8_t alb[16];            /* allocation blocks used */
 	uint8_t seqreq;             /* sequential records to read/write */
-	uint16_t rrec;              /* random record to read/write */ 
-	uint8_t rrecob;             /* random record overflow byte (MS) */
+	uint16_t rrec;              /* rand record to read/write */ 
+	uint8_t rrecob;             /* rand record overflow byte (MS) */
 } fcb_t; /* File Control Block */
 
 typedef struct cpm_dir_s {

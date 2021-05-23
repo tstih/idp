@@ -17,10 +17,6 @@
 
 #include <stddef.h>
 
-/* TODO:
-extern int atoi(const char *nptr);
-*/
-
 extern void exit(int status);
 
 extern long strtol(char *nptr, char **endptr, int base);
@@ -28,8 +24,8 @@ extern unsigned long int strtoul(const char *nptr, char **endptr, int base);
 
 extern int abs (int i);
 
-extern long int random(void);
-extern void srandom(unsigned int seed);
+extern int rand(void);
+extern void srand(unsigned int seed);
 
 #define META_SIZE sizeof(struct block_meta)
 /* TODO: malloc, free, realloc, calloc */

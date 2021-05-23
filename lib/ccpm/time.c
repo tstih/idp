@@ -5,11 +5,7 @@
  * gmtime(), mktime(), time(), settimmeofday().
  * 
  * LINKS:
- *  https://www.oryx-embedded.com/doc/date__time_8c_source.html
- *  https://www.geeksforgeeks.org/time-h-header-file-in-c-with-examples/
- *  http://sourceware.org/git/?p=glibc.git;a=tree;f=time;h=c950c5d4dd90541e8f3c7e1649fcde4aead989bb;hb=master
- *  https://www.unige.ch/medecine/nouspikel/ti99/mbp.htm
- *  https://www.unige.ch/medecine/nouspikel/ti99/mbp.htm#Acessing%20clock
+
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih

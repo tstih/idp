@@ -126,3 +126,22 @@ A device can act as a DTE or a DCE. The DTE is usually a PC, and the DCE a perip
 | RxD  | Receive data                                                                                               | in  | out | 3        |
 | GND  | Zero voltage reference for pins above (Ground)                                                             | -   | -   | 7        |
 | PG   |  Protective ground, connected to the chassis ground                                                        | -   | -   | 1        |
+
+
+## Z80 SIO galore
+
+https://github.com/dcollens/ZED-80/blob/523859c66f22f01e962289b1a9ae0e3ca3ac6167/emulator/src/io_sio.mm
+
+https://github.com/BirchJD/advancemame-0.106.1-RPi/blob/43064d73e5e7a28dc6a76922969adfd0ca5b6c86/src/machine/z80sio.h
+
+https://github.com/SHARPENTIERS/EmuZ-700-1500/blob/19ede7e09588ab368312abb08559b2beb84f473a/source/src/vm/z80sio.cpp
+https://github.com/KailoKyra/Clay/tree/faa3142fb87a76f54cedc509b8e02e306cea1c39/rom
+
+https://github.com/pdzion/fc-100/blob/a29f1a048c1cee65c18519bbf5290c45cd86d88b/source/src/vm/mz2500/mouse.cpp
+
+https://github.com/DSkywalk/gmame-custom-0.178/blob/bdeba7e98124d5ba19b8e119419bbd6f203986d0/src/devices/machine/z80sio.cpp
+
+https://github.com/anchorz/z80-uart/tree/main/src
+
+https://github.com/anchorz/jkcemu/tree/master/src/z80emu
+

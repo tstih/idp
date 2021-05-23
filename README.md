@@ -12,7 +12,7 @@ writing software for the Iskra Delta Partner computer.
 
 > The repository is currently under construction. Things change. 
 
-# Tabele of Contents
+# Table of Contents
 
 - [Projects](#projects)
   * [The C Runtime](#the-c-runtime)

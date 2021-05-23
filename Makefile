@@ -61,6 +61,7 @@ install: all
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/std-test.com 0:std-test.com
 	rm -f diskdefs
 	# And copy binaries to bin dir.
+	cp $(BUILD_DIR)/crt0cpm.rel $(BIN_DIR)
 	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)
 	cp $(BUILD_DIR)/fddb.img $(BIN_DIR)

@@ -23,7 +23,7 @@
 __bin2bcd::
         push af
         push bc
-        ld hl,#2
+        ld hl,#6
         add hl,sp
         ld a,(hl)               ; get bin to a
         ld c, a
@@ -49,7 +49,7 @@ b2bloop:
 __bcd2bin::
         push af
         push bc
-        ld hl,#2
+        ld hl,#6
         add hl,sp
         ld a,(hl)
         ld	c,a

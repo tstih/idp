@@ -78,6 +78,6 @@ extern time_t mktime(struct tm *tme);
 extern time_t time(time_t *arg);
 
 /* Non standard function to set system time. */
-extern void settimeofday(time_t);
+extern void setdatetime(struct tm *tme);
 
 #endif /* __TIME_H__ */

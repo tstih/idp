@@ -46,3 +46,71 @@ settings, but this still needs to be confirmed via tests.
  *  https://www.unige.ch/medecine/nouspikel/ti99/mbp.htm
    
  *  https://www.unige.ch/medecine/nouspikel/ti99/mbp.htm#Acessing%20clock
+
+
+# Notes from 24. may 2021
+
+## NVRAM usage
+
+Non-volatile RAM (battery powered RAM) from `0xa8` to incl. `0xaf` is indeed used by SET UP. It covers ports: `0xab`, `0xac`, `0xae`, `0xaf`. `0xa9` is used to store curent year (last 2 digits i.e. 21 for 2021). Usage of ports `0xa8`, `0xaa`, and `0xad` is not known at the moment.
+
+Following was decoded and reported by Miha Grcar.
+
+ * Tabulators - **not saved**
+     + Clear all tabs
+     + Set all tabs to 8
+ * Term. & Kbd. 
+     + Terminal type
+		- Partner (ab=1X)
+		- VT 52 (ab=2X)
+		- Ansi (ab=0X)
+     + Terminal language
+		- Usascii (ab=X0)
+		- Ukascii
+		- Spanish
+		- French
+		- Greman
+		- Italian
+		- Danish
+		- Swedih (ab=X7) 
+		- Yugoslav (ab=X8)
+     + Key click bit 3
+		- Yes (af=X0) XXXX 0000
+		- No (af=X8)  XXXX 1000
+     + Autorepeat bit 5
+		- Yes (af=8X) 1000 XXXX
+		- No (af=aX)  1010 XXXX
+     + Keyboard type      b7 
+		- Querty (af=28) 0010 1000
+		- Quertz         1010 1000
+ * Screen
+     + Screen width    
+		- 80 ac=51 (dec 81)   
+		- 132 ac=85 (dec 133)
+     + Screen background bit 0
+		- Normal ae=06   0000 0110
+		- Reverse ae=07  0000 0111
+     + Auto new line bit 2
+		- Yes ae=06 0000 0110
+		- No ae=02  0000 0010
+     + Auto wrap_around  bit 1
+		- Yes ae=02  0000 0010
+		- No ae=00   0000 0000
+
+Port `0xa8` is always `0x00` on real Partner, but `0xf0` on the emulator.
+
+## Port 0xa0 decoded
+
+Port `0xa0` is 1/1000 of a second counter. The confusion between 1/1000 (hardware doc) and 1/10000 (Partner doc) is caused by this port always having lower nibble 
+equal to 0. Hence, only values `0x00`, `0x10`, `0x20`, `0x30`... are possible. This value is updated every 1/1000 of a second.
+
+## How to set the clock?
+
+## Links
+
+https://github.com/nlitsme/nlitsme.github.io/blob/e6e7c1e155bfa7426dd7c922b3dadf9bd3dd72a8/1994/03/1995-03-01-various-hardware/port.wj
+
+https://github.com/pbetti/ZDS/blob/5943345e48957fdf7cc88465fe0b4a266160d803/software/MIXED-FULL/DATESUBS.C
+
+https://github.com/freecores/System09/blob/699c84a13e7a6e96d3cb1560317528787abc1b26/src/sys09bug/sys09equ.asm
+

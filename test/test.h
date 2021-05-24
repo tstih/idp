@@ -19,7 +19,7 @@
 #include <stdio.h>
 
 /* These three lines are the entire test framework. */
-#define FAIL() printf("\nfailure in %s() line %d\n", __func__, __LINE__)
+#define FAIL() printf("\nfailure in %s() line %d\n\r", __func__, __LINE__)
 #define ASSERT(test) do { if (!(test)) { FAIL(); return 1; } } while(0)
 #define VERIFY(test) do { int r=test(); tests_run++; if(r) return r; } while(0)
 

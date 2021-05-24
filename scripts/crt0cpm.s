@@ -31,6 +31,9 @@
 
         .area	_CODE
 start:
+        ;; store CP/M stack
+        ld (#cpm_stack),sp
+
         ;; define a stack   
         ld	sp,#stack
 
@@ -51,14 +54,23 @@ start:
         ;; we ignore the return code AND the stack as reset
         ;; will handle both...
 _exit::
-        ;; BDOS exit.
-        ld c,#0
-	    call 0x0005
+        ;; Don't do BDOS exit (reset), just retur to CP/M.
+        ld sp,(#cpm_stack)
+        ret
 
 
         ;; init code for functions/var.
         .area   _GSINIT
-gsinit::        
+gsinit::      
+        ;; copy statics.
+        ld bc, #l__INITIALIZER
+        ld a, b
+        or a, c
+        jr Z, gsinit_next
+        ld de, #s__INITIALIZED
+        ld hl, #s__INITIALIZER
+        ldir
+gsinit_next:
         ;; and call initialize function
         call __stdlib_init
 
@@ -71,7 +83,8 @@ _argc::
         .dw 1                           ; default argc is 1 (filename!)
 _argv::
         .ds 16                          ; max 8 argv arguments
-
+cpm_stack:
+        .dw 1                           ; store CP/M stack here
 
         .area	_STACK
 	    .ds	512

@@ -12,8 +12,6 @@
 #include <stdio.h>
 #include <conio.h>
 
-static int index=10;
-
 int main() {
-    printf("Hello world!%d\n\r", index);
+    printf("Hello world!\n\r");
 }

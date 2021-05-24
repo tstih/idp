@@ -55,21 +55,21 @@ install: all
 	$(BUILD_DIR)/load $(BUILD_DIR)/hello
 	$(BUILD_DIR)/load $(BUILD_DIR)/tetris
 	$(BUILD_DIR)/load $(BUILD_DIR)/std-test
-	$(BUILD_DIR)/load $(BUILD_DIR)/hw-test
+	$(BUILD_DIR)/load $(BUILD_DIR)/setup-xp
 	# Make CP/M floppy.
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hello.com 0:hello.com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/tetris.com 0:tetris.com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/std-test.com 0:std-test.com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hw-test.com 0:hw-test.com
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/setup-xp.com 0:setup-xp.com
 	rm -f diskdefs
 	# And copy binaries to bin dir.
 	cp $(BUILD_DIR)/crt0cpm.rel $(BIN_DIR)
 	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)
 	cp $(BUILD_DIR)/fddb.img $(BIN_DIR)
-	
+
 # Special build shortcut. Don't use!
 .PHONY: dex
 dex:	install

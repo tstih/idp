@@ -8,7 +8,7 @@ LDFLAGS	= -mz80 -Wl -y \
 CRT0	=	crt0cpm
 SRC		=	$(wildcard *.c)
 OBJS	=	$(BUILD_DIR)/$(CRT0).rel $(patsubst %.c,$(BUILD_DIR)/%.rel,$(SRC))
-TARGET	=	hw-test
+TARGET	=	setup-xp
 
 # Rules.
 .PHONY: all

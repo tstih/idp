@@ -1,5 +1,5 @@
 /*
- * gpx-test.c
+ * gpx-xp.c
  *
  * Tests of graphical functions. 
  *

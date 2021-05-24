@@ -336,7 +336,7 @@ Experiments end with -xp i.e. `setup-xp.com`.
 At time of writing, forllowing tests are available: 
  * `stdlib/std-test.c` The Standard C Library auto unit tests.
  * `hw/setup-xp.c` Displays real time clock and battery powered RAM bytes.
- * `hw/gpx-xp.c` Drawing experiments (in graphics mode).
+ * `gpx/gpx-xp.c` Drawing experiments (in graphics mode).
 
 ## GPX
 

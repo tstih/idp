@@ -1,7 +1,7 @@
 /*
- * std-test.c
+ * setup-xp.c
  *
- * Standard C library tests.
+ * Print setup port area.
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih

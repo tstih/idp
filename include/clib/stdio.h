@@ -51,8 +51,6 @@ extern char *getenv(const char *name);
 extern int fflush(FILE *stream);
 extern void perror(const char *s);
 extern int ferror(FILE *stream);
-extern int getchar(void);
-extern void cpm_putchar(char c);
 */
 extern FILE *fopen(const char *path, const char *mode);
 extern int fseek(FILE *stream, long offset, int whence);
@@ -70,5 +68,6 @@ extern int vsprintf(char **out, char *format, va_list ap);
 extern int printf(char *fmt, ...);
 extern int sprintf(char *buf, char *fmt, ...);
 extern void putchar(int c);
+extern int getchar(void);
 
 #endif /* __STDIO_H__ */

@@ -19,4 +19,7 @@ void _stdlib_init() {
 
     /* initialize file system */
     _fds_init();
+
+    /* initialize conio */
+    _conio_init();
 }

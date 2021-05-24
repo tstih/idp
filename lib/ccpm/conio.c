@@ -17,7 +17,11 @@
 #include <conio.h>
 
 /* Last character (for unget) */
-static int _lastch = 0;
+static int _lastch;
+
+void _conio_init() {
+    _lastch = 0;
+}
 
 /* Read terminal type from the setup. */
 uint8_t _terminal_type() {
@@ -44,10 +48,10 @@ int kbhit() {
 void clrscr() {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            puts("\e[2J\e[1;1H");
+            puts("\x1b[2J\x1b[1;1H");
             break;
         default:
             errno=ENOTTY;
@@ -77,10 +81,10 @@ int ungetch(int c) {
 void gotoxy(int x, int y) {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            printf("\e[%d;%dH", y, x);
+            printf("\x1b[%d;%dH", y, x);
             break;
         default:
             errno=ENOTTY;
@@ -103,10 +107,10 @@ int cputs(char *s) {
 void hidecursor() {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            puts("\e[?25l");
+            puts("\x1b[?25l");
             break;
         default:
             errno=ENOTTY;
@@ -117,10 +121,10 @@ void hidecursor() {
 void showcursor() {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            puts("\e[?25h");
+            puts("\x1b[?25h");
             break;
         default:
             errno=ENOTTY;
@@ -131,10 +135,10 @@ void showcursor() {
 void clreol() {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            puts("\e[K");
+            puts("\x1b[K");
             break;
         default:
             errno=ENOTTY;
@@ -145,10 +149,10 @@ void clreol() {
 void delline() {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            puts("\e[2K");
+            puts("\x1b[2K");
             break;
         default:
             errno=ENOTTY;
@@ -159,10 +163,10 @@ void delline() {
 void textattr(uint8_t attr) {
     switch(_terminal_type()) {
         case T_VT52:
-            puts("\e<"); /* Enter ansi mode */
+            puts("\x1b<"); /* Enter ansi mode */
         case T_PARTNER:
         case T_ANSI:
-            printf("\e[P%d m",attr);
+            printf("\x1b[P%d m",attr);
             break;
         default:
             errno=ENOTTY;

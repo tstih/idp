@@ -91,7 +91,10 @@ int update(void)
             {
                 shadow[y * B_COLS + x] = board[y * B_COLS + x];
                 gotoxy(x * 2 + 28, y);
-                printf("\e[%dm  ", board[y * B_COLS + x]);
+                textattr(AT_INVERSE);
+                printf("%d",board[y * B_COLS + x]);
+                textattr(AT_NONE);
+                /*printf("\e[%dm  ", board[y * B_COLS + x]);*/
             }
         }
     }
@@ -203,7 +206,7 @@ int main()
                     }
                 }
                 shape = next_shape();
-                if (!fits_in(shape, pos = 17))
+                if (!fits_in(shape, pos = 17)) 
                     c = keys[KEY_QUIT];
             }
         }
@@ -243,6 +246,7 @@ int main()
             {
                 clrscr();
                 gotoxy(0, 0);
+                printf("%d",c);
                 break;
             }
 
@@ -251,8 +255,6 @@ int main()
 
             while (getch() - keys[KEY_PAUSE])
                 ;
-
-            /* unfreeye */
         }
 
         place(shape, pos, 7);

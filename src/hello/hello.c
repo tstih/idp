@@ -10,10 +10,9 @@
  *
  */
 #include <stdio.h>
+#include <conio.h>
 
-int main(int argc, char * argv[]) {
-
+int main() {
     printf("Hello world!\n");
-
     return 0;
 }

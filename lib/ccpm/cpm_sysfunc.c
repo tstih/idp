@@ -120,7 +120,7 @@ char cpm_getchar(void) {
 char cpm_getchar_nonblock(void) {
     char f = 0;
     bdos_call_t cread = { C_RAWIO, { (uint16_t) 0x00ff } };
-    f = cpmbdos_extn(&cread, &ret_ba, &ret_hl);
+    f=cpmbdos_extn(&cread, &ret_ba, &ret_hl);
     return f;
 }
 

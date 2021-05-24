@@ -48,6 +48,10 @@ void putchar(int c) {
     cpm_putchar(c);
 }
 
+int getchar(void) {
+    return cpm_getchar();
+}
+
 FILE *fopen(const char *path, const char *mode)
 {
     static struct stat statbuf;

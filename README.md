@@ -183,6 +183,44 @@ extern int tolower(int c);
 ~~~
 </details>  
 
+<details><summary>errno.h/</summary>
+
+</details>  
+
+<details><summary>fcntl.h/</summary>
+
+</details>  
+
+<details><summary>limits.h/</summary>
+
+</details>  
+
+<details><summary>stdarg.h/</summary>
+
+</details>  
+
+<details><summary>stdbool.h/</summary>
+
+</details>  
+
+<details><summary>stddef.h/</summary>
+
+</details>  
+
+<details><summary>stdint.h/</summary>
+
+</details>  
+
+<details><summary>stdio.h/</summary>
+
+</details>  
+
+<details><summary>stdlib.h/</summary>
+
+</details>  
+
+<details><summary>string.h/</summary>
+
 </details>  
 
 <details><summary>time.h/</summary>
@@ -245,6 +283,23 @@ extern time_t time(time_t *arg);
 /* Non standard function to set system time. */
 extern void settimeofday(time_t);
 ~~~
+</details>  
+
+<details><summary>unistd.h/</summary>
+
+</details>  
+
+
+<details><summary>sys/ioctl.h/</summary>
+
+</details>  
+
+<details><summary>sys/stat.h/</summary>
+
+</details>  
+
+<details><summary>sys/types.h/</summary>
+
 </details>  
 
 <br/>

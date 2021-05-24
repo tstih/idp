@@ -19,8 +19,8 @@ writing software for the Iskra Delta Partner computer.
     + [Startup Code](#startup-code)
     + [SDCC Auxiliary Library](#sdcc-auxiliary-library)
     + [Standard C Library](#standard-c-library)
-      - [Tests](#tests)
     + [Hello Partner Project](#hello-partner-project)
+  * [The CP/M Test Framework](#tests)
   * [GPX](#gpx)
   * [xyz](#xyz)
   * [TETRIS](#tetris)
@@ -95,15 +95,159 @@ and the `libsdcc` does that.
 
 ### Standard C Library
 
-![Under construction.](doc/img/under-construction.jpg)
+The Standard C Library for Iskra Delta Partner is called `libccpm`.
+In addition to standard functions it also implements some non-standard 
+extensions.  
 
-#### Tests
+*You can check the contents of standard header files by expanding them.*
 
-The `test/stdlib` folder contains tests for the library, using the tiny
-[test framework of Eric Radman](https://eradman.com/posts/tdd-in-c.html),
-based on [the original MinUnit by John Brewer](http://www.jera.com/techinfo/jtns/jtn002.html).
+<details><summary>conio.h/</summary>
 
-![Under construction.](doc/img/under-construction.jpg)
+~~~cpp
+/* Terminal type. */
+#define T_PARTNER    0x00
+#define T_VT52       0x01
+#define T_ANSI       0x02
+
+/* Text attributes. */
+#define AT_NONE         0x00
+#define AT_BOLD         0x01
+#define AT_UNDERLINE    0x04
+#define AT_BLINK        0x05
+#define AT_INVERSE      0x07
+
+/* Basic info about the terminal. */
+struct text_info {
+    unsigned char screenwidth;
+    unsigned char screenheight;
+    unsigned char terminal;
+};
+
+/* Basic information about the screen. */
+extern void gettextinfo(struct text_info *ti);
+
+/* Clears the screen. Moves cursor to 0,0. */
+extern void clrscr(void);
+
+/* A single character from the predefined 
+standard input handle is read and returned. */
+extern int getch(void);
+
+/* Puts char back so that getch returns it again. */
+extern int ungetch(int);
+
+/* Move cursor. */
+extern void gotoxy(int x, int y);
+
+/* Put char. */
+extern int putch(int c);
+
+/* Put string. */
+extern int cputs(char *s);
+
+/* Hide cursor. */
+extern void hidecursor();
+
+/* Show cursor. */
+extern void showcursor();
+
+/* Non blocking keyboard read. */
+extern int kbhit();
+
+/* Delete until end of line. */
+void clreol();
+
+/* Delete current line. */
+void delline();
+
+/* Set text attributes. */
+void textattr(unsigned char attr);
+~~~
+
+</details>  
+
+<details><summary>ctype.h/</summary>
+
+~~~cpp
+/* True if char is a letter. */
+extern bool isalpha(int c);
+
+/* True if char is white space. */
+extern bool isspace(int c);
+
+/* True if char is punctuation. */
+extern bool ispunct(int c);
+
+/* Returns char, converted to lowercase. */
+extern int tolower(int c);
+~~~
+</details>  
+
+</details>  
+
+<details><summary>time.h/</summary>
+
+~~~cpp
+/* idp clock has a resolution of 1/1000 sec */
+#define CLOCKS_PER_SEC  1000
+typedef long clock_t;
+
+/* Std C defines this as number of seconds since  00:00, Jan 1 1970 UTC */
+typedef long time_t;
+
+/* Std C tm struct */
+struct tm {
+    /* seconds,  range 0 to 59 */
+    int tm_sec;
+    /* minutes, range 0 to 59 */
+    int tm_min;
+    /* hours, range 0 to 23 */
+    int tm_hour;
+    /* day of the month, range 1 to 31 */
+    int tm_mday;
+    /* month, range 0 to 11 */
+    int tm_mon;
+    /* The number of years since 1900 */
+    int tm_year;
+    /* day of the week, range 0 to 6 */
+    int tm_wday;
+    /* day in the year, range 0 to 365 */
+    int tm_yday;
+    /* daylight saving time */
+    int tm_isdst;
+};
+
+/* Converts given calendar time tm to a textual representation of 
+the following fixed 25-character form: Www Mmm dd hh:mm:ss yyyy. */
+extern char* asctime(const struct tm* time_ptr);
+
+/* Return current clock in 1/1000 seconds */
+extern clock_t clock(void);
+
+/* Convert current time to textual representation using the following
+format Www Mmm dd hh:mm:ss yyyy (uses asctime...).*/
+extern char* ctime(const time_t* ptt);
+
+/* Returns difference between two time points in seconds! */
+extern long difftime(time_t time_end,time_t time_beg);
+
+/* Get Greenwich mean time (politically correct: UTC), make localtime
+equal to UTC. */
+#define localtime gmtime
+extern struct tm *gmtime(const time_t *timer);
+
+/* Create time_t given tm structure. */
+extern time_t mktime(struct tm *tme);
+	
+/* Get current time. */
+extern time_t time(time_t *arg);
+
+/* Non standard function to set system time. */
+extern void settimeofday(time_t);
+~~~
+</details>  
+
+<br/>
 
 ### Hello Partner Project
 
@@ -121,6 +265,23 @@ int main(int argc, char * argv[]) {
 and does what every **Hello World** program in the world should do. 
 
 ![Hello World](doc/img/hello.jpg)
+
+## Tests
+
+There are two types of tests in the `test` folder: *automated unit tests* that
+automatically verify test results against expected results. And *experiments*,
+that test some feature of the operating system, and require the user to check
+the results. 
+
+Automated unit tests use the [tiny test framework of Eric Radman](https://eradman.com/posts/tdd-in-c.html), based on [the original MinUnit by John Brewer](http://www.jera.com/techinfo/jtns/jtn002.html). The name of automated unit tests ends in `-test` (i.e. `std-test.com`).
+
+Experiments may create some files, display some data, draw some graphics, etc.
+Experiments end with -xp i.e. `setup-xp.com`.
+
+At time of writing, forllowing tests are available: 
+ * `stdlib/std-test.c` The Standard C Library auto unit tests.
+ * `hw/setup-xp.c` Displays real time clock and battery powered RAM bytes.
+ * `hw/gpx-xp.c` Drawing experiments (in graphics mode).
 
 ## GPX
 

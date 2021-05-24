@@ -53,25 +53,25 @@ struct tm {
 };
 
 /* Converts given calendar time tm to a textual representation of 
-the following fixed 25-character form: Www Mmm dd hh:mm:ss yyyy\n */
+the following fixed 25-character form: Www Mmm dd hh:mm:ss yyyy. */
 extern char* asctime(const struct tm* time_ptr);
 
 /* Return current clock in 1/1000 seconds */
 extern clock_t clock(void);
 
 /* Convert current time to textual representation using the following
-format Www Mmm dd hh:mm:ss yyyy (uses asctime...)*/
+format Www Mmm dd hh:mm:ss yyyy (uses asctime...).*/
 extern char* ctime(const time_t* ptt);
 
 /* Returns difference between two time points in seconds! */
 extern long difftime(time_t time_end,time_t time_beg);
 
 /* Get Greenwich mean time (politically correct: UTC), make localtime
-equal to UTC */
+equal to UTC. */
 #define localtime gmtime
 extern struct tm *gmtime(const time_t *timer);
 
-/* Create time_t given tm structure */
+/* Create time_t given tm structure. */
 extern time_t mktime(struct tm *tme);
 	
 /* Get current time. */

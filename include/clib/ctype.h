@@ -18,9 +18,16 @@
 
 #include <stdbool.h>
 
+/* True if char is a letter. */
 extern bool isalpha(int c);
+
+/* True if char is white space. */
 extern bool isspace(int c);
+
+/* True if char is punctuation. */
 extern bool ispunct(int c);
+
+/* Returns char, converted to lowercase. */
 extern int tolower(int c);
 
 #endif /* __CTYPE_H__ */

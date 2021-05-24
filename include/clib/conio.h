@@ -70,6 +70,6 @@ void clreol();
 void delline();
 
 /* Set text attributes. */
-void textattr(uint8_t attr);
+void textattr(unsigned char attr);
 
 #endif /* __CONIO_H__ */

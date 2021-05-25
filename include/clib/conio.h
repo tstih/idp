@@ -14,16 +14,19 @@
 #define __CONIO_H__
 
 /* Terminal type */
-#define T_PARTNER    0x00
-#define T_VT52       0x01
-#define T_ANSI       0x02
+#define T_PARTNER           0x00
+#define T_VT52              0x01
+#define T_ANSI              0x02
 
-/* Text attributes */
-#define AT_NONE         0x00
-#define AT_BOLD         0x01
-#define AT_UNDERLINE    0x04
-#define AT_BLINK        0x05
-#define AT_INVERSE      0x07
+/* Text attributes - these are loosely compatible with
+VT52 SGR attributes */
+#define AT_NONE             0x00
+#define AT_BOLD             0x01
+#define AT_HIGHLIGHT        0x02
+#define AT_BOLD_HIGHLIGHT   0x03
+#define AT_UNDERLINE        0x04
+#define AT_BLINK            0x05
+#define AT_INVERSE          0x07
 
 /* Basic info about the terminal */
 struct text_info {

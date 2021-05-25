@@ -61,8 +61,8 @@ Following was decoded and reported by Miha Grcar.
      + Set all tabs to 8
  * Term. & Kbd. 
      + Terminal type
-		- Partner (ab=1X)
-		- VT 52 (ab=2X)
+		- Partner (ab=1X) ... on emulator this is 2X
+		- VT 52 (ab=2X) ...on emulator this is 1X
 		- Ansi (ab=0X)
      + Terminal language
 		- Usascii (ab=X0)

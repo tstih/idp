@@ -27,6 +27,10 @@ export ARFLAGS		=	-rc
 # Subfolders for make.
 SUBDIRS = tools lib src test
 
+# .COM programs from IHX.
+IHX		=	$(wildcard $(BUILD_DIR)/*.ihx)
+COM		=	$(patsubst %.ihx,%.com,$(IHX))
+
 # Rules.
 .PHONY: all
 all:	$(BUILD_DIR) $(SUBDIRS)
@@ -50,25 +54,29 @@ clean:
 	rm -f diskdefs
 
 .PHONY: install
-install: all
-	# Make .COM files (for CP/M).
-	$(BUILD_DIR)/load $(BUILD_DIR)/hello
-	$(BUILD_DIR)/load $(BUILD_DIR)/tetris
-	$(BUILD_DIR)/load $(BUILD_DIR)/std-test
-	$(BUILD_DIR)/load $(BUILD_DIR)/setup-xp
-	# Make CP/M floppy.
+install: floppy $(COM) bin after
+
+.PHONY: floppy
+floppy:
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/hello.com 0:hello.com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/tetris.com 0:tetris.com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/std-test.com 0:std-test.com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(BUILD_DIR)/setup-xp.com 0:setup-xp.com
-	rm -f diskdefs
-	# And copy binaries to bin dir.
+
+# Make .COM files (for CP/M).
+.PHONY: $(COM)
+$(COM):
+	$(BUILD_DIR)/load $(basename $@)
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ 0:$(@F)
+
+.PHONY: bin
+bin:
 	cp $(BUILD_DIR)/crt0cpm.rel $(BIN_DIR)
 	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)
 	cp $(BUILD_DIR)/fddb.img $(BIN_DIR)
+
+.PHONY: after
+after:
+	rm -f diskdefs
 
 # Special build shortcut. Don't use!
 .PHONY: dex

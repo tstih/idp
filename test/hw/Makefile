@@ -7,15 +7,14 @@ LDFLAGS	= -mz80 -Wl -y \
 # Source files.
 CRT0	=	crt0cpm
 SRC		=	$(wildcard *.c)
-OBJS	=	$(BUILD_DIR)/$(CRT0).rel $(patsubst %.c,$(BUILD_DIR)/%.rel,$(SRC))
-TARGET	=	setup-xp
+TARGETS	=	$(patsubst %.c,$(BUILD_DIR)/%.ihx,$(SRC))
 
 # Rules.
 .PHONY: all
-all: $(BUILD_DIR)/$(TARGET).ihx
+all: $(TARGETS)
 
-$(BUILD_DIR)/$(TARGET).ihx: $(OBJS)
-	$(LD) $(LDFLAGS) -o $(BUILD_DIR)/$(TARGET).ihx $(OBJS)
+$(BUILD_DIR)/%.ihx: $(BUILD_DIR)/%.rel
+	$(LD) $(LDFLAGS) -o $@ $(BUILD_DIR)/$(CRT0).rel $<
 
 $(BUILD_DIR)/$(CRT0).rel: $(SCR_DIR)/$(CRT0).s
 	$(AS) $(ASFLAGS) -o $(BUILD_DIR)/$(CRT0).rel $(SCR_DIR)/$(CRT0).s

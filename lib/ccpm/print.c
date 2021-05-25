@@ -186,6 +186,7 @@ static int vsprintf(char **out, char *format, va_list ap)
 
 				case('s'):
 					u.s = va_arg(ap, char *);
+                    #pragma disable_warning 196
 					pc += prints(out, u.s ? u.s : "(null)", width, flags);
 					break;
 				case('l'):

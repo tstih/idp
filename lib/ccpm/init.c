@@ -11,6 +11,7 @@
  */
 extern void _cpm_sysfunc_init();
 extern void _fds_init();
+extern void _conio_init();
 
 void _stdlib_init() {
 

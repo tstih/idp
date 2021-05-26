@@ -193,14 +193,46 @@ extern int tolower(int c);
 
 <details><summary>limits.h/</summary>
 
+~~~cpp
+#define CHAR_BIT    8                /* number of bits in byte */
+#define SCHAR_MIN   -128
+#define SCHAR_MAX   +127
+#define UCHAR_MAX   255
+#define CHAR_MIN    -128
+#define CHAR_MAX    +127
+#define SHRT_MIN    -128
+#define SHRT_MAX    +127
+#define USHRT_MAX   255
+#define INT_MIN     -32768
+#define INT_MAX     +32767
+#define UINT_MAX    65535
+#define LONG_MIN    -2147483648
+#define LONG_MAX    +2147483647
+#define ULONG_MAX   4294967295
+~~~
 </details>  
 
 <details><summary>stdarg.h/</summary>
 
+~~~cpp
+/* Standard C var arg macros */
+#define va_list                 unsigned char *
+#define va_start(marker, last)  { marker = (va_list)&last + sizeof(last); }
+#define va_arg(marker, type)    *((type *)((marker += sizeof(type)) - sizeof(type)))
+#define va_end(marker)          marker = (va_list) 0;
+~~~
 </details>  
 
 <details><summary>stdbool.h/</summary>
 
+~~~cpp
+#define bool int
+
+#define false 0
+#define FALSE 0
+#define true 1
+#define TRUE 1
+~~~
 </details>  
 
 <details><summary>stddef.h/</summary>
@@ -209,6 +241,15 @@ extern int tolower(int c);
 
 <details><summary>stdint.h/</summary>
 
+~~~cpp
+typedef char            int8_t;
+typedef unsigned char   uint8_t;
+typedef int             int16_t;
+typedef unsigned int    uint16_t;
+typedef long            int32_t;
+typedef unsigned long   uint32_t;
+typedef unsigned int*   uintptr_t;
+~~~
 </details>  
 
 <details><summary>stdio.h/</summary>
@@ -217,10 +258,86 @@ extern int tolower(int c);
 
 <details><summary>stdlib.h/</summary>
 
+~~~cpp
+/* Standard requires it here. */
+#ifndef NULL
+#define NULL 0
+#endif /* NULL */
+
+/* Exit application. */
+extern void exit(int status);
+
+/* String to long using base. */
+extern long strtol(char *nptr, char **endptr, int base);
+
+/* Strin to unsigned long using base, */
+extern unsigned long int strtoul(const char *nptr, char **endptr, int base);
+
+/* Absolute value. */
+extern int abs (int i);
+
+/* Return random number */
+extern int rand(void);
+
+/* Set random seed. */
+extern void srand(unsigned int seed);
+~~~
 </details>  
 
 <details><summary>string.h/</summary>
 
+~~~cpp
+#ifndef NULL
+#define NULL ( (void *) 0)
+#endif /* NULL */
+
+/* Set n bytes in memory block to the value c, */
+extern void *memset(void *s, int c, size_t n);
+
+/* Copy memory block, */
+extern void *memcpy(const void *dest, const void *src, size_t n);
+
+/* Searches for the first occurrence of the character c 
+(an unsigned char) in the first n bytes. */
+extern void *memchr(const void *s, int c, size_t n);
+
+/* Compare memory blocks. 0=equal. */
+extern int memcmp(const void *s1, const void *s2, size_t n);
+
+/* Zero terminated string length. */
+extern size_t strlen(const char *s);
+
+/* Copy string to another string */
+extern char *strcpy(char *dest, const char *src);
+
+/* Copy max num chars to another string. */
+extern char* strncpy(char* dst, const char* src, size_t num);
+
+/* Compare strings, 0=match. */
+extern int strcmp(const char *s1, const char *s2);
+
+/* Compare first n chars of string. */
+extern int strncmp(const char *s1, const char *s2, size_t n);
+
+/* Find first occurence of c in s. */
+extern char *strchr(const char *s, int c);
+
+/* Find first occurence of c in s frin the right (=last occurence). */
+extern char *strrchr(const char *s, int c);
+
+/* Non standard (unix) tokenizer. */
+extern char *strsep(char **stringp, const char *delim);
+
+/* The length of the number of characters before the 1st occurrence 
+of character present in both the string. */
+extern size_t strcspn(const char *s1, const char *s2); 
+
+/* Tokenize string s using delimiters delim. */
+extern char *strtok(char *s, const char *delim);
+
+/* Return text of the errnum system error. */
+extern char *strerror(int errnum);
+~~~
 </details>  
 
 <details><summary>time.h/</summary>
@@ -287,6 +404,25 @@ extern void setdatetime(struct tm *tme);
 
 <details><summary>unistd.h/</summary>
 
+~~~cpp
+/* Max CPM path len is NNX:AAAAAAAA.EEE plus zero terminator */
+#define PATH_MAX 17
+
+/* Open file. */
+extern int open(const char *pathname, int flags);
+
+/* Close file. */
+extern int close(int fd);
+
+/* Read count bytes from file. */
+extern ssize_t read(int fd, void *buf, size_t count);
+
+/* Write count bytes to file. */
+extern ssize_t write(int fd, const void *buf, size_t count);
+
+/* Move to position */
+extern off_t lseek(int fd, off_t offset, int whence);
+~~~
 </details>  
 
 

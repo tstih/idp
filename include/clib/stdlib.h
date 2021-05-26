@@ -44,6 +44,13 @@ extern int rand(void);
 /* Set random seed. */
 extern void srand(unsigned int seed);
 
-#define META_SIZE sizeof(struct block_meta)
+/* Memory allocation. */
+extern void *malloc(size_t size);
+
+/* Free allocated memory block. */
+extern void free(void *ptr);
+
+/* Covert ascii to integer. */
+extern int atoi(const char *str);
 
 #endif /* __STDLIB_H__ */

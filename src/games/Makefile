@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = hello utils games
+SUBDIRS = tetris
 
 # Rules.
 .PHONY: all

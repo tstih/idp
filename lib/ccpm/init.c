@@ -12,8 +12,12 @@
 extern void _cpm_sysfunc_init();
 extern void _fds_init();
 extern void _conio_init();
+extern void _memory_init();
 
 void _stdlib_init() {
+
+    /* initialize memory management */
+    _memory_init();
 
     /* initialize comamnd line args and cp/m defaults */
     _cpm_sysfunc_init();

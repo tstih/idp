@@ -1,5 +1,5 @@
 /*
- * std-test.c
+ * tme-test.c
  *
  * Standard C library tests.
  * 

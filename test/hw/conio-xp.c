@@ -63,11 +63,15 @@ void main() {
     textattr(AT_NONE);
 
     gotoxy(0,12);
-    /* Draw two lines of text (top and bottom) */
+    /* Draw two lines of text (top and bottom) 
+    use sequences 
+     - DEC Double-Height Letters, Top Half
+     - DEC Double-Height Letters, Bottom Half */
     printf("\x1b#3 Please, send photo.\n\r\x1b#4 Please, send photo.\n\r");
 
     /* test SGR attributes */
     gotoxy(0,15);
+    /* use DEC Double-Width Line seq. */
     cputs("\x1b#6 Emulator crashes at 5:");
     gotoxy(3,17);
     for (int i=0;i<108;i++) {

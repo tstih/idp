@@ -114,3 +114,13 @@ https://github.com/pbetti/ZDS/blob/5943345e48957fdf7cc88465fe0b4a266160d803/soft
 
 https://github.com/freecores/System09/blob/699c84a13e7a6e96d3cb1560317528787abc1b26/src/sys09bug/sys09equ.asm
 
+# Notes from 25.
+
+## Implementation Links
+
+http://www.jbox.dk/sanos/source/lib/time.c.html
+
+http://www.ethernut.de/api/gmtime_8c_source.html
+
+https://doxygen.reactos.org/d6/da2/gmtime_8c.html
+

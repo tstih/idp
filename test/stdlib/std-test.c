@@ -13,6 +13,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "../test.h"
 
@@ -63,23 +64,26 @@ int time_test() {
 int asc_test() {
     time_t t=time(NULL);
     struct tm * ptme=gmtime(&t);
+    printf("Current time is %s\n\r", asctime(ptme));
     ASSERT(!strcmp(asctime(ptme),ctime(&t)));
     return 0;
 }
 
+extern uint8_t _dow(struct tm * ptim);
 int mktime_test() {
     struct tm tme;
-    /* First create time_t 24.05.2021 21:00:00 */
+    /* First create time_t 25.05.2021 21:00:00 */
     tme.tm_sec=0;
     tme.tm_min=0;
     tme.tm_hour=21;
-    tme.tm_mday=24;
-    tme.tm_mon=4; /* this is really may, 0 based */
+    tme.tm_mday=25;
+    tme.tm_mon=4; 
     tme.tm_year=121;
+    tme.tm_wday=_dow(&tme);
     time_t t=mktime(&tme);
     struct tm *ptm;
-    ptm=localtime(&t);
-    ASSERT(!strcmp(asctime(ptm),"Mon May 24 21:00:00 2021"));
+    ptm=gmtime(&t);
+    ASSERT(!strcmp(asctime(ptm),"Tue May 25 21:00:00 2021"));
     return 0;
 }
 

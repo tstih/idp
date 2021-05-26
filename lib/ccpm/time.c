@@ -4,8 +4,8 @@
  * Time functions: asctime(), clock(), ctime(), difftime(), 
  * gmtime(), mktime(), time(), settimmeofday().
  * 
- * LINKS:
-
+ * NOTES:
+ *  Loosely based on http://www.jbox.dk/sanos/source/lib/time.c.html
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -30,11 +30,32 @@
 #define MONTH   0xa7
 #define YEAR    0xa9 /* fake 2 digit year, from CMOS memory */
 
-/* strings */
-static const char *_days[7] = {
-    "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+#define YEAR0           1900
+#define EPOCH_YR        1970
+#define SEC_IN_MINUTE   60L
+#define SEC_IN_HOUR     3600L
+#define SEC_IN_DAY      86400L
+
+/* days before month (sum), feb=28 */
+static int _bmdays[12] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+
+/* days in month (for non-leap and leap years) */
+static int _mdays[2][12] = {
+  {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+  {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
+/* days in month */
+#define _dim(x,dfeb) ((x == 1) ? dfeb : mdays[x])
+/* days in year */
+#define _diy(year) (_leap(year) ? 366 : 365)
+
+/* day names */
+static const char *_days[7] = {
+    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+};
+
+/* month names */
 static const char *_months[12] = {
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -42,36 +63,31 @@ static const char *_months[12] = {
 
 /* buffers for functions returning pointers */
 static char _at[26]; 
-static struct tm _tm;
+static struct tm _tmi;
+
+/* leap year=1, otherwise 0 */
+uint8_t _leap(int y) {
+	if ( 
+		(((y%4)==0) && ((y%100)!=0))	/* divisible by 4 but not by 100 ... */
+		|| ((y%400)==0)					/* or divisible by 400 */
+	) return 1;
+	else return 0;
+}
 
 /* Service function to calculates day of week */
-uint8_t _dow(uint16_t y, uint8_t m, uint8_t d) {
-    uint16_t h,j,k;
-    y+=1900; /* year from tm format to real year! */
-    m++; /* month from 0-11 to 1-12 */
-    if(m <= 2) { m += 12; y -= 1; }
-  
-    /* j is the century */
-    j = y / 100;
-    /* k the year of the century */
-    k = y % 100;
-  
-    /* Compute H using Zeller's congruence. */
-    h = d + (26 * (m + 1) / 10) + k + (k / 4) + (5 * j) + (j / 4);
-  
-    /* And return the day of the week. */
-    return ((h + 5) % 7) + 1;
+uint8_t _dow(struct tm * ptim) {
+    int d=ptim->tm_mday, m=ptim->tm_mon + 1, y=YEAR0 + ptim->tm_year;
+    int weekday  = (d += m < 3 ? y-- : y - 2, 23*m/9 + d + 4 + y/4- y/100 + y/400)%7;  
+    return weekday;
 }
 
 /* Service function to calculate day of year */
-uint8_t _doy(uint16_t y, uint8_t m, uint8_t d) {
-    uint8_t dm[]={31,28,31,30,31,30,31,31,30,31,30,31};
-    if( (y % 4 == 0 && y % 100 != 0 ) || (y % 400 == 0) )
-        dm[1]=29; /* leap year */
-    uint8_t days=0;
-    for (int i=0;i<m;i++) 
-        days+=dm[i];
-    days+=d;
+int _doy(struct tm * ptim) {
+    int days = ptim->tm_mday - 1; /* day of month 1 based */
+    days += _bmdays[ptim->tm_mon]; /* plus days before month */
+    if (ptim->tm_mon > 1 && _diy(ptim->tm_year) == 366)
+        days++; /* adjust for february */
+    /* compute day of the year, and return */
     return days;
 }
 
@@ -82,7 +98,7 @@ char* asctime(const struct tm* pt) {
     char www[4], mmm[4];
 
     /* copy Www first... */
-    strncpy(www,_days[(pt->tm_wday)-1],3);
+    strncpy(www,_days[pt->tm_wday],3);
 
     /* Now Mmm */
     strncpy(mmm,_months[pt->tm_mon],3);
@@ -118,80 +134,97 @@ long difftime(time_t time_end,time_t time_beg) {
 }
 
 /* Get Greenwich mean time (politically correct: UTC) */
+#undef DEBUG
 struct tm *gmtime(const time_t *timer) {
-    uint32_t a, b, c, d, e, f;
-    time_t t=*timer;
-    if(t < 1) t = 0;
-    /* t is in seconds, extract hms */
-    _tm.tm_sec=t%60; t/=60;
-    _tm.tm_min=t%60; t/=60;
-    _tm.tm_hour=t%24; t/=24;
-    /* remained is the date */
-    a = (uint32_t) ((4 * t + 102032) / 146097 + 15);
-    b = (uint32_t) (t + 2442113 + a - (a / 4));
-    c = (20 * b - 2442) / 7305;
-    d = b - 365 * c - (c / 4);
-    e = d * 1000 / 30601;
-    f = d - e * 30 - e * 601 / 1000;
-    /* jan and feb are months 13 and 14 */
-    if(e <= 13) { c -= 4716; e -= 1; }
-    else { c -= 4715; e -= 13; }
-    /* and copy to struct */
-    _tm.tm_year=c-1900; /* C std: tm_year is years from 1900 */
-    _tm.tm_mon=e-1; /* 0-11 */
-    _tm.tm_mday=f;
-    /* and calculated values... */
-    _tm.tm_wday=_dow(_tm.tm_year,_tm.tm_mon, _tm.tm_mday);
-    _tm.tm_yday=_doy(_tm.tm_year,_tm.tm_mon, _tm.tm_mday);
-    _tm.tm_isdst=-1; /* 1=DST, 0=std. time, -1=not known */
+
+    time_t time=*timer;
+
+    long days, rem;
+    int y;
+    int *ip;
+   
+    days = ((long)time) / SEC_IN_DAY;
+    rem = ((long)time) % SEC_IN_DAY;
+
+    while (rem < 0)  { rem += SEC_IN_DAY; --days; }
+    while (rem >= SEC_IN_DAY) { rem -= SEC_IN_DAY; ++days; }
+ 
+    /* compute hour, min, and sec */  
+    _tmi.tm_hour = (int) (rem / SEC_IN_HOUR);
+    rem %= SEC_IN_HOUR;
+    _tmi.tm_min = (int) (rem / SEC_IN_MINUTE);
+    _tmi.tm_sec = (int) (rem % SEC_IN_MINUTE);
+
+    /* compute day of week */
+    if ((_tmi.tm_wday = ((4 + days) % 7)) < 0)
+        _tmi.tm_wday = _tmi.tm_wday +  7;
+
+    /* compute year & day of year */
+    y = EPOCH_YR;
+    if (days >= 0) {
+        for (;;) {
+            if (days < _diy(y))
+                break;
+            y++;
+            days -= _diy(y);
+        }
+    } else {
+        do {
+            --y;
+            days += _diy(y);
+        } while (days < 0);
+    }
+
+    _tmi.tm_year = y - YEAR0;
+    _tmi.tm_yday = days;
+    ip = _mdays[_leap(y)];
+    for (_tmi.tm_mon = 0; days >= ip[_tmi.tm_mon]; ++(_tmi.tm_mon))
+        days = days - ip[_tmi.tm_mon];
+        
+    _tmi.tm_mday = days + 1 + _leap(y);
+
     /* return internal static structure */
-    return &_tm;
+    return &_tmi;
 }
 
+
 /* Create time_t given tm structure */
-time_t mktime(struct tm *tme) {
-    long y,m,d;
-    time_t t;
-    y = 1900 + tme->tm_year; /* tm_year is no. of years since 1900 */
-    m = 1 + tme->tm_mon; /* needs to be 1 based for this calculation */
-    d = tme->tm_mday;
-    /* trick...count jan and feb as months 13 and 14 of the prev. year */
-    if (m<=2) { m+=12; y-=1; }
-    /* first years to days */
-    t = (365 * y) + (y / 4) - (y / 100) + (y / 400);
-    /* now add months as days */
-    t += ((30 * m) + (3 * (m + 1) / 5) + d);
-    /* first date is jan 1st 1970 */
-    t -= 719561;
-    /* convert total days to seconds! */
-    t *= 86400;
-    /* finally, add hours, minutes and seconds */
-    t += (3600 * tme->tm_hour) + (60 * tme->tm_min) + tme->tm_sec;
-    /* and return */
-    return t;
+time_t mktime(struct tm *ptim) {
+    /* update tm_yday */
+    ptim->tm_yday=_doy(ptim);
+    /* and return... */
+    return 
+        ptim->tm_sec 
+        + ptim->tm_min*SEC_IN_MINUTE 
+        + ptim->tm_hour*SEC_IN_HOUR 
+        + ptim->tm_yday*SEC_IN_DAY 
+        + (ptim->tm_year-70)*31536000 
+        + ((ptim->tm_year-69)/4)*SEC_IN_DAY 
+        - ((ptim->tm_year-1)/100)*SEC_IN_DAY 
+        + ((ptim->tm_year+299)/400)*SEC_IN_DAY;
 }
 	
 /* Get current time. */
 time_t time(time_t *arg) {
 
     /* init... */
-    struct tm tme;
+    struct tm tim;
 
     /* populate from ports */
-    tme.tm_sec=_bcd2bin(_port_read(SECOND));
-    tme.tm_min=_bcd2bin(_port_read(MINUTE));
-    tme.tm_hour=_bcd2bin(_port_read(HOUR));
+    tim.tm_sec=_bcd2bin(_port_read(SECOND));
+    tim.tm_min=_bcd2bin(_port_read(MINUTE));
+    tim.tm_hour=_bcd2bin(_port_read(HOUR));
 
-    tme.tm_mday=_bcd2bin(_port_read(MDAY));
-    tme.tm_mon=_bcd2bin(_port_read(MONTH))-1; /* Normalize */
+    tim.tm_mday=_bcd2bin(_port_read(MDAY));
+    tim.tm_mon=_bcd2bin(_port_read(MONTH))-1; /* Normalize */
 
     /* read fake year from nvram */
     uint8_t y=_bcd2bin(_port_read(YEAR));
     if (y<70) y+=100;
-    tme.tm_year=y;
+    tim.tm_year=y;
 
     /* convert */
-    time_t t = mktime(&tme);
+    time_t t = mktime(&tim);
 
     /* copy to arg if not NULL? */
     if (arg!=NULL)
@@ -202,17 +235,17 @@ time_t time(time_t *arg) {
 }
 
 /* Non standard function to set system time. */
-void setdatetime(struct tm *tme) {
+void setdatetime(struct tm *ptim) {
 
     /* reset counters */
     _port_write(0xb2,0xff);
 
     /* and set all values */
-    _port_write(YEAR,_bin2bcd((tme->tm_year)%100));
-    _port_write(MONTH,_bin2bcd(tme->tm_mon+1));
-    _port_write(WDAY,_bin2bcd(_dow(tme->tm_year,tme->tm_mon, tme->tm_mday)));
-    _port_write(MDAY,_bin2bcd(tme->tm_mday));
-    _port_write(HOUR,_bin2bcd(tme->tm_hour));
-    _port_write(MINUTE,_bin2bcd(tme->tm_min));
-    _port_write(SECOND,_bin2bcd(tme->tm_sec));
+    _port_write(YEAR,_bin2bcd((ptim->tm_year)%100));
+    _port_write(MONTH,_bin2bcd(ptim->tm_mon+1));
+    _port_write(WDAY,_bin2bcd(_dow(ptim)));
+    _port_write(MDAY,_bin2bcd(ptim->tm_mday));
+    _port_write(HOUR,_bin2bcd(ptim->tm_hour));
+    _port_write(MINUTE,_bin2bcd(ptim->tm_min));
+    _port_write(SECOND,_bin2bcd(ptim->tm_sec));
 }

@@ -17,15 +17,15 @@ extern int heap;
 void main() {
     
     /* Heap addr? */
-    printf("Heap is %d\n\r", heap);
+    printf("Heap is %u\n\r", heap);
 
     /* Allocate kilobyte. */
     void *p=malloc(1024);
-    printf("p is %d\n\r", p);
+    printf("p is %u\n\r", p);
 
     /* Allocate 256 bytes */
     void *q=malloc(256);
-    printf("q is %d\n\r", q);
+    printf("q is %u\n\r", q);
 
     /* Release kilobyte. Next alloc will be at the same address. */
     printf("Releasing p\n\r");
@@ -33,9 +33,9 @@ void main() {
 
     /* Same amount */
     void *r=malloc(512);
-    printf("r is %d\n\r", r);
+    printf("r is %u\n\r", r);
 
     void *s=malloc(256);
-    printf("s is %d\n\r", s);
+    printf("s is %u\n\r", s);
 
 }

@@ -5,6 +5,15 @@
  * 
  * NOTES:
  *  Based on https://github.com/dmo9000/cpmlibc
+ *  Will probably need a rewrite.
+ * 
+ * TODO:
+ *  int fprintf(FILE *stream, const char *format, ...);
+ *  int snprintf(char *str, size_t size, const char *format, ...);
+ *  char *getenv(const char *name);
+ *  int fflush(FILE *stream);
+ *  void perror(const char *s);
+ *  int ferror(FILE *stream);
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -44,14 +53,6 @@ typedef struct _iobuf FILE;
 #define stdout          (&filehandles[1])
 #define stderr          (&filehandles[2])
 
-/* TODO:
-extern int fprintf(FILE *stream, const char *format, ...);
-extern int snprintf(char *str, size_t size, const char *format, ...);
-extern char *getenv(const char *name);
-extern int fflush(FILE *stream);
-extern void perror(const char *s);
-extern int ferror(FILE *stream);
-*/
 extern FILE *fopen(const char *path, const char *mode);
 extern int fseek(FILE *stream, long offset, int whence);
 extern size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);

@@ -3,8 +3,9 @@
  *
  * standard C header file
  * 
- * NOTES:
- *  Based on https://github.com/dmo9000/cpmlibc
+ * TODO:
+ *  Original functions are based on https://github.com/dmo9000/cpmlibc
+ *  but I'll probably have to rewrite.
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -19,23 +20,22 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define PATH_MAX 13
+/* Max CPM path len is NNX:AAAAAAAA.EEE plus zero terminator */
+#define PATH_MAX 17
 
-typedef uint16_t useconds_t;
-
-/* TODO:
-extern unsigned int alarm(unsigned int seconds);
-extern int usleep(useconds_t usec);
-extern void *sbrk(intptr_t increment);
-extern int isatty(int fd);
-extern int unlink(const char *path);
-*/
-
+/* Open file. */
 extern int open(const char *pathname, int flags);
-extern int close(int fd);
-extern ssize_t read(int fd, void *buf, size_t count);
-extern ssize_t write(int fd, const void *buf, size_t count);
-extern off_t lseek(int fd, off_t offset, int whence);
 
+/* Close file. */
+extern int close(int fd);
+
+/* Read count bytes from file. */
+extern ssize_t read(int fd, void *buf, size_t count);
+
+/* Write count bytes to file. */
+extern ssize_t write(int fd, const void *buf, size_t count);
+
+/* Move to position */
+extern off_t lseek(int fd, off_t offset, int whence);
 
 #endif /* __UNISTD_H__ */

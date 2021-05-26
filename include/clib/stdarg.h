@@ -15,6 +15,7 @@
 #ifndef __STDARG_H__
 #define __STDARG_H__
 
+/* Standard C var arg macros */
 #define va_list                 unsigned char *
 #define va_start(marker, last)  { marker = (va_list)&last + sizeof(last); }
 #define va_arg(marker, type)    *((type *)((marker += sizeof(type)) - sizeof(type)))

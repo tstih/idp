@@ -180,3 +180,63 @@ void textattr(uint8_t attr) {
             break;
     }
 }
+
+/* DEC Duble-Width, Double-Height Line top */
+void decdhl_top() {
+    switch(_terminal_type()) {
+        case T_VT52:
+            puts("\x1b<"); /* Enter ansi mode */
+        case T_ANSI:
+            printf("\x1b#3");
+            break;
+        case T_PARTNER:
+        default:
+            errno=ENOTTY;
+            break;
+    }
+}
+
+/* DEC Duble-Width, Double-Height Line bottom */
+void decdhl_bottom() {
+    switch(_terminal_type()) {
+        case T_VT52:
+            puts("\x1b<"); /* Enter ansi mode */
+        case T_ANSI:
+            printf("\x1b#4");
+            break;
+        case T_PARTNER:
+        default:
+            errno=ENOTTY;
+            break;
+    }
+}
+
+/* DEC Duble-Width, Single-Height Line */
+void decdwl() {
+    switch(_terminal_type()) {
+        case T_VT52:
+            puts("\x1b<"); /* Enter ansi mode */
+        case T_ANSI:
+            printf("\x1b#6");
+            break;
+        case T_PARTNER:
+        default:
+            errno=ENOTTY;
+            break;
+    }
+}
+
+/* DEC Single-Width, Single-Height Line top */
+void decswl() {
+    switch(_terminal_type()) {
+        case T_VT52:
+            puts("\x1b<"); /* Enter ansi mode */
+        case T_ANSI:
+            printf("\x1b#5");
+            break;
+        case T_PARTNER:
+        default:
+            errno=ENOTTY;
+            break;
+    }
+}

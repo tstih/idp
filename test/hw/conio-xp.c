@@ -67,12 +67,16 @@ void main() {
     use sequences 
      - DEC Double-Height Letters, Top Half
      - DEC Double-Height Letters, Bottom Half */
-    printf("\x1b#3 Please, send photo.\n\r\x1b#4 Please, send photo.\n\r");
+    decdhl_top();
+    cputs(" Please, send photo.\n\r");
+    decdhl_bottom();
+    cputs(" Please, send photo.\n\r");
 
     /* test SGR attributes */
     gotoxy(0,15);
     /* use DEC Double-Width Line seq. */
-    cputs("\x1b#6 And have a nice day.");
+    decdwl();
+    cputs(" And have a nice day.");
 
-   gotoxy(3,17);
+    gotoxy(3,17);
 }

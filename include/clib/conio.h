@@ -67,12 +67,24 @@ extern void showcursor();
 extern int kbhit();
 
 /* Delete until end of line. */
-void clreol();
+extern void clreol();
 
 /* Delete current line/ */
-void delline();
+extern void delline();
 
 /* Set text attributes. */
-void textattr(unsigned char attr);
+extern void textattr(unsigned char attr);
+
+/* DEC Duble-Width, Double-Height Line top */
+extern void decdhl_top();
+
+/* DEC Duble-Width, Double-Height Line bottom */
+extern void decdhl_bottom();
+
+/* DEC Duble-Width, Single-Height Line */
+extern void decdwl();
+
+/* DEC Single-Width, Single-Height Line top */
+extern void decswl();
 
 #endif /* __CONIO_H__ */

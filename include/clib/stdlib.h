@@ -47,6 +47,9 @@ extern void srand(unsigned int seed);
 /* Memory allocation. */
 extern void *malloc(size_t size);
 
+/* Allocate zero initialized block. */
+extern void *calloc (size_t num, size_t size);
+
 /* Free allocated memory block. */
 extern void free(void *ptr);
 

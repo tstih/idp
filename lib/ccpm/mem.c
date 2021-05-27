@@ -10,7 +10,7 @@
  *
  */
 #include <mem.h>
-#include <stdio.h>
+#include <string.h>
 
 uint8_t _match_free_block(list_header_t *p, uint16_t size)
 {
@@ -106,4 +106,12 @@ void free(void *p)
         if (b->hdr.next && !(((block_t *)(b->hdr.next))->stat & ALLOCATED)) 
             _merge_with_next(b);
     }
+}
+
+/* Allocate zero initialized array. */
+void* calloc (size_t num, size_t size) {
+    size_t bytes=num*size;
+    void *result=malloc(bytes);
+    memset(result,0,bytes);
+    return result;
 }

@@ -72,7 +72,7 @@ void main() {
     /* test SGR attributes */
     gotoxy(0,15);
     /* use DEC Double-Width Line seq. */
-    cputs("\x1b#6 Amd have a nice day.");
+    cputs("\x1b#6 And have a nice day.");
 
    gotoxy(3,17);
 }

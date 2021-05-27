@@ -30,9 +30,6 @@
 
   		.area _CODE
 start:
-        ;; store CP/M stack
-        ld (#cpm_stack),sp
-
         ;; define a stack   
         ld	sp,#stack
 
@@ -53,9 +50,9 @@ start:
         ;; we ignore the return code AND the stack as reset
         ;; will handle both...
 _exit::
-        ;; Don't do BDOS exit (reset), just retur to CP/M.
-        ld sp,(#cpm_stack)
-        ret
+        ;; BDOS exit (reset) return control to CP/M.
+        ld c,#0
+	    jp 5
 
         ;; init code for functions/var.
         .area   _GSINIT
@@ -81,8 +78,6 @@ _argc::
         .dw 1                           ; default argc is 1 (filename!)
 _argv::
         .ds 16                          ; max 8 argv arguments
-cpm_stack:
-        .dw 1                           ; store CP/M stack here
 
         .area	_STACK
 	    .ds	512

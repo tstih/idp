@@ -38,6 +38,6 @@ typedef struct block_s {
 #define MEM_TOP     0xdc00
 
 /* Defined in crt0cpm.s */
-extern void *heap;
+extern void heap;
 
 #endif /* __MEM_H__ */

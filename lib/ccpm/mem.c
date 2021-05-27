@@ -10,6 +10,7 @@
  *
  */
 #include <mem.h>
+#include <stdio.h>
 
 uint8_t _match_free_block(list_header_t *p, uint16_t size)
 {
@@ -43,17 +44,14 @@ void _split(block_t *b, uint16_t size)
 
 /*
  * initialize memory management
- * sample call:
- *      user_heap=0x8000;
- *      mem_init(user_heap, 0x8000);
  */
 void _memory_init()
 {
     /* Calculate free memory */
-    int size=MEM_TOP - (uint16_t)heap;
+    uint16_t size=(uint16_t)MEM_TOP - (uint16_t)&heap;
 
     /* First block is the heap. s*/
-    block_t *first = (block_t *)heap;
+    block_t *first = (block_t *)&heap;
     first->hdr.next = NULL;
     first->size = size - BLK_SIZE;
     first->stat = NEW;
@@ -68,7 +66,7 @@ void *malloc(size_t size)
     block_t *b;
 
     b = (block_t *)list_find(
-        (list_header_t *)heap, 
+        (list_header_t *)&heap, 
         (list_header_t **)&prev, 
         _match_free_block, size);
 
@@ -95,7 +93,7 @@ void free(void *p)
     b = (block_t *)((uint16_t)p - BLK_SIZE);
 
     /* make sure it is a valid memory block by finding it */
-    if (list_find((list_header_t *)heap, (list_header_t **)&prev, list_match_eq, (uint16_t)b))
+    if (list_find((list_header_t *)&heap, (list_header_t **)&prev, list_match_eq, (uint16_t)b))
     {
         b->stat = NEW;
         /* merge 3 blocks if possible */

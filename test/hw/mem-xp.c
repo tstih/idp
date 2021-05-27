@@ -17,7 +17,7 @@ extern int heap;
 void main() {
     
     /* Heap addr? */
-    printf("Heap is %u\n\r", heap);
+    printf("Heap is %u\n\r", (unsigned int)&heap);
 
     /* Allocate kilobyte. */
     void *p=malloc(1024);

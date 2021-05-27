@@ -5,7 +5,7 @@
  *
  * copyright (c) 2021 tomaz stih
  *
- * 23.05.2021   tstih
+ * 23.05.2021   mgrcar
  *
  */
 #ifndef __TETRIS_H__

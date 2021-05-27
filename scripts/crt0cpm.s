@@ -1,4 +1,4 @@
-		;; cpm0.s
+		;; crt0cpm.s
 		;; cp/m app startup code
 		;;
 		;; tomaz stih, fri mar 26 2021
@@ -15,21 +15,20 @@
         .equ    TBUFF,  0x80
         .equ    TFCB,   0x5c
 
-        ;; Ordering of segments for the linker.
-		.area   _HOME
+		;; Ordering of segments for the linker (after header)
 		.area   _CODE
+		.area   _HOME
+		.area   _GSINIT
+	    .area   _GSFINAL
 		.area   _INITIALIZER
-		.area   _INITFINAL
-	    .area   _GSINIT
-	    .area   _GSFINAL	
+		.area   _INITFINAL	
 		.area   _DATA
 		.area   _INITIALIZED
         .area   _BSS
         .area   _STACK
 	    .area   _HEAP
 
-
-        .area	_CODE
+  		.area _CODE
 start:
         ;; store CP/M stack
         ld (#cpm_stack),sp
@@ -57,7 +56,6 @@ _exit::
         ;; Don't do BDOS exit (reset), just retur to CP/M.
         ld sp,(#cpm_stack)
         ret
-
 
         ;; init code for functions/var.
         .area   _GSINIT

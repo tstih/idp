@@ -4,6 +4,11 @@ LDFLAGS	= -mz80 -Wl -y \
 	--code-loc 0x100 --no-std-crt0 --nostdlib --nostdinc \
 	-L$(BUILD_DIR) -llibsdcc -llibccpm 
 
+# Data segment fix (link again)
+L2		= sdldz80
+L2FLAGS	= -nf
+L2FIX	= sed '/-b _DATA = 0x8000/d'
+
 # Source files.
 CRT0	=	crt0cpm
 SRC		=	$(wildcard *.c)
@@ -15,6 +20,8 @@ all: $(TARGETS)
 
 $(BUILD_DIR)/%.ihx: $(BUILD_DIR)/%.rel
 	$(LD) $(LDFLAGS) -o $@ $(BUILD_DIR)/$(CRT0).rel $<
+	$(L2FIX) $(basename $<).lk > $(basename $<).link
+	$(L2) $(L2FLAGS) $(basename $<).link
 
 $(BUILD_DIR)/$(CRT0).rel: $(SCR_DIR)/$(CRT0).s
 	$(AS) $(ASFLAGS) -o $(BUILD_DIR)/$(CRT0).rel $(SCR_DIR)/$(CRT0).s

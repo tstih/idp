@@ -60,6 +60,7 @@ install: floppy $(COM) bin after
 floppy:
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(SCR_DIR)/CCP.COM 0:CCP.COM
 
 # Make .COM files (for CP/M).
 .PHONY: $(COM)

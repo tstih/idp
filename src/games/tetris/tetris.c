@@ -10,9 +10,11 @@
  */
 #include <tetris.h>
 
+extern char cpm_getchar_nonblock();
+
 void main() {
-
     clrscr();
-
-
+    cputs("Press any key to abort...\n\r");
+    while (!kbhit());
+    cputs("\n\r");
 }

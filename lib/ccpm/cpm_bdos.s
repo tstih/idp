@@ -51,17 +51,21 @@ _cpmbdos_extn::
         ;; and store a and b values into it
 		ld l,2(ix)
 		ld h,3(ix) 
-		ld (hl),b
-		inc hl
 		ld (hl),a
+		inc hl
+		ld (hl),b
 
         ;; get ptr to ret_hl and store hl into it
-		ld l,8(ix)
-		ld h,9(ix)
+		ld l,4(ix)
+		ld h,5(ix)
 		pop bc		                    ; recover the HL we have pushed
-		ld (hl),b
-		inc hl
 		ld (hl),c
+		inc hl
+		ld (hl),b
+
+        ;; finally, return byte in c    
+        ld l,c
+
 		pop ix                          ; restore ix
 		ret
 

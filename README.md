@@ -105,19 +105,22 @@ extensions.
 <details><summary>conio.h/</summary>
 
 ~~~cpp
-/* Terminal type. */
-#define T_PARTNER    0x00
-#define T_VT52       0x01
-#define T_ANSI       0x02
+/* Terminal type */
+#define T_PARTNER           0x00
+#define T_VT52              0x01
+#define T_ANSI              0x02
 
-/* Text attributes. */
-#define AT_NONE         0x00
-#define AT_BOLD         0x01
-#define AT_UNDERLINE    0x04
-#define AT_BLINK        0x05
-#define AT_INVERSE      0x07
+/* Text attributes - these are loosely compatible with
+VT52 SGR attributes */
+#define AT_NONE             0x00
+#define AT_BOLD             0x01
+#define AT_HIGHLIGHT        0x02
+#define AT_BOLD_HIGHLIGHT   0x03
+#define AT_UNDERLINE        0x04
+#define AT_BLINK            0x05
+#define AT_INVERSE          0x07
 
-/* Basic info about the terminal. */
+/* Basic info about the terminal */
 struct text_info {
     unsigned char screenwidth;
     unsigned char screenheight;
@@ -137,13 +140,13 @@ extern int getch(void);
 /* Puts char back so that getch returns it again. */
 extern int ungetch(int);
 
-/* Move cursor. */
+/* Move cursor */
 extern void gotoxy(int x, int y);
 
 /* Put char. */
 extern int putch(int c);
 
-/* Put string. */
+/* Put string */
 extern int cputs(char *s);
 
 /* Hide cursor. */
@@ -156,13 +159,25 @@ extern void showcursor();
 extern int kbhit();
 
 /* Delete until end of line. */
-void clreol();
+extern void clreol();
 
-/* Delete current line. */
-void delline();
+/* Delete current line/ */
+extern void delline();
 
 /* Set text attributes. */
-void textattr(unsigned char attr);
+extern void textattr(unsigned char attr);
+
+/* DEC Duble-Width, Double-Height Line top */
+extern void decdhl_top();
+
+/* DEC Duble-Width, Double-Height Line bottom */
+extern void decdhl_bottom();
+
+/* DEC Duble-Width, Single-Height Line */
+extern void decdwl();
+
+/* DEC Single-Width, Single-Height Line top */
+extern void decswl();
 ~~~
 
 </details>  
@@ -271,6 +286,9 @@ extern void exit(int status);
 /* String to long using base. */
 extern long strtol(char *nptr, char **endptr, int base);
 
+/* Covert ascii to integer. */
+extern int atoi(const char *str);
+
 /* Strin to unsigned long using base, */
 extern unsigned long int strtoul(const char *nptr, char **endptr, int base);
 
@@ -282,6 +300,15 @@ extern int rand(void);
 
 /* Set random seed. */
 extern void srand(unsigned int seed);
+
+/* Memory allocation. */
+extern void *malloc(size_t size);
+
+/* Allocate zero initialized block. */
+extern void *calloc (size_t num, size_t size);
+
+/* Free allocated memory block. */
+extern void free(void *ptr);
 ~~~
 </details>  
 

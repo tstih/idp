@@ -87,4 +87,7 @@ extern void draw_ball();
 /* move the ball, return 0 or player who won (1,2) */
 extern int move_ball();
 
+/* what to do, what to do... */
+extern void ai_move();
+
 #endif /* __PONG_H__ */

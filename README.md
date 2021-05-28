@@ -24,6 +24,7 @@ writing software for the Iskra Delta Partner computer.
   * [GPX](#gpx)
   * [xyz](#xyz)
   * [TETRIS](#tetris)
+  * [PONG](#pong)
 - [Building](#building)
   * [On Linux](#on-linux)
 - [Internals](#internals)
@@ -493,6 +494,10 @@ to replace the CP/M on Iskra Delta Partner.
 Porting terminal version of the game of Tetris.
 
 ![Under construction.](doc/img/under-construction.jpg)
+
+## PONG
+
+Terminal version of the Atari PONG.
 
 # Building
 

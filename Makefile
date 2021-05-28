@@ -56,11 +56,35 @@ clean:
 .PHONY: install
 install: floppy $(COM) bin after
 
+.PHONY: install-ccp
+install-ccp: floppy-ccp $(COM) bin after
+
+.PHONY: install-boot
+install-boot: floppy-boot $(COM) bin after
+
+.PHONY: install-bootg
+install-bootg: floppy-bootg $(COM) bin after
+
 .PHONY: floppy
 floppy:
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
+
+.PHONY: floppy-ccp
+floppy-ccp:
+	cp $(ROOT)/scripts/diskdefs .
+	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(SCR_DIR)/CCP.COM 0:CCP.COM
+
+.PHONY: floppy-boot
+floppy-boot:
+	cp $(ROOT)/scripts/diskdefs .
+	cp  $(SCR_DIR)/boot.img $(BUILD_DIR)/fddb.img
+
+.PHONY: floppy-bootg
+floppy-bootg:
+	cp $(ROOT)/scripts/diskdefs .
+	cp  $(SCR_DIR)/bootg.img $(BUILD_DIR)/fddb.img
 
 # Make .COM files (for CP/M).
 .PHONY: $(COM)

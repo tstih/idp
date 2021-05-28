@@ -58,9 +58,17 @@ install: floppy $(COM) bin after
 
 .PHONY: floppy
 floppy:
-	cp $(ROOT)/scripts/diskdefs .
-	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(SCR_DIR)/CCP.COM 0:CCP.COM
+	cp $(SCR_DIR)/diskdefs .
+	if [ "$$FLOPPY" = boot ]; then \
+		cp  $(SCR_DIR)/boot.img $(BUILD_DIR)/fddb.img ;\
+	elif [ "$$FLOPPY" = bootg ]; then \
+		cp  $(SCR_DIR)/bootg.img $(BUILD_DIR)/fddb.img ;\
+	elif [ "$$FLOPPY" = ccp ]; then \
+		mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img ;\
+		cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(SCR_DIR)/CCP.COM 0:CCP.COM ;\
+	else \
+		mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img ;\
+	fi
 
 # Make .COM files (for CP/M).
 .PHONY: $(COM)

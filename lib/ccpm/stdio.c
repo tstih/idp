@@ -31,9 +31,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <fio.h>
 #include <string.h>
 #include <io.h>
+
+#define BUFSIZ      512
+#define _NFILE      8
 
 extern int open(const char *pathname, int flags);
 extern int close(int fd);
@@ -43,6 +46,16 @@ extern off_t lseek(int fd, off_t offset, int whence);
 
 extern int  _find_free_filehandle();
 extern FILE filehandles[FILES_MAX];
+
+FILE *stdin;
+FILE *stdout;
+FILE *stderr;
+
+void _stdio_init() {
+    stdin=(&filehandles[0]);
+    stdout=(&filehandles[1]);
+    stderr=(&filehandles[2]);
+}
 
 void putchar(int c) {
     cpm_putchar(c);

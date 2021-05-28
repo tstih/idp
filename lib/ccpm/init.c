@@ -13,6 +13,7 @@ extern void _cpm_sysfunc_init();
 extern void _fds_init();
 extern void _conio_init();
 extern void _memory_init();
+extern void  _stdio_init(); 
 
 void _stdlib_init() {
 
@@ -24,6 +25,9 @@ void _stdlib_init() {
 
     /* initialize file system */
     _fds_init();
+
+    /* initialize stdio */
+    _stdio_init();
 
     /* initialize conio */
     _conio_init();

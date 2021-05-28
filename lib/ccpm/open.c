@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <stdio.h>
+#undef FILE /* Make sure you don't use stdio.h version */
+#include <fio.h>
 #include <string.h>
 #include <io.h>
 

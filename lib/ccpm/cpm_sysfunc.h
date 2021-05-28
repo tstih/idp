@@ -86,7 +86,6 @@ extern void cpm_set_fcb_name(char *fname, char *ftype, fcb_t *cb);
 /* return saved values of BA or HL */
 extern uint16_t get_ret_ba();
 extern uint16_t get_ret_hl();
-extern uint16_t get_stktop();
 
 extern bool continue_or_exit ();
 

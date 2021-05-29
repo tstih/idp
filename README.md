@@ -773,8 +773,9 @@ And, voila...
 
 # The team
 
-*Tomaz Stih* (lead) 
-*Miha Grcar*
+**Tomaz Stih** (lead) 
+
+**Miha Grcar**
 
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C

@@ -3,7 +3,7 @@
  *
  * Tetris. 
  *
- * copyright (c) 2021 tomaz stih
+ * copyright (c) 2021 miha grcar
  *
  * 23.05.2021   mgrcar
  *

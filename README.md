@@ -3,12 +3,12 @@
 # idp-dev
 
 Welcome to the **idp-dev**, a repository, dedicated to the 
-Iskra Delta Partner development.
+*Iskra Delta Partner* development.
 
  ![Iskra Delta Partner](doc/img/partner.jpg)
 
 We are a group of volunteers, providing tools and tutorials to developers
-writing software for the Iskra Delta Partner computer.
+writing software for the *Iskra Delta Partner* computer.
 
 > The repository is currently under construction. Things change. 
 
@@ -26,9 +26,11 @@ writing software for the Iskra Delta Partner computer.
   * [TETRIS](#tetris)
   * [PONG](#pong)
 - [Building](#building)
-  * [On Linux](#on-linux)
+- * [Prerequisites](#prerequisites)
+  * [Make](#make)
+  * [Other make targets](#other-make-targets)
 - [Internals](#internals)
-- [Creating disks](#creating-disks)
+- [Creating disks manually](#creating-disks-manually)
   * [Create hard drive](#create-hard-drive)
   * [Create floppy drive](#create-floppy-drive)
   * [Add local files to disk](#add-local-files-to-disk)
@@ -38,13 +40,13 @@ writing software for the Iskra Delta Partner computer.
 
 # Projects
 
-## The C Runtime
+## The C runtime
 
-The goal of this project is to create a C11 compiler and a standard C library 
-for the Iskra Delta Partner. We are adjusting the SDCC compiler suite to
-generate (.COM) files for Iskra Delta Partner. 
+The goal of this project is to create a *C11* compiler and a standard C library 
+for the *Iskra Delta Partner*. We have adjusted the *SDCC* compiler suite to
+generate `.com` files for *Iskra Delta Partner.* 
 
-It consists of three main modules:
+The adjustment consists of three modules:
 
 | Module                     | Status (complete) |
 |----------------------------|-------------------|
@@ -52,55 +54,56 @@ It consists of three main modules:
 | The SDCC auxiliary library | ![100%](https://progress-bar.dev/100/)|
 | The Standard C library     | ![100%](https://progress-bar.dev/100/)|  
 
-To compile your source code, you must strip it of all SDCC defaults, and
-use Partner defaults instead. Following switches should be used.
+To compile your program code, you must strip it of all *SDCC* defaults, and
+use *Partner* defaults instead. Following switches should be used.
 
- * `--no-std-crt0`. This switch tells the compiler not to include the SDCC
+ * `--no-std-crt0`. This switch tells the compiler not to include the *SDCC*
    C startup file `crt0.s`. You replace it by adding the `scripts/crt0cpm.s`
    as the first file to your project.
- * `--nostdinc`. This will prevent the SDCC to include standard headers from
-   the SDCC standard library. You can use the `-I` to redirect to Partner's
-   standard library headers `-I /include/clib` instead.
- * `--nostdlib`. This will tell the SDCC linker no to link the SDCC standard
+ * `--nostdinc`. This will prevent the *SDCC* to include standard headers from
+   the SDCC version of the standard library. You can use the `-I` to redirect 
+   to *Partner's* standard library headers `-I /include/clib` instead.
+ * `--nostdlib`. This will tell the *SDCC* linker no to link the *SDCC* standard
    library. You can replace it by instructing the linker to search the `build/`
    folder for `libsdcc`, and `libccpm`, like this `-Lbuild -llibsdcc -llibcpm`  
 
 Consult the `hello` chapter for complete command line to use to compile your
-C source code to Iskra Delta Partner binary.
+C source code to *Iskra Delta Partner* binary.
 
 ### Startup Code
 
 The startup code is file `scripts/crt0cpm.s`. This code should compile 
 to the `0x100` address. It initializes the stack and the heap, reads and
 stores the command line arguments (if any!), calls your `main()` function 
-and, after it completes, calls the CP/M (BDOS) `exit()`. 
+and, after it completes, calls the *CP/M* (*BDOS*) `exit()`. 
 
 ### SDCC Auxiliary Library
 
 The `libsdcc` auxiliary library is located in the `lib/sdcc/` folder.
 
-This library is the glue betweeen the SDCC C compiler and the
-Z80 processor. Z80 lacks instructions for integer multiplication 
+This library is the glue betweeen the *SDCC* C compiler and the
+*Z80* processor. *Z80* lacks instructions for integer multiplication 
 and division, and for handling long integers and floating point 
 numbers.
 
-To mitigate it, the SDCC C compiler replaces these non-existing
+To mitigate it, the *SDCC* C compiler replaces these non-existing
 instructions with calls to special functions (such as: `__mulint`).
 Invisible to you, the linker then links these special functions 
 with your code.
 
-This works in the SDCC realm, but if you prevent the compiler to link
-default SDCC libraries (by using directives `--nostdlib`, `--nostdinc`, 
+This works in the *SDCC* realm, but if you prevent the compiler to link
+default *SDCC* libraries (by using directives `--nostdlib`, `--nostdinc`, 
 and `--no-std-crt0`) then you need to provide these special functions,
 and the `libsdcc` does that.
 
 ### Standard C Library
 
-The Standard C Library for Iskra Delta Partner is called `libccpm`.
+The *Standard C Library* for *Iskra Delta Partner* is called `libccpm`.
 In addition to standard functions it also implements some non-standard 
 extensions.  
 
-*You can check the contents of standard header files by expanding them.*
+ > You can check the implementation scope by expanding the 
+ > standard header files bellow.
 
 <details><summary>conio.h/</summary>
 
@@ -585,7 +588,8 @@ typedef uint32_t mode_t;
 
 ### Hello Partner Project
 
-The Iskra Delta Partner Hello World program is located in the `src/hello` folder.
+The *Iskra Delta Partner* **Hello World** program is located in the 
+`src/hello` folder.
 
 ~~~cpp
 #include <stdio.h>
@@ -613,55 +617,93 @@ Experiments may create some files, display some data, draw some graphics, etc.
 Experiments end with -xp i.e. `setup-xp.com`.
 
 At time of writing, forllowing tests are available: 
- * `stdlib/std-test.c` The Standard C Library auto unit tests.
+ * `stdlib/std-test.c` The *Standard C Library* auto unit tests.
+ * `stdlib/file-xp.c` Creating a test text file: `ZDRAVA.TXT`
+ * `stdlib/mem-xp.c` Allocating memory with `malloc`, freeing with `free` test.
+ * `stdlib/rnd-xp.c` Random numbers tests.
+ * `stdlib/tme-test` Testing the `time.h` functions. **Warning:** sets system time to 1.1.1980.
  * `hw/setup-xp.c` Displays real time clock and battery powered RAM bytes.
+ * `hw/conio-xp.c` Console output tests.
  * `gpx/gpx-xp.c` Drawing experiments (in graphics mode).
 
 ## GPX
 
-The goal of this project is to create fast graphical library for Iskra Delta
-Partner.
+The goal of this project is to create fast graphical library for 
+*Iskra Delta Partner*.
 
 ![Under construction.](doc/img/under-construction.jpg)
 
 ## xyz
 
-The goal of this project is to create a graphical, multitasking operating system
-to replace the CP/M on Iskra Delta Partner.
-
-![Under construction.](doc/img/under-construction.jpg)
-
-## TETRIS
-
-Porting terminal version of the game of Tetris.
+The goal of this ambitious project is to create a graphical, 
+multitasking operating system to replace the *CP/M* on *Iskra Delta Partner*.
 
 ![Under construction.](doc/img/under-construction.jpg)
 
 ## PONG
 
-Terminal version of the Atari PONG.
+Terminal version of the *Atari PONG*. 
+
+ > This was a viability test and the conclusion is that terminal emulation
+   on *Iskra Delta Partner* is too slow for games.
+
+## TETRIS
+
+A version of the game of *Tetris*.
+
+![Under construction.](doc/img/under-construction.jpg)
 
 # Building
 
-## On Linux
+## Prerequisites
 
-Make sure you have gcc, sdcc, and cpmtools installed.
+At present the build environment is *Linux* with following tools installed: 
+`sdcc`, `cpmtools`, `gcc`, and `sed`. 
 
-Compile with 
+ > The *Standard C Library* requires latest version of *SDCC* (**4.1.6**). 
+ > You are going to have to [build it from the sources]
+ > (http://sdcc.sourceforge.net/). To make things more complicated, 
+ > the build process also requires an exact version of the `automake` tools 
+ > (**1.16.2**) and will not compile with other versions.
+
+## Make
+
+Commpile everything with 
 
 `make`
 
-Create disk image for the emulator with
+After you are done compiling, create disk image for the emulator with
 
 `make install`
 
-All output will go to the build folder. Disk image that you 
-can import into Partner emulator (using Alt+O) is called `fddb.img`.
+All output will go to the `build` folder. Disk image that you 
+can import into the Partner emulator (using **Alt+O**) is called `fddb.img`.
+
+## Other make targets
+
+For comfortable work following targets can also be used. Each
+of them creates a `bin` folder, copies the `.com`, `.lib` and `crt0cpm.rel` 
+files into it. And then creates a image of the floppy disk called 
+`fddb.img` with all the `.com` files to the floppy image, 
+   
+
+ * `make install` Create the `bin` folder and standard floppy (with `.com` files).
+ * `make ccp` Add `ccp.com` to the floppy. CP/M allows programs to overwrite its'
+   command shell called the CCP. When the program ends the CP/M reloads the shell
+   and if not present on the disk displays an error (prompts for disk change). 
+ * `make boot` Uses a bootable floppy for *std. partner* as a base for creating
+   the disk image. 
+ * `make bootg` Uses a bootable floppy for *graphical partner* as a base for
+   creating the disk image
+ * `make dex` Calls `make install` and copies the floppy image to a user
+   folder (`~/Dex/`). Use this if you work in *Linux* and need to exchange 
+   the image with enother environment (i.e. a *Windows* where the emulator
+   is running). *In case you wonder, dex stands for Data EXchange.*
 
 # Internals
 
-While reverse engineering the Partner and writing code, we keep notes 
-on its internal functioning. While these are not well structured,
+While reverse engineering the Partner and writing code, we are keeping 
+notes on its internal functioning. While these are not well structured,
 they are a rich source of information about inner functioning of
 Iskra Delta Partner and the softwares.
 
@@ -674,20 +716,20 @@ Iskra Delta Partner and the softwares.
  * [Real time clock](doc/notes/rtclock-notes.md)
  * [Porting software plans](doc/notes/porting-notes.md)
 
-# Creating disks
+# Creating disks manually
 
-Use cpmtools to create your own disks for the emulator.
+Use the `cpmtools` package to create your own disks for the emulator.
 
 http://www.moria.de/~michael/cpmtools/
 
 Disk definitions for Partner floppy and hard drives are in
 the the `scripts\diskdefs` file.
- * idpfdd for floppy drive
- * idphdd for the hard disk
+ * `idpfdd` for floppy drive
+ * `idphdd` for the hard disk
 
 ## Create hard drive
 
-*Note: -f is disk format and can be idphdd or idpfdd.*
+Note: `-f` is disk format and can be `idphdd` or `idpfdd`.
 
 `mkfs.cpm.exe -f idphdd -t hdda.img`
 
@@ -697,7 +739,7 @@ the the `scripts\diskdefs` file.
 
 ## Add local files to disk
 
-*Following command adds file test.com to area 0: of floppy drive fddb.img.*
+Following command adds file `hello.com` to area 0: of floppy drive `fddb.img`.
 
 `cpmcp -f idpfdd fddb.img test.com 0:test.com`
 
@@ -711,7 +753,8 @@ You can download the emulator from here.
 
 http://matejhorvat.si/sl/slorac/delta/partner/index.htm
 
-Once you are in the emulator, press Alt+O and select the `fddb.img` file. This will create `B:` drive. Finally, type...
+Once you are in the emulator, press Alt+O to select the `fddb.img` file. 
+This will create a `B:` drive. Finally, type...
 
 ~~~
 B:
@@ -725,11 +768,9 @@ And, voila...
 
 # Thank you
 
-**Miha Grcar** for keeping a Partner Revival Slack, testing, and sharing his findings.
-
 **Matej Horvat** for sharing technical details about his emulator and code samples.
 
-**Tomaz Stih**, 22.05.2021
+**Tomaz Stih** and **Miha Grcar**, 22.05.2021
 
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C

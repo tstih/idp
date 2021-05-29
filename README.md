@@ -769,7 +769,7 @@ And, voila...
 
 # Thank you
 
-*Matej Horvat* for sharing technical details about his emulator and code samples.
+**Matej Horvat** for sharing technical details about his emulator and code samples.
 
 # The team
 

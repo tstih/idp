@@ -9,19 +9,33 @@
  * 27.03.2021   tstih
  *
  */
-#include "gpx.h"
+#include <conio.h>
+#include <stdio.h>
+#include <gpx.h>
 
 extern void* zx6x8_font;
 
 void main() {
 
-    /* initialize display */
-    graphics_t* g;
-    g=graphics_init();
+    /* display warning */
+    printf("WARNING: The screen will enter graphics mode\n\r");
+    printf("         and go blank. When blank, press any\n\r");
+    printf("         key to come back.\n\r\n\r");
+    printf("Now press a key to enter graphics mode!\n\r");
 
-    /* fill the screen with lines */
-    int y;
-    for (y=0;y<SCREEN_HEIGHT-1;y+=64)
-        draw_line(g,0,y,SCREEN_WIDTH-1,y, 0, 0xaa);
+    while (!kbhit());
+
+    /* initialize display */
+    graphics_t* g = gpx_init();
+
+    /* exit graphics mode */
+    gpx_exit(g);
+
+    while (!kbhit());
+
+    /* now display width and height. */
+    printf("Hires width=%d, height=%d\n\r\n\r", 
+        g->area.x1 - g->area.x0,
+        g->area.y1 - g->area.y0);
 
 }

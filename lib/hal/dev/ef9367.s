@@ -25,7 +25,7 @@
         ;; ---------------
 		;; void gdp_init()
         ;; ---------------
-        ;; initializes the gdp, set the 1024x512 graphics mode
+        ;; initializes the gdp, sets the 1024x512 graphics mode
 		;; input:	-
 		;; output:	-
         ;; affect:  -
@@ -65,7 +65,6 @@ _gdp_xy::
         push af
         push bc
         push de
-        push hl
 
         ld hl,#0x0a                 ; hl=sp+10 (skip regs and ret addr)
         add hl,sp                   ; hl points to the first parameter
@@ -83,7 +82,6 @@ _gdp_xy::
         call gdp_xy_dirty           ; first go to x,y
 
         ;; restore regs
-        pop hl
         pop de
         pop bc
         pop af

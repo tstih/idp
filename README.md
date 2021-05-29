@@ -15,16 +15,19 @@ writing software for the *Iskra Delta Partner* computer.
 # Table of Contents
 
 - [Projects](#projects)
-  * [The C Runtime](#the-c-runtime)
-    + [Startup Code](#startup-code)
-    + [SDCC Auxiliary Library](#sdcc-auxiliary-library)
-    + [Standard C Library](#standard-c-library)
-    + [Hello Partner Project](#hello-partner-project)
-  * [The CP/M Test Framework](#tests)
+  * [The C runtime](#the-c-runtime)
+    + [Startup code](#startup-code)
+    + [SDCC auxiliary library](#sdcc-auxiliary-library)
+    + [Standard C library](#standard-c-library)
+    + [Hello Partner project](#hello-partner-project)
+  * [The test framework](#the-test-framework)
+  * [The hardware abstraction library](#the-hardware-abstraction-library)
   * [GPX](#gpx)
   * [xyz](#xyz)
-  * [TETRIS](#tetris)
-  * [PONG](#pong)
+  * [Utilities](#utilities)
+  * [Games](#games)
+    + [TETRIS](#tetris)
+    + [PONG](#pong)
 - [Building](#building)
 - * [Prerequisites](#prerequisites)
   * [Make](#make)
@@ -54,6 +57,7 @@ The adjustment consists of three modules:
 | The startup code           | ![100%](https://progress-bar.dev/100/)|
 | The SDCC auxiliary library | ![100%](https://progress-bar.dev/100/)|
 | The Standard C library     | ![100%](https://progress-bar.dev/100/)|  
+|-|-|
 
 To compile your program code, you must strip it of all *SDCC* defaults, and
 use *Partner* defaults instead. Following switches should be used.
@@ -299,7 +303,6 @@ typedef int             int16_t;
 typedef unsigned int    uint16_t;
 typedef long            int32_t;
 typedef unsigned long   uint32_t;
-typedef unsigned int*   uintptr_t;
 ~~~
 </details>  
 
@@ -604,7 +607,7 @@ and does what every **Hello World** program in the world should do.
 
 ![Hello World](doc/img/hello.jpg)
 
-## Tests
+## The test framework
 
 There are two types of tests in the `test` folder: *automated unit tests* that
 automatically verify test results against expected results. And *experiments*,
@@ -614,7 +617,7 @@ the results.
 Automated unit tests use the [tiny test framework of Eric Radman](https://eradman.com/posts/tdd-in-c.html), based on [the original MinUnit by John Brewer](http://www.jera.com/techinfo/jtns/jtn002.html). The name of automated unit tests ends in `-test` (i.e. `std-test.com`).
 
 Experiments may create some files, display some data, draw some graphics, etc.
-Experiments end with -xp i.e. `setup-xp.com`.
+Experiments end with `-xp` i.e. `setup-xp.com`.
 
 At time of writing, forllowing tests are available: 
  * `stdlib/std-test.c` The *Standard C Library* auto unit tests.
@@ -622,9 +625,16 @@ At time of writing, forllowing tests are available:
  * `stdlib/mem-xp.c` Allocating memory with `malloc`, freeing with `free` test.
  * `stdlib/rnd-xp.c` Random numbers tests.
  * `stdlib/tme-test` Testing the `time.h` functions. **Warning:** sets system time to 1.1.1980.
- * `hw/setup-xp.c` Displays real time clock and battery powered RAM bytes.
- * `hw/conio-xp.c` Console output tests.
+ * `stdlib/conio-xp.c` Console output tests.
  * `gpx/gpx-xp.c` Drawing experiments (in graphics mode).
+
+## The hardware abstraction library
+
+The hardware abstraction library (`libhal.lib`) abstracts 
+*Iskra Delta Partner* hardware. 
+
+> **Note:** The *Standard C Library* does not depend on the 
+> *The Hardware Abstraction Library*, it depends on the *CP/M BDOS* calls.
 
 ## GPX
 
@@ -640,14 +650,26 @@ multitasking operating system to replace the *CP/M* on *Iskra Delta Partner*.
 
 ![Under construction.](doc/img/under-construction.jpg)
 
-## PONG
+## Utilities
+
+Small utilities to make your (developers') life easier.
+
+| Utility      | Description                         |
+|--------------|-------------------------------------|
+| MEMDUMP.COM  | Dump memory contents. |
+| PORTDUMP.COM | Read and dump port values. |
+|-|-|
+
+## Games
+
+### PONG
 
 Terminal version of the *Atari PONG*. 
 
  > This was a viability test and the conclusion is that terminal emulation
    on *Iskra Delta Partner* is too slow for games.
 
-## TETRIS
+### TETRIS
 
 A version of the game of *Tetris*.
 

@@ -2,7 +2,7 @@
 LD		= sdcc
 LDFLAGS	= -mz80 -Wl -y \
 	--code-loc 0x100 --no-std-crt0 --nostdlib --nostdinc \
-	-L$(BUILD_DIR) -llibsdcc -llibccpm -llibgpx
+	-L$(BUILD_DIR) -llibsdcc -llibccpm -llibgpx -llibhal
 
 # Data segment fix (link again)
 L2		= sdldz80

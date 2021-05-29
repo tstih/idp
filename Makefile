@@ -18,7 +18,7 @@ export SCR_DIR		=	$(ROOT)/scripts
 
 # Globa settings: tools.
 export CC			=	sdcc
-export CFLAGS		=	--std-c11 -mz80 --max-allocs-per-node 25000 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib -D__ID_PARTNER__ --debug
+export CFLAGS		=	--std-c11 -mz80 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib --debug
 export AS			=	sdasz80
 export ASFLAGS		=	-xlos -g
 export AR			=	sdar

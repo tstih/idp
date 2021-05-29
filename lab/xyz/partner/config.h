@@ -1,8 +1,13 @@
 /*
  * partner/config.h
- * configuration for iskra delta partner   
  *
- * tomaz stih mon apr 05 2021
+ * yos configuration file for Iskra Delta Partner.
+ * 
+ * MIT License (see: LICENSE)
+ * copyright (c) 2021 tomaz stih
+ *
+ * 05.04.2021   tstih
+ *
  */
 #ifndef _CONFIG_H
 #define _CONFIG_H

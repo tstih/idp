@@ -37,6 +37,7 @@ writing software for the *Iskra Delta Partner* computer.
   * [Remove files from disk](#remove-files-from-disk)
 - [The Emulator](#the-emulator)
 - [Thank you](#thank-you)
+- [The team](#the-team)
 
 # Projects
 
@@ -768,9 +769,11 @@ And, voila...
 
 # Thank you
 
-**Matej Horvat** for sharing technical details about his emulator and code samples.
+*Matej Horvat* for sharing technical details about his emulator and code samples.
 
-**Tomaz Stih** and **Miha Grcar**, 22.05.2021
+# The team
+
+Tomaz Stih & Miha Grcar
 
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C

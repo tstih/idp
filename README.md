@@ -585,7 +585,6 @@ typedef uint32_t mode_t;
 ~~~
 </details>  
 
-<br/>
 
 ### Hello Partner Project
 

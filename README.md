@@ -717,7 +717,7 @@ Iskra Delta Partner and the softwares.
  * [Real time clock](doc/notes/rtclock-notes.md)
  * [Porting software plans](doc/notes/porting-notes.md)
 
-# Creating disks manually
+# Creating Disks Manually
 
 Use the `cpmtools` package to create your own disks for the emulator.
 
@@ -767,11 +767,11 @@ And, voila...
 
 ![Hello World](doc/img/hello.jpg)
 
-# Thank you
+# Thank You
 
 **Matej Horvat** for sharing technical details about his emulator and code samples.
 
-# The team
+# The Team
 
 **Tomaz Stih** (lead) 
 

@@ -77,6 +77,35 @@ typedef struct graphics_s {
 #define DWM_RESET           0x00
 
 
+
+typedef struct gpy_generation_s {
+    unsigned int gcls:3;                /* glyph class */
+    unsigned int gdwm:2;                /* drawing mode */
+    unsigned int reserved:3;            /* up to 1 byte */
+} gpy_generation_t;
+
+/* each glyph file starts with glyph envelope */
+typedef struct gpy_envelope_s {
+    gpy_generation_t generation;
+    uint16_t width;
+    uint16_t height;
+    uint8_t reserved;                   /* number of glyphs following */
+} gpy_envelope_t;
+
+/* font_s struct is a gpy_envelope_s */
+typedef struct font_s {
+    gpy_generation_t generation;
+    uint16_t width;
+    uint16_t height;
+    union {
+        uint8_t stride;                     /* bytes per glyph row for raster fonts */   
+        uint8_t reserved;
+    };
+    uint8_t first_ascii;
+    uint8_t last_ascii;
+} font_t;
+
+
 /*
  * drawing functions
  */
@@ -86,5 +115,11 @@ extern graphics_t* gpx_init();
 
 /* exit graphics mode */
 extern void gpx_exit(graphics_t* g);
+
+/* clear screen */
+extern void gpx_cls(graphics_t *g);
+
+/* draw text on screen */
+extern void gpx_draw_text(graphics_t* g, char *s, font_t *font, coord x, coord y); 
 
 #endif /* __GPX_H__ */

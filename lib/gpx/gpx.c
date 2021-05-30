@@ -35,3 +35,7 @@ graphics_t* gpx_init() {
 void gpx_exit(graphics_t *g) {
     hal_hires_exit();
 }
+
+void gpx_cls(graphics_t *g) {
+    hal_hires_cls();
+}

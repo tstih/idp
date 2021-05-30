@@ -30,4 +30,12 @@ extern void hal_hires_info(int *w, int *h);
 /* Clears hires screen. */
 extern void hal_hires_cls();
 
+/* Put raster on screen */
+void hal_hires_put_raster(
+    uint8_t *raster,
+    int16_t x, 
+    int16_t y, 
+    uint8_t width,
+    uint8_t height);
+
 #endif /* __HAL_H__ */

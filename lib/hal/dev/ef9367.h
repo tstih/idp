@@ -21,19 +21,27 @@
 #include <yos.h>
 
 /* hires mode screen size */
-#define GDP_HIRES_WIDTH     1024
-#define GDP_HIRES_HEIGHT    512
+#define EF9367_HIRES_WIDTH     1024
+#define EF9367_HIRES_HEIGHT    512
 
 /* initializes gdp, enter hires (1024x512) mode */
-extern void gdp_init();
+extern void ef9367_init();
 
 /* clear screen and goto 0,0 */
-extern void gdp_cls();
+extern void ef9367_cls();
 
 /* goto x,y */
-extern void gdp_xy(int16_t x, int16_t y);
+extern void ef9367_xy(int16_t x, int16_t y);
 
-/* pixel at x,y */
-extern void gdp_setpixel(int16_t x, int16_t y);
+/* put pixel at x,y */
+extern void ef9367_put_pixel(int16_t x, int16_t y);
+
+/* draw raw bitmap at x,y */
+extern void ef9367_put_raster(
+    uint8_t *raster,
+    int16_t x, 
+    int16_t y, 
+    uint8_t width,
+    uint8_t height);
 
 #endif /* _EF9367_H */

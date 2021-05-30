@@ -1,7 +1,7 @@
 		;; scn2674.s
         ;; 
         ;; a library of text mode (only) primitives for the signetics 
-        ;; scn2674 avdc card
+        ;; SCN2674 (AVDC) card
 		;;
         ;; MIT License (see: LICENSE)
         ;; copyright (c) 2021 tomaz stih
@@ -9,10 +9,10 @@
 		;; 04.04.2021   tstih
 	    .module scn2674
 
-        .globl  _avdc_init
-        .globl  _avdc_cursor_on
-	    .globl  _avdc_cursor_off
-        .globl  _avdc_cls
+        .globl  _scn2674_init
+        .globl  _scn2674_cursor_on
+	    .globl  _scn2674_cursor_off
+        .globl  _scn2674_cls
 
         .include "scn2674.inc"
 
@@ -20,46 +20,46 @@
 
 
         ;; ---------------
-		;; void avdc_init()
+		;; void SCN2674_init()
         ;; ---------------
-        ;; initializes the avdc, sets up avdc IR registers, cursor position, 
+        ;; initializes the SCN2674, sets up SCN2674 IR registers, cursor position, 
         ;; screen start position
 		;; input:	-
 		;; output:	-
         ;; affect:  -
-_avdc_init::
+_scn2674_init::
         ;; store registers
         push af
         push bc
         push hl
         ;; first do a master reset
-        ld a,#AVDC_CMD_RESET
-		out	(#AVDC_CMD),a
+        ld a,#SCN2674_CMD_RESET
+		out	(#SCN2674_CMD),a
         ;; give the card time to recover
         ld b,#0xff
-avdc_delay:
+SCN2674_delay:
         nop
         nop
         nop
-        djnz avdc_delay
+        djnz SCN2674_delay
         ;; reset the IR pointer to 0 (just in case)
-		ld a,#AVDC_CMD_SET_IR						
-		out (#AVDC_CMD),a
+		ld a,#SCN2674_CMD_SET_IR						
+		out (#SCN2674_CMD),a
         ;; now initialize registers IR0-IR11
-        ld hl,#avdc_rtbl			    ;; table for registers IR0-IR11
+        ld hl,#SCN2674_rtbl			    ;; table for registers IR0-IR11
 		ld b,#0x0c						;; 12 bytes
-		ld c,#AVDC_INIT					;; out port will be 0x38 i.e. IR initialization
+		ld c,#SCN2674_INIT              ;; out port will be 0x38 i.e. IR initialization
 		otir							;; and loop
 		;; set screen start to 0 (for both screens)
 		xor a
-		out (#AVDC_SS1_LO),a
-		out (#AVDC_SS1_HI),a
-		out (#AVDC_SS2_LO),a
-		out (#AVDC_SS2_HI),a
+		out (#SCN2674_SS1_LO),a
+		out (#SCN2674_SS1_HI),a
+		out (#SCN2674_SS2_LO),a
+		out (#SCN2674_SS2_HI),a
         ;; move cursor to 0,0
         xor a
-        out (#AVDC_CUR_LO),a
-        out (#AVDC_CUR_HI),a
+        out (#SCN2674_CUR_LO),a
+        out (#SCN2674_CUR_HI),a
         ;; restore registers
         pop hl
         pop bc
@@ -67,7 +67,7 @@ avdc_delay:
         ;; and return
         ret
         ;; initialization table
-avdc_rtbl:
+SCN2674_rtbl:
 		;; decoding IR table
 		;; IR0 = 0xd0 (0b11010000) 
 		;; bit 7 double width (yes)
@@ -118,55 +118,55 @@ avdc_rtbl:
 
 
         ;; ---------------------
-		;; void avdc_cursor_on()
+		;; void SCN2674_cursor_on()
         ;; ---------------------
-        ;; shows avdc cursor
+        ;; shows SCN2674 cursor
 		;; input:	-
 		;; output:	-
         ;; affect:  -
-_avdc_cursor_on::
+_scn2674_cursor_on::
         push af
-        ld a, #AVDC_CMD_CURS_ON
-        out (#AVDC_CMD), a
+        ld a, #SCN2674_CMD_CURS_ON
+        out (#SCN2674_CMD), a
         pop af
         ret
 
 
         ;; ----------------------
-		;; void avdc_cursor_off()
+		;; void SCN2674_cursor_off()
         ;; ----------------------
-        ;; hides avdc cursor
+        ;; hides SCN2674 cursor
 		;; input:	-
 		;; output:	-
         ;; affect:  -
-_avdc_cursor_off::
+_scn2674_cursor_off::
         push af
-        ld a, #AVDC_CMD_CURS_OFF
-        out (#AVDC_CMD), a
+        ld a, #SCN2674_CMD_CURS_OFF
+        out (#SCN2674_CMD), a
         pop af
         ret
 
 
         ;; ---------------
-		;; void avdc_cls()
+		;; void SCN2674_cls()
         ;; ---------------
         ;; clears screen, the cursor position is a mess after this operation
 		;; input:	-
 		;; output:	-
         ;; affect:  -
-_avdc_cls::
+_scn2674_cls::
         push af                         ; make sure we dont destroy the acc.
         ;; move cursor to 0,0
         xor a
-        out (#AVDC_CUR_LO),a
-        out (#AVDC_CUR_HI),a
+        out (#SCN2674_CUR_LO),a
+        out (#SCN2674_CUR_HI),a
         ;; fill screen with char ' ', attr 0
 		ld a,#' '
-		out (#AVDC_CHR), a				; use space chars!
-		ld a,#AVDC_AT_NONE				
-		out (#AVDC_AT), a				; and no attributes
+		out (#SCN2674_CHR), a           ; use space chars!
+		ld a,#SCN2674_AT_NONE				
+		out (#SCN2674_AT), a            ; and no attributes
         ;; fill from cursor to display pointer
-        ld a,#AVDC_CMD_WC2P
-        out (#AVDC_CMD), a
+        ld a,#SCN2674_CMD_WC2P
+        out (#SCN2674_CMD), a
         pop af                          ; restore the acc.
         ret

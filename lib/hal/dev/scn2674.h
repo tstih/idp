@@ -12,16 +12,16 @@
 #ifndef _SCN2674_H
 #define _SCN2674_H
 
-/* initialize the avdc, set to default mode 80x25 */
-extern void avdc_init();
+/* initialize the scn2674, set to default mode 80x25 */
+extern void scn2674_init();
 
 /* show cursor */
-extern void avdc_cursor_on();
+extern void scn2674_cursor_on();
 
 /* hide cursor */
-extern void avdc_cursor_off();
+extern void scn2674_cursor_off();
 
 /* clear screen */
-extern void avdc_cls();
+extern void scn2674_cls();
 
 #endif /* _SCN2674_H */

@@ -174,6 +174,12 @@ nextcol:
         ;; before looping make sure we don't destroy hl and a
         push af 
         push hl
+        ;; is there a remainder (stride?)
+        ld a,c
+        cp #0
+        jr z, raster_newline
+        inc hl
+raster_newline:
         ;; cursor to next line
         ld c,2(ix)                      ; bc=x
         ld b,3(ix)

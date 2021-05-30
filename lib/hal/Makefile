@@ -5,7 +5,7 @@ OBJS	=	$(patsubst %.c,$(BUILD_DIR)/%.rel,$(C_SRCS)) $(patsubst %.s,$(BUILD_DIR)/
 
 # Subdirectories must contain makes.
 SUBDIRS	=	$(wildcard */.)
-export TARGET = libgpx
+export TARGET = libhal
 
 
 # Rules.

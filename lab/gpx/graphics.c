@@ -11,10 +11,6 @@
  */
 #include "graphics.h"
 
-#if __LINUX_SDL2__
-SDL_Surface *surface;
-#endif
-
 graphics_t screen;
 
 graphics_t* graphics_init() {
@@ -24,10 +20,6 @@ graphics_t* graphics_init() {
     screen.area.x1=screen.clip.x1=SCREEN_WIDTH-1;
     screen.area.y1=screen.clip.y1=SCREEN_HEIGHT-1;
     
-#if __LINUX_SDL2__
-    /* custom initialization */
-    surface = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32, 0, 0, 0, 0);
-#elif __ID_PARTNER__
     /* first reset the avdc (text mode). clear screen and hide cursor */
     avdc_init();
     avdc_cls();
@@ -37,7 +29,6 @@ graphics_t* graphics_init() {
     gdp_init();
     gdp_cls();
     gdp_xy(0,0);
-#endif
     
     return &screen;
 }

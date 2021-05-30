@@ -28,47 +28,54 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#define BUFSIZ      512
-#define _NFILE      8
-
 #define EOF         0x1A	
 #define SEEK_SET    0
 #define SEEK_CUR    1
 #define SEEK_END    2
 
-#define uchar unsigned char
+#define FILE        void
+extern FILE *stdin;
+extern FILE *stdout;
+extern FILE *stderr;
 
-struct  _iobuf {
-  char*     _ptr;
-  int       _cnt;
-  char*    _base;
-  char      _flags[4];
-  int       _file;
-  bool 	    _eof;
-  ssize_t   _limit;
-}; 
-
-typedef struct _iobuf FILE;
-#define stdin           (&filehandles[0])
-#define stdout          (&filehandles[1])
-#define stderr          (&filehandles[2])
-
+/* Open file. */
 extern FILE *fopen(const char *path, const char *mode);
+
+/* Move to fpos. */
 extern int fseek(FILE *stream, long offset, int whence);
+
+/* Read a record. */
 extern size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+
+/* EOF reached? */
 extern int feof(FILE *stream);
+
+/* Close a file. */
 extern int fclose(FILE *stream);
+
+/* Get file position. */
 extern long ftell(FILE *stream);
+
+/* Write a record. */
 extern size_t fwrite(
     const void *ptr, 
     size_t size, 
     size_t nmemb, 
     FILE *stream);
+
+/* Prints a string. */
 extern int puts(const char *s);
-extern int vsprintf(char **out, char *format, va_list ap);
+
+/* Print formatted string to stdout. */
 extern int printf(char *fmt, ...);
+
+/* Prints formated string to a string. */
 extern int sprintf(char *buf, char *fmt, ...);
+
+/* Prints a char. */
 extern void putchar(int c);
+
+/* Reads a char (blocks. */
 extern int getchar(void);
 
 #endif /* __STDIO_H__ */

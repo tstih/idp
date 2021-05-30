@@ -18,7 +18,7 @@
 #ifndef _EF9367_H
 #define _EF9367_H
 
-#include <stdint.h>
+#include <yos.h>
 
 /* hires mode screen size */
 #define GDP_HIRES_WIDTH     1024

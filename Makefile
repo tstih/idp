@@ -4,7 +4,7 @@ $(error OS must be Linux!)
 endif
 
 # Check if all required tools are on the system.
-REQUIRED = sdcc sdar sdasz80 mkfs.cpm cpmcp gcc sed
+REQUIRED = sdcc sdar sdasz80 sdldz80 mkfs.cpm cpmcp gcc sed
 K := $(foreach exec,$(REQUIRED),\
     $(if $(shell which $(exec)),,$(error "$(exec) not found. Please install or add to path.")))
 
@@ -18,7 +18,7 @@ export SCR_DIR		=	$(ROOT)/scripts
 
 # Globa settings: tools.
 export CC			=	sdcc
-export CFLAGS		=	--std-c11 -mz80 --max-allocs-per-node 25000 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib -D__ID_PARTNER__ --debug
+export CFLAGS		=	--std-c11 -mz80 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib --debug
 export AS			=	sdasz80
 export ASFLAGS		=	-xlos -g
 export AR			=	sdar

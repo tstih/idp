@@ -10,31 +10,16 @@
  * 23.03.2021   tstih
  *
  */
-#ifndef _GPX_H
-#define _GPX_H
+#ifndef __GPX_H__
+#define __GPX_H__
 
-#include "yos.h"
-
-
-/* 
- * screen constants
- */
-#if __LINUX_SDL2__
-#define SCREEN_WIDTH    1024
-#define SCREEN_HEIGHT   512
-#elif __ID_PARTNER__
-#define SCREEN_WIDTH    1024
-#define SCREEN_HEIGHT   512
-#elif __ZX_SPECTRUM__
-#define SCREEN_WIDTH    256
-#define SCREEN_HEIGHT   192
-#endif
+#include <yos.h>
 
 
 /*
  * extra gpx types
  */
-typedef word_t coord_t;
+typedef int16_t coord;
 
 
 /* 
@@ -43,10 +28,10 @@ typedef word_t coord_t;
 
 /* the rectangle */
 typedef struct rect_s {
-	coord_t x0;
-	coord_t y0;
-	coord_t x1;
-	coord_t y1;
+	coord x0;
+	coord y0;
+	coord x1;
+	coord y1;
 } rect_t;
 
 /* the display */
@@ -97,27 +82,9 @@ typedef struct graphics_s {
  */
 
 /* initialize the graphics system */
-extern graphics_t* graphics_init();
+extern graphics_t* gpx_init();
 
-/* special line type (horizontal) */
-extern void draw_hline(graphics_t* d, coord_t y, coord_t x0, coord_t x1, byte_t mode, byte_t pattern);
+/* exit graphics mode */
+extern void gpx_exit(graphics_t* g);
 
-/* special line type (vertical) */
-extern void draw_vline(graphics_t* d, coord_t x, coord_t y0, coord_t y1, byte_t mode, byte_t pattern);
-
-/* draw individual pixel */
-extern byte_t draw_pixel(graphics_t* d, coord_t x0, coord_t y0, byte_t mode);
-
-/* draw line */
-extern void draw_line(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern);
-
-/* draw circle with radius */
-extern void draw_circle(graphics_t *d, coord_t x0, coord_t y0, coord_t radius, byte_t mode, byte_t pattern);
-
-/* draw ellipse with rectangle */
-extern void draw_ellipse(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern);
-
-/* draws a rectangle */
-extern void draw_rectangle(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern);
-
-#endif /* _GPX_H */
+#endif /* __GPX_H__ */

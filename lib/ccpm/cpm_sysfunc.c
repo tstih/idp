@@ -37,11 +37,6 @@ uint16_t get_ret_hl()
     return ret_hl;
 }
 
-uint16_t get_stktop()
-{
-    return heap;
-}
-
 extern uint16_t argc;
 extern uint16_t argv;
 extern uint16_t filename;

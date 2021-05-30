@@ -19,6 +19,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <io.h>
+#undef FILE /* Make sure you don't use stdio.h version */
+#include <fio.h>
 
 /* fwd definition */
 extern ssize_t seq_read(int fd, void *buf, size_t count);

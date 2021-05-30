@@ -1,8 +1,12 @@
-		;; partner/crt0.s
+        ;; partner/start.s
+        ;; 
         ;; startup code for partner at address 0x0000
 		;;
-		;; tomaz stih, mon apr 05 2021
-		.module crt0
+        ;; MIT License (see: LICENSE)
+        ;; copyright (c) 2021 tomaz stih
+        ;;
+		;; 05.04.2021    tstih
+		.module start
 
 
         .area   _RESET(ABS)

@@ -34,10 +34,11 @@ typedef struct block_s {
     uint8_t         data[1];
 } block_t;
 
-/* Mem top. */
-#define MEM_TOP     0xdc00
-
 /* Defined in crt0cpm.s */
 extern void heap;
+
+/* Mem top. By convention this is start of BDOS, retreived from
+the 0x0005 address (BDOS call) */
+extern uint16_t* mem_top;
 
 #endif /* __MEM_H__ */

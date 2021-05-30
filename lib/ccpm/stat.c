@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <io.h>
+#undef FILE /* Make sure you don't use stdio.h version */
+#include <fio.h>
 
 int stat(char *pathname, struct stat *buf)
 {

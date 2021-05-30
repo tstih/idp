@@ -14,15 +14,24 @@
 #include <gpx.h>
 
 extern void ef9367_put_pixel(int16_t x, int16_t y);
+extern void hal_hires_put_raster(
+    uint8_t *raster,
+    int16_t x, 
+    int16_t y, 
+    uint8_t width,
+    uint8_t height);
 
 /* the system font address */
 extern void system8x16_font;
 extern void dagger_font;
 extern void radon_font;
+extern void tut_bitmap;
 
 void wait() {
     while (!kbhit());
 }
+
+font_t *f;
 
 void main() {
 
@@ -37,7 +46,6 @@ void main() {
     /* initialize display */
     graphics_t* g = gpx_init();
 
-
     /* very slow non-optimized lines */
     for(int y=0;y<512;y+=16)
         for(int x=0;x<1024;x++)
@@ -48,7 +56,7 @@ void main() {
     /* full screen of text, raster non/optimized font */
     gpx_cls(g);
     char *lorem="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque laoreet imperdiet ligula, ac auctor magna mollis eu vestibulum";
-    font_t *f=(font_t *)&system8x16_font;
+    f=(font_t *)&system8x16_font;
     for (int yc=0;yc<32;yc++) gpx_draw_text(g,lorem,f,0,16*yc);
     wait();
 

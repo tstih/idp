@@ -13,6 +13,7 @@
         .globl	_ef9367_xy
         .globl  _ef9367_put_pixel
         .globl  _ef9367_put_raster
+        .globl  _ef9367_draw_line
 	    
 		.include "ef9367.inc"
 
@@ -109,6 +110,43 @@ _ef9367_put_pixel::
 		ret
 
 
+
+
+        ;; ---------------------------------------------------
+		;; void ef9367_draw_line(
+        ;;     int16_t x0, int16_t y0, int16_t x1, int16_t y1)
+        ;; ---------------------------------------------------
+        ;; draw fast line from x0, y0 to x1, y1
+        ;; input:	-
+		;; output:	-
+        ;; affect:  -
+_ef9367_draw_line::
+        ;; store ix to stack, we'll use it to access args.
+        push ix
+        ld ix,#4                        ; first arg.
+        add ix,sp
+
+        ;; get x0 and y0 to bc, de
+        ld c,(ix)
+        ld b,1(ix)
+        ld e,2(ix)
+        ld d,3(ix)
+        call ef9367_xy_dirty            ; first go to x,y
+
+        ;; if line is longer than 256 pixels we'll need to cut
+        ld l,6(ix)                      ; get y1
+        ld h,7(ix)
+        sbc hl,de                       ; hl=y1-y0
+        jr nc, hl_beq                   ; hl>=de
+
+hl_beq:
+        ;; restore regs
+        pop ix
+
+		ret
+
+
+
         ;; ------------------------------------------
 		;; void ef9367_put_raster(
         ;;     uint8_t *raster,
@@ -173,13 +211,13 @@ nextcol:
         djnz raster_col_loop
         ;; before looping make sure we don't destroy hl and a
         push af 
-        push hl
         ;; is there a remainder (stride?)
         ld a,c
-        cp #0
+        cp #8
         jr z, raster_newline
         inc hl
 raster_newline:
+        push hl
         ;; cursor to next line
         ld c,2(ix)                      ; bc=x
         ld b,3(ix)

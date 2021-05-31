@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = stdlib gpx
+SUBDIRS = stdlib gpx hal
 
 # Rules.
 .PHONY: all

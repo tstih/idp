@@ -10,6 +10,7 @@
 
         .equ    EF9367_HIRES_WIDTH,     1024
         .equ    EF9367_HIRES_HEIGHT,    512
+        .equ    EF9367_MAX_DELTA,       255
 
         ;; --- 0x20 - W: command, R:the status register -----------------------
         .equ    EF9367_STS,             0x20    ; status reg. (no interrupt reset)

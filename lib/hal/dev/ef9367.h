@@ -31,17 +31,24 @@ extern void ef9367_init();
 extern void ef9367_cls();
 
 /* goto x,y */
-extern void ef9367_xy(int16_t x, int16_t y);
+extern void ef9367_xy(uint16_t x, uint16_t y);
 
 /* put pixel at x,y */
-extern void ef9367_put_pixel(int16_t x, int16_t y);
+extern void ef9367_put_pixel(uint16_t x, uint16_t y);
 
 /* draw raw bitmap at x,y */
 extern void ef9367_put_raster(
     uint8_t *raster,
-    int16_t x, 
-    int16_t y, 
+    uint16_t x, 
+    uint16_t y, 
     uint8_t width,
     uint8_t height);
+
+/* fast line draw */
+extern void  ef9367_draw_line(
+    uint16_t x0, 
+    uint16_t y0, 
+    uint16_t x1,
+    uint16_t y1);
 
 #endif /* _EF9367_H */

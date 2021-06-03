@@ -14,6 +14,63 @@
  */
 #include "draw.h"
 
+
+
+void ef9367_put_raster(
+    uint8_t *raster,
+    uint8_t stride,
+    uint16_t x, 
+    uint16_t y, 
+    uint8_t width,
+    uint8_t height) {
+
+    initpen();
+
+    y=512-y; /* reverse axis */
+
+    while (height>0) {
+        
+        xy(x,y);
+        
+        /* next row, remember:reversed axis */
+        y--;
+
+        /* draw stride of bytes */
+        uint8_t bits=8;
+        for(uint8_t b=0;b<stride;b++) {
+            if (b==stride-1) /* last byte */
+                bits=width & 7; /* remainder bits */
+            /* paint bits */
+            uint8_t pattern=*raster;
+            for(uint8_t bit=0;bit<bits;bit++) {
+                if ((pattern&0x80)!=0) {
+                    __asm
+                        call ef9367_wait_sts_ready
+                    __endasm;
+                    EF9367_CMD=EF9367_CMD_SEL_PEN;
+                } else {
+                    __asm
+                        call ef9367_wait_sts_ready
+                    __endasm;
+                    EF9367_CMD=EF9367_CMD_SEL_ERS;
+                }
+                pattern<<=1;
+
+                __asm
+                call ef9367_wait_sts_ready
+                __endasm;            
+                EF9367_CMD=0b10100000;
+            }
+            raster++;
+        }
+
+        /* loop */
+        height--;
+    }
+}
+
+
+
 byte_t draw_pixel(graphics_t *d, coord_t x0, coord_t y0, byte_t mode)
 {
     gdp_setpixel(x0,y0);
@@ -45,7 +102,7 @@ void draw_line(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, by
     }
 }
 
-void draw_circle(graphics_t *d, coord_t x0, coord_t y0, coord_t radius, byte_t mode, byte_t pattern)
+void gpx_draw_circle(graphics_t *d, coord_t x0, coord_t y0, coord_t radius, byte_t mode)
 {
     int f = 1 - radius;
     int ddF_x = 1;

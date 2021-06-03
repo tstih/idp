@@ -13,64 +13,35 @@
 #include <stdio.h>
 #include <gpx.h>
 
-extern void ef9367_put_pixel(int16_t x, int16_t y);
-extern void hal_hires_put_raster(
-    uint8_t *raster,
-    int16_t x, 
-    int16_t y, 
-    uint8_t width,
-    uint8_t height);
-
-/* the system font address */
-extern void system8x16_font;
-extern void dagger_font;
-extern void radon_font;
-extern void tut_bitmap;
+extern uint8_t test();
+extern void ef9367_init();
+extern int ef9367_put_pixel(uint16_t x, uint16_t y, uint8_t mode);
 
 void wait() {
     while (!kbhit());
 }
 
-font_t *f;
-
 void main() {
+
+    ef9367_init();
 
     /* display warning */
     printf("WARNING: The screen will enter  graphics mode\n\r");
     printf("         There will be no text. Press any key\n\r");
-    printf("         to continue to the next experiment.\n\r\n\r");
+    printf("         to continue to the next experiment.\n\r");
+    printf("         You'll have to switch the computer\n\r");
+    printf("         off at the end. Sorry!\n\r\n\r");
     printf("Now press a key to start the first experiment.\n\r");
     wait();
 
 
-    /* initialize display */
-    graphics_t* g = gpx_init();
+    graphics_t *g=gpx_init();
 
-    /* very slow non-optimized lines */
-    for(int y=0;y<512;y+=16)
-        for(int x=0;x<1024;x++)
-                ef9367_put_pixel(x,y);
+    for (int i=0;i<200;i+=3)
+        gpx_draw_pixel(g, 500+i,200,DWM_SET|DWM_XOR);
+    for (int j=0;j<3;j++)
+        gpx_draw_circle(g,j*200,j*100,j*50,DWM_SET);
     wait();
 
-
-    /* full screen of text, raster non/optimized font */
-    gpx_cls(g);
-    char *lorem="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque laoreet imperdiet ligula, ac auctor magna mollis eu vestibulum";
-    f=(font_t *)&system8x16_font;
-    for (int yc=0;yc<32;yc++) gpx_draw_text(g,lorem,f,0,16*yc);
-    wait();
-
-
-    /* the 3 font demo */
-    gpx_cls(g);
-    gpx_draw_text(g,"This is our system font.",f,20,30);
-    f=(font_t *)&radon_font;
-    gpx_draw_text(g,"This is our radon font for sci-fi games.",f,30,60);
-    f=(font_t *)&dagger_font;
-    gpx_draw_text(g,"This is our dagger font for text adventures.",f,30,90);
-
-    wait();
-
-    /* exit graphics mode */
     gpx_exit(g);
 }

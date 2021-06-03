@@ -30,12 +30,21 @@ extern void hal_hires_info(int *w, int *h);
 /* Clears hires screen. */
 extern void hal_hires_cls();
 
+/* Draw a pixel. This is very slow. Use only if no other option. */
+extern void hal_hires_set_pixel(int x, int y, uint8_t mode);
+
 /* Put raster on screen */
-void hal_hires_put_raster(
+extern void hal_hires_put_raster(
     uint8_t *raster,
+    uint8_t stride,
     int16_t x, 
     int16_t y, 
     uint8_t width,
-    uint8_t height);
+    uint8_t height,
+    uint8_t mode);
+
+/* Draw fassst line */
+extern void hal_hires_line(
+    int x0, int y0, int x1, int y1, uint8_t mode, uint8_t mask);
 
 #endif /* __HAL_H__ */

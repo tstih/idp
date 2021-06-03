@@ -8,9 +8,16 @@
 		;; 04.04.2021   tstih
 
 
+        ;; --- limits ---------------------------------------------------------
         .equ    EF9367_HIRES_WIDTH,     1024
         .equ    EF9367_HIRES_HEIGHT,    512
         .equ    EF9367_MAX_DELTA,       255
+
+        ;; --- drawing modes --------------------------------------------------
+        .equ    EF9367_DWM_CLR,         0
+        .equ    EF9367_DWM_SET,         1
+        .equ    EF9367_DWM_XOR,         2
+
 
         ;; --- 0x20 - W: command, R:the status register -----------------------
         .equ    EF9367_STS,             0x20    ; status reg. (no interrupt reset)
@@ -24,10 +31,10 @@
         .equ    EF9367_STS_IRQ,         0x80    ; IRQ
 
 		.equ	EF9367_CMD,             0x20    ; command register (W)
-        .equ    EF9367_CMD_SEL_PEN,     0x00    ; select pen (set bit 1 of CR1)
-        .equ    EF9367_CMD_SEL_ERS,     0x01    ; select eraser (clr bit 1 of CR1)
-        .equ    EF9367_CMD_SEL_DOWN,    0x02    ; pen/eraser down
-        .equ    EF9367_CMD_SEL_UP,      0x03    ; pen/eraser up
+        .equ    EF9367_CMD_DMOD_SET,    0x00    ; select pen (set bit 1 of CR1)
+        .equ    EF9367_CMD_DMOD_CLR,    0x01    ; select eraser (clr bit 1 of CR1)
+        .equ    EF9367_CMD_PEN_DOWN,    0x02    ; pen/eraser down
+        .equ    EF9367_CMD_PEN_UP,      0x03    ; pen/eraser up
         .equ    EF9367_CMD_CLS,         0x04    ; clear screen
         .equ    EF9367_CMD_00,          0x05    ; x=y=0
         .equ    EF9367_CMD_CLS00,       0x06    ; clear screen, x=y=0
@@ -44,8 +51,8 @@
 
         ;; --- 0x21 - RW: control register, bit 7 is reserved (always 0) ------
         .equ    EF9367_CR1,             0x21
-        .equ    EF9367_CR1_PENDOWN,     0x01    ; 1 pen down, 0 pen up
-        .equ    EF9367_CR1_PEN,         0x02    ; 1 pen, 0 eraser
+        .equ    EF9367_CR1_PEN_DOWN,    0x01    ; 1 pen down, 0 pen up
+        .equ    EF9367_CR1_DMOD_TST,    0x02    ; 1 pen, 0 eraser
         .equ    EF9367_CR1_WO,          0x04    ; 1 write only
         .equ    EF9367_CR1_CYCLIC,      0x08    ; cyclic screen if pen out...
         .equ    EF9367_CR1_LPEN_ENBLE,  0x10    ; enable light pen irq
@@ -105,7 +112,7 @@
         .equ    PIO_GR_CMN,             0x30
         .equ    PIO_GR_CMN_DISP_PG,     0x01    ; display page of memory
         .equ    PIO_GR_CMN_WR_PG,       0x02    ; write page of memory
-        .equ    PIO_GR_CMN_WR_MODE,     0x04    ; write mode (xor/nor)
+        .equ    PIO_GR_CMN_XOR_MODE,    0x04    ; write mode (xor)
         ;; bits 3-4 are resolution
         .equ    PIO_GR_CMN_1024x512,    0x18    ; hires        
         .equ    PIO_GR_CMN_EF9367I,     0x20    ; RO:EF9367 interrupt 

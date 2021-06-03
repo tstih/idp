@@ -13,7 +13,10 @@
  * 07.10.2013   tstih
  *
  */
-#include <rect.h>
+#include <gpx.h>
+
+#define MAX(a,b) (a>b?a:b)
+#define MIN(a,b) (a<b?a:b)
 
 bool rect_contains(rect_t *r, coord x, coord y) {
 	return (r->x0 <= x && r->x1 >= x && r->y0 <= y && r->y1 >=y );

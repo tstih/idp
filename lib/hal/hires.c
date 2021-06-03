@@ -9,8 +9,12 @@
  * 04.04.2021   tstih
  * 
  */
+#ifdef __PARTNER__
+#include "dev/ef9367.h"
+#include "dev/scn2674.h"
+#endif /* __PARTNER__ */
 #include <yos.h>
-#include <hires.h>
+#include <gpx.h>
 
 void hal_hires_init() {
 #ifdef __PARTNER__
@@ -47,15 +51,30 @@ void hal_hires_cls() {
 #endif /* __PARTNER__ */
 }
 
+void hal_hires_set_pixel(int x, int y, uint8_t mode) {
+#ifdef __PARTNER__
+     ef9367_put_pixel(x, y, mode);
+#endif /* __PARTNER__ */
+}
+
+void hal_hires_line(int x0, int y0, int x1, int y1, uint8_t mode, uint8_t mask) {
+#ifdef __PARTNER__
+     ef9367_draw_line(x0, y0, x1, y1, mode, mask);
+#endif /* __PARTNER__ */
+}
+
+/* TODO: handle stride */
 void hal_hires_put_raster(
     uint8_t *raster,
+    uint8_t stride,
     int16_t x, 
     int16_t y, 
     uint8_t width,
-    uint8_t height)
+    uint8_t height,
+    uint8_t mode)
 {
 #ifdef __PARTNER__
     /* draw raw bitmap at x,y */
-    ef9367_put_raster(raster, x, y, width, height);
+    ef9367_put_raster(raster, stride, x, y, width, height, mode);
 #endif
 }

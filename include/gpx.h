@@ -73,10 +73,15 @@ typedef struct graphics_s {
 #define TPV_MOVE            0x10        /* just move */
 
 /* drawing mode */
-#define DWM_SET             0x00
-#define DWM_RESET           0x00
+#define DWM_RESET           0
+#define DWM_SET             1
+#define DWM_XOR             2
 
-
+/* official list masks (will work fast!) */
+#define DMSK_SOLID          0xff
+#define DMSK_DOTTED         0xaa
+#define DMSK_DASHED         0xee
+#define DMSK_DOT_DASH       0xe4
 
 typedef struct gpy_generation_s {
     unsigned int gcls:3;                /* glyph class */
@@ -107,7 +112,7 @@ typedef struct font_s {
 
 
 /*
- * drawing functions
+ * initialization and screen functions
  */
 
 /* initialize the graphics system */
@@ -119,7 +124,67 @@ extern void gpx_exit(graphics_t* g);
 /* clear screen */
 extern void gpx_cls(graphics_t *g);
 
+
+/*
+ * drawing functions
+ */
+
+/* Draw single pixel 
+   TODO: implement mode - SET, RESET, or XOR ... currently it is ignored
+*/
+extern void gpx_draw_pixel(graphics_t *g, coord x, coord y, uint8_t mode);
+
 /* draw text on screen */
-extern void gpx_draw_text(graphics_t* g, char *s, font_t *font, coord x, coord y); 
+extern void gpx_draw_text(
+    graphics_t* g, 
+    char *s, 
+    font_t *font, 
+    coord x, 
+    coord y,
+    uint8_t mode); 
+
+/* draw fast line */
+extern void gpx_draw_line(
+    graphics_t *h, 
+    coord x0, 
+    coord y0, 
+    coord x1, 
+    coord y1, 
+    uint8_t mode,
+    uint8_t mask);
+
+/* draw slow circle */
+extern void gpx_draw_circle(
+    graphics_t *d, 
+    coord x0, 
+    coord y0, 
+    coord radius, 
+    uint8_t mode);
+
+/*
+ * rectangle management functions
+ */
+
+/* Does rectangle contains point? */
+extern bool rect_contains(rect_t *r, coord x, coord y);
+
+/* Do rectangles overlap? */
+extern bool rect_overlap(rect_t *a, rect_t *b);
+
+/* Inflate coordinates by dx and dy */
+extern rect_t* rect_inflate(rect_t* rect, coord dx, coord dy);
+
+/* Get intersect rectangle. */
+extern rect_t* rect_intersect(rect_t *a, rect_t *b, rect_t *intersect);
+
+/* Convert relative to absolute coordinates for parent and child rectangle. */
+extern rect_t* rect_rel2abs(rect_t* abs, rect_t* rel, rect_t* out);
+
+/* Subtract rectangles and return what's left. */
+extern void rect_subtract(rect_t *outer, rect_t *inner, rect_t *result,	uint8_t *num);
+
+/* Offset rectangle. */
+extern void rect_delta_offset(rect_t *rect, 
+    coord oldx, coord newx, coord oldy, coord newy, coord size_only);
 
 #endif /* __GPX_H__ */

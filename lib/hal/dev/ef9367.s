@@ -24,20 +24,10 @@
 
         .area	_CODE
 
-
         
         ;; TODO: proxy function for tests
 _test::
-        ld hl,#100
-        push hl
-        ld hl,#200
-        push hl
-        call _ef9367_xy
         ret
-
-        jp draw_delta_line
-
-
 
 
         ;; ------------------
@@ -175,50 +165,52 @@ _ef9367_draw_line::
         push hl                         ; store y1.
         sbc hl,de                       ; hl=y1-y0-c (C=0)
         ;; note: partner has reverse y axis
-        jr c, negative_dy               ; y1<y0, no change to delta sign
+        jr c, dli_negat_dy              ; y1<y0, no change to delta sign
         pop de                          ; clean the stack (remove y1)
         ;; set flag (remember, reverse y axis!)
         or #4                           ; set flag (bit 2 of a)
-        jr calc_dy_done                 ; we're done 
-negative_dy:
+        jr dli_dy_done                  ; we're done 
+dli_negat_dy:
         pop hl                          ; hl=y1 (again)
         ex de,hl                        ; reverese equation
         sbc hl,de                       ; and make result positive
         inc hl                          ; +1
-calc_dy_done:
-        push hl                         ; abs(y1-y0) to stack
+dli_dy_done:
+        ex de,hl                         ; de=abs(y1-y0)
         ;; start dx calculation
         ld c,(ix)                       ; bc=x0
         ld b,1(ix)
         ld l,4(ix)                      ; hl=x1
         ld h,5(ix)
+        pop ix                          ; restore ix forever to cln. stack
+        push de                         ; store abs(y1-y0) to stack
         push hl                         ; store the x1 
         sbc hl,bc                       ; hl=x1-x0
-        jr nc,positive_dx               ; x1>=x0, sign 0 is ok    
+        jr nc,dli_posit_dx              ; x1>=x0, sign 0 is ok    
         or #2                           ; set bit 1 of delta to -, C=0
         pop de                          ; de=x1       
         push bc                         ; bc to hl
         pop hl                          ; hl=x0
         sbc hl,de                       ; hl=abs(x0-x1)
-        jr calc_dx_done    
-positive_dx:
+        jr dli_dx_done    
+dli_posit_dx:
         pop de                          ; clean the stack (remove x1)
-calc_dx_done:
+dli_dx_done:
         ;; hl = abs(x1-x0) and abs(y1-y0) is already on stack
-        pop de
+        pop de                          ; de=abs(y1-y0)
         ;; but push back for later
         push de
         push hl                         ; both distances to stack
         ;; now find longer to find out how many lines 
         ;; hl=dx, de=dy
         sbc hl,de
-        jr c,dy_longer
+        jr c,dli_dy_longer
         pop hl                          ; hl is the longer one
         push hl                         ; put it back
-        jr gen_lines
-dy_longer:
+        jr dli_draw_lines
+dli_dy_longer:
         ex de,hl                        ; move longer one to hl
-gen_lines:
+dli_draw_lines:
         ;; store longer one to stack
         push hl
         ;; set mode
@@ -226,57 +218,83 @@ gen_lines:
         ld b,8(ix)                      ; mode to b
         call ef9367_set_dmode
         pop af                          ; restore draw command
-        ;; find out how many delta lines are required?
-        ld de,#2*(EF9367_MAX_DELTA+1)
-        sbc hl,de                       ; test against hl...
-        jr nc,four_lines                ; de>=limit
-        pop hl
+        ;; start the recursion. there are four parameters
+        ;; on stack (in the pop order): longest coordinate, 
+        ;; abs(dx), abs(dy), and return
+dli_recursion:
+        pop hl                          ; get longest coordinate
+        push hl                         ; and store to stack for consistency
+        ld de,#EF9367_MAX_DELTA         ; max line we can draw
+        or a                            ; clear carry flag
+        sbc hl,de                       ; commpare
+        jr c, dli_draw_delta            ; end of recursion
+        ;; we can't draw this
+        ;; find mid point and divide 
+        ;; the line to two lines        ;
+        exx                             ; we'll need more registers
+        pop de                          ; get longest coordinate into de
+        push de
+        pop hl                          ; AND into hl
+        srl d                           ; de=long. coord/2
+        rr e
+        sbc hl,de                       ; hl=clong. oord-de (/2 for odd numbers!)
+        exx
+        ;; do the same for dx with std. register sets
+        pop de                          ; de=dx
+        push de
+        pop hl                          ; AND into hl
+        srl d                           ; de=dx/2
+        rr e
+        sbc hl,de                       ; hl=dx-de (/2 for odd numbers!)
+        ;; and, finally, for dy use bc and bc' as storage!
+        pop bc                          ; bc=dy
+        push bc                         ; store back
+        push hl                         ; store hl...
+        exx 
+        pop bc                          ; ...into alt bc
+        exx
+        pop hl                          ; hl=(also) dy
+        srl b                           ; bc=dy/2
+        rr c
+        sbc hl,bc                       ; hl=dy-dy/2
+        ;; we have it all!
+        ;; only return address left on staqck at this point, leave it!
+        ;; nicely put halved args back to stack in reverse order, longer first!
+        push hl                         ; dy2
+        exx
+        push bc                         ; dx2
+        push hl                         ; longer coord. 2
+        exx
+        ;; now the shorter line
+        ld hl,#dli_recursion            ; restart the recursion upon return
         push hl
-        ld de,#EF9367_MAX_DELTA         ; test delta
-        sbc hl,de                       
-        jr nc,two_lines
-one_line:
-        pop hl                          ; clean stack
+        push bc                         ; dy1
+        push de                         ; dx1
+        exx
+        push de                         ; shorter longest coord.
+        exx
+        jr dli_recursion
+
+dli_draw_delta:
+        pop hl                          ; longest coord. ... discharge it
         pop hl                          ; hl=dx
         pop de                          ; de=dy
         ld b,l                          ; b=dx
-        ld c,e                          ; c=dy                  
-        call draw_delta_line            ; and draw it...
-        jr finalize
-two_lines:
-        jr finalize
-four_lines:
-
-finalize:
-        ;; restore regs
-        pop ix
-		ret
-
-
+        ld c,e                          ; c=dy 
         ;; superfast line drawing (delta method)
-        ;; the routine assumes that the cursor is at 
-        ;; the right position, because sign is separated
-        ;; from the byte delta number, max delta can be
-        ;; from -255 to 255.
-        ;; input:	b=delta x
-        ;;          c=delta y
-        ;;          a=bit 0 sign for x, bit 1 sign for y
-		;; output:	
-        ;; affect:  -
-draw_delta_line:
-        push af
-ddl_wait_sts:
+        push af                         ; store command
+dli_wait_gdp:
         ;; wait for GDP
         in a,(#EF9367_STS)
         and #EF9367_STS_READY
-        jr z,ddl_wait_sts
+        jr z,dli_wait_gdp
         ;; set deltas!
         ld a,b
         out (#EF9367_DX),a
         ld a,c
         out (#EF9367_DY),a
         pop af
-        ;; command is already in a
+        ;; command is in a
         call ef9367_cmd
         ret
 

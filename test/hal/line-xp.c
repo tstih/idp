@@ -15,11 +15,8 @@
 
 #include <gpx.h>
 
-extern int test();
 extern void ef9367_init();
 extern void ef9367_cls();
-
-/* fast line draw */
 extern int16_t  ef9367_draw_line(
     uint16_t x0, 
     uint16_t y0, 
@@ -28,15 +25,10 @@ extern int16_t  ef9367_draw_line(
     uint8_t mode,
     uint8_t mask);  
 
-void wait() {
-    while (!kbhit());
-}
-
-int diff;
-
 void main() {
 
     ef9367_init();
-
-    printf("%d\n\r",ef9367_draw_line(0,0,200,100,DWM_SET,DMSK_SOLID));
+    ef9367_cls();
+    for(int i=1;i<511;i++)
+        ef9367_draw_line(0,i,i,i,DWM_SET,DMSK_SOLID);
 }

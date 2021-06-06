@@ -54,16 +54,16 @@ clean:
 	rm -f diskdefs
 
 .PHONY: install
-install: floppy $(COM) bin after
+install: floppy $(COM) bin hfe after
 
 .PHONY: ccp
-ccp: floppy-ccp $(COM) bin after
+ccp: floppy-ccp $(COM) bin hfe after
 
 .PHONY: boot
-boot: floppy-boot $(COM) bin after
+boot: floppy-boot $(COM) bin hfe after
 
 .PHONY: bootg
-bootg: floppy-bootg $(COM) bin after
+bootg: floppy-bootg $(COM) bin hfe after
 
 .PHONY: floppy
 floppy:
@@ -85,6 +85,10 @@ floppy-boot:
 floppy-bootg:
 	cp $(ROOT)/scripts/diskdefs .
 	cp $(SCR_DIR)/bootg.img $(BUILD_DIR)/fddb.img
+
+.PHONY: hfe
+hfe:
+	-hxcfe -uselayout:IDP -conv:HXC_HFE -finput:$(BUILD_DIR)/fddb.img -foutput:$(BUILD_DIR)/fddb.hfe
 
 # Make .COM files (for CP/M).
 .PHONY: $(COM)

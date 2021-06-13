@@ -58,6 +58,33 @@ namespace Idp.Gpx.Common.Utils
 
         #region Method(s)
 
+        public Bitmap QuantDither(Color[] reduced)
+        {
+            Bitmap result = new Bitmap(_bmp.Width, _bmp.Height);
+            for (int y = 0; y < _bmp.Height; y++)
+                for (int x = 0; x < _bmp.Width; x++)
+                {
+                    Color originalPixel = _bmp.GetPixel(x, y);
+                    Color transformedPixel = ToClosest(originalPixel, reduced);
+
+                    // Calculate error.
+                    int redError = originalPixel.R - transformedPixel.R;
+                    int blueError = originalPixel.G - transformedPixel.G;
+                    int greenError = originalPixel.B - transformedPixel.B;
+
+                    // Transfer error to surrounding pixels.
+                    TransferError(_bmp, x + 1, y, 7.0f / 16.0f, redError, blueError, greenError);
+                    TransferError(_bmp, x + 1, y + 1, 1.0f / 16.0f, redError, blueError, greenError);
+                    TransferError(_bmp, x, y + 1, 5.0f / 16.0f, redError, blueError, greenError);
+                    TransferError(_bmp, x - 1, y + 1, 3.0f / 16.0f, redError, blueError, greenError);
+
+                    result.SetPixel(x, y, transformedPixel);
+                }
+
+            return result;
+        }
+
+
         public byte[] ToTiny(ref byte maxw)
         {
             // Get all pixels from image.
@@ -618,9 +645,52 @@ namespace Idp.Gpx.Common.Utils
             return bits;
         }
 
+        public byte[] ToBytes()
+        {
+            BitArray bits=ToBits();
+            byte[] ret = new byte[(bits.Length - 1) / 8 + 1];
+            bits.CopyTo(ret, 0);
+            return ret;
+        }
+
         #endregion // Method(s)
 
         #region Helper(s)
+
+        private static void TransferError(
+             Bitmap bmp,
+             int x,
+             int y,
+             float factor,
+             int rerr,
+             int berr,
+             int gerr)
+        {
+            if (x < 0 || x >= bmp.Width) return;
+            if (y < 0 || y >= bmp.Height) return;
+
+            Color orig = bmp.GetPixel(x, y);
+
+            float newRed = orig.R + factor * rerr;
+            if (newRed > 255) newRed = 255;
+            if (newRed < 0) newRed = 0;
+
+            float newGreen = orig.G + factor * gerr;
+            if (newGreen > 255) newGreen = 255;
+            if (newGreen < 0) newGreen = 0;
+
+            float newBlue = orig.B + factor * berr;
+            if (newBlue > 255) newBlue = 255;
+            if (newBlue < 0) newBlue = 0;
+
+            Color newColor = Color.FromArgb(
+                        (int)Math.Round(newRed),
+                        (int)Math.Round(newBlue),
+                        (int)Math.Round(newGreen));
+
+            bmp.SetPixel(x, y, newColor);
+        }
+
 
         /// <summary>
         /// Douglases the peucker reduction.
@@ -827,6 +897,30 @@ namespace Idp.Gpx.Common.Utils
             var temp = a;
             a = b;
             b = temp;
+        }
+
+        private Color ToClosest(Color c, Color[] reduced)
+        {
+            double minDistance = ColorDistance(c, reduced[0]);
+            Color result = reduced[0];
+            foreach (Color r in reduced)
+            {
+                if (ColorDistance(c, r) < minDistance)
+                {
+                    minDistance = ColorDistance(c, r);
+                    result = r;
+                }
+            }
+            return result;
+        }
+
+        private double ColorDistance(Color c1, Color c2)
+        {
+            return Math.Sqrt(
+                    Math.Pow(c1.R - c2.R, 2)
+                    + Math.Pow(c1.G - c2.G, 2)
+                    + Math.Pow(c1.B - c2.B, 2)
+                );
         }
         #endregion // Helper(s)
     }

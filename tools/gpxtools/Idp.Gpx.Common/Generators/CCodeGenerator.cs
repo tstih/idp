@@ -34,26 +34,27 @@ namespace Idp.Gpx.Common.Generators
         #endregion // Ctor
 
         #region Method(s)
-        public CCodeGenerator AddHeader(string name, string desc = null, string ext = ".c", string shortAuthor = null, string fullAuthor = null, string notes = null)
+        public CCodeGenerator AddHeader(string name, string desc = null, string ext = ".c", string shortAuthor = null, string fullAuthor = null, string notes = null, bool cpp=false)
         {
-            NextLine("/*");
-            _sb.AppendFormat(" * {0}{1}{2}", name, ext, Environment.NewLine);
-            NextLine(" *");
-            _sb.AppendFormat(" * {0}{1}", string.IsNullOrEmpty(desc) ? name : desc, Environment.NewLine);
-            NextLine(" *");
+            string prefix = cpp ? "//" : " *";
+            NextLine(cpp?"//":"/*");
+            _sb.AppendFormat(prefix+" {0}{1}{2}", name, ext, Environment.NewLine);
+            NextLine(cpp?"//":" *");
+            _sb.AppendFormat(prefix+" {0}{1}", string.IsNullOrEmpty(desc) ? name : desc, Environment.NewLine);
+            NextLine(cpp?"//":" *");
             if (!string.IsNullOrEmpty(fullAuthor))
             {
-                NextLine(" * MIT License (see: LICENSE)");
-                _sb.AppendFormat(" * Copyright (c) 2021 {0}{1}", fullAuthor, Environment.NewLine);
+                NextLine(prefix+" MIT License (see: LICENSE)");
+                _sb.AppendFormat(prefix+" Copyright (c) 2021 {0}{1}", fullAuthor, Environment.NewLine);
             }
-            NextLine(" *");
+            NextLine(cpp?"//":" *");
             if (!string.IsNullOrEmpty(shortAuthor))
             {
-                string authLine = string.Format(" * {0}", DateTime.Now.ToString("dd.MM.yyyy"));
+                string authLine = string.Format(prefix+" {0}", DateTime.Now.ToString("dd.MM.yyyy"));
                 _sb.AppendFormat("{0}{1}{2}", PadTabs(authLine, 4), shortAuthor, Environment.NewLine);
-                NextLine(" *");
+                NextLine(cpp?"//":" *");
             }
-            NextLine(" */");
+            NextLine(cpp?"//":" */");
 
             // Be fluent.
             return this;
@@ -93,9 +94,12 @@ namespace Idp.Gpx.Common.Generators
             return this;
         }
 
-        public CCodeGenerator CommentOnly(string text, int tabs=1)
+        public CCodeGenerator CommentOnly(string text, int tabs=1, bool cpp=false)
         {
-            _sb.AppendFormat("{0}/* {1} */{2}", Tabs(tabs), text, Environment.NewLine);
+            if (!cpp)
+                _sb.AppendFormat("{0}/* {1} */{2}", Tabs(tabs), text, Environment.NewLine);
+            else
+                _sb.AppendFormat("{0}// {1}{2}", Tabs(tabs), text, Environment.NewLine);
             return this;
         }
 
@@ -159,7 +163,7 @@ namespace Idp.Gpx.Common.Generators
         public CCodeGenerator ArrayAsBytes(
             byte[] array, 
             int bytesPerRow, 
-            string[] comments, 
+            string[] comments = null, 
             bool firstRow = false, 
             int tabs = 1, 
             int commentTabs=14)
@@ -190,8 +194,9 @@ namespace Idp.Gpx.Common.Generators
                 string line = string.Format("{0}{1}", Tabs(tabs), rsb.ToString());
 
                 // Do we need to attach a comment to this row?
-                if (row < comments.Length || !string.IsNullOrEmpty(comments[row]))
-                    line = string.Format("{0}/* {1} */", PadTabs(line, commentTabs),comments[row]);
+                if (comments!=null)
+                    if (row < comments.Length || !string.IsNullOrEmpty(comments[row]))
+                        line = string.Format("{0}/* {1} */", PadTabs(line, commentTabs),comments[row]);
 
                 // Now appaend as line.
                 NextLine(line);

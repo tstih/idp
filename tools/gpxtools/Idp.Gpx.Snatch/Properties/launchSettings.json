@@ -2,7 +2,7 @@
   "profiles": {
     "Idp.Gpx.Snatch": {
       "commandName": "Project",
-      "commandLineArgs": "array -f fonts\\B42.png -first 32 -last 127 -o zx6x8 -format asm -gw 6 -gh 8 -tiny -proportional -ew 3"
+      "commandLineArgs": "array -f fonts\\dagger.gif -first 0 -last 127 -o dagger -format grid -l 3 -t 3 -gw 9 -gh 14"
     }
   }
 }

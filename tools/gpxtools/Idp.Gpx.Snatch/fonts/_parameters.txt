@@ -3,3 +3,5 @@
 B42.png:                array -f fonts\B42.png -first 32 -last 127 -o zx6x8 -format grid -gw 6 -gh 8
 Xwindows_8x12.png:      array -f fonts\Xwindows_8x12.png -first 0 -last 127 -o xwin8x12 -format grid -gw 8 -gh 12
 dagger.gif:             array -f fonts\dagger.gif -first 0 -last 127 -o dagger -format grid -l 3 -t 3 -gw 9 -gh 14
+8x16_z1.png:            array -f fonts\8x16_z1.png -first 32 -last 127 -o idp8x16 -format grid -gw 8 -gh 16
+radon.gif:              array -f fonts\radon.gif -first 32 -last 127 -t 2 -l 3 -o radon -format grid -gw 8 -gh 12

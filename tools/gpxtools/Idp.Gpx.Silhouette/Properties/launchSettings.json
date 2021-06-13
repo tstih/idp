@@ -2,7 +2,7 @@
   "profiles": {
     "Idp.Gpx.Silhouette": {
       "commandName": "Project",
-      "commandLineArgs": "animate -f gif\\puma.gif -o puma -outline -th 2"
+      "commandLineArgs": "animate -f gif\\puma.gif -o puma -outline -th 1"
     }
   }
 }

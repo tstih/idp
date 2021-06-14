@@ -13,8 +13,7 @@
 #include "dev/ef9367.h"
 #include "dev/scn2674.h"
 #endif /* __PARTNER__ */
-#include <yos.h>
-#include <gpx.h>
+#include <hal.h>
 
 void hal_hires_init() {
 #ifdef __PARTNER__

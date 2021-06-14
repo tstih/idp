@@ -145,7 +145,7 @@ extern void gpx_draw_text(
 
 /* draw fast line */
 extern void gpx_draw_line(
-    graphics_t *h, 
+    graphics_t *g, 
     coord x0, 
     coord y0, 
     coord x1, 
@@ -155,7 +155,7 @@ extern void gpx_draw_line(
 
 /* draw slow circle */
 extern void gpx_draw_circle(
-    graphics_t *d, 
+    graphics_t *g, 
     coord x0, 
     coord y0, 
     coord radius, 

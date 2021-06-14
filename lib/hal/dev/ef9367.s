@@ -160,6 +160,7 @@ _ef9367_draw_line::
         ld d,3(ix)
         ;; find delta signs and mex line len
         ld a,#0x11                      ; a will hold the deltas
+        or a                            ; clear carry flag
         ld l,6(ix)                      ; hl=y1
         ld h,7(ix)
         push hl                         ; store y1.
@@ -174,7 +175,7 @@ dli_negat_dy:
         pop hl                          ; hl=y1 (again)
         ex de,hl                        ; reverese equation
         sbc hl,de                       ; and make result positive
-        inc hl                          ; +1
+        inc hl                          ; +1, because of carry
 dli_dy_done:
         ex de,hl                         ; de=abs(y1-y0)
         ;; start dx calculation
@@ -185,6 +186,7 @@ dli_dy_done:
         pop ix                          ; restore ix forever to cln. stack
         push de                         ; store abs(y1-y0) to stack
         push hl                         ; store the x1 
+        or a                            ; clear carry flag
         sbc hl,bc                       ; hl=x1-x0
         jr nc,dli_posit_dx              ; x1>=x0, sign 0 is ok    
         or #2                           ; set bit 1 of delta to -, C=0
@@ -203,6 +205,7 @@ dli_dx_done:
         push hl                         ; both distances to stack
         ;; now find longer to find out how many lines 
         ;; hl=dx, de=dy
+        or a                            ; clear carry
         sbc hl,de
         jr c,dli_dy_longer
         pop hl                          ; hl is the longer one
@@ -237,6 +240,7 @@ dli_recursion:
         pop hl                          ; AND into hl
         srl d                           ; de=long. coord/2
         rr e
+        or a                            ; clear carry
         sbc hl,de                       ; hl=clong. oord-de (/2 for odd numbers!)
         exx
         ;; do the same for dx with std. register sets
@@ -245,6 +249,7 @@ dli_recursion:
         pop hl                          ; AND into hl
         srl d                           ; de=dx/2
         rr e
+        or a                            ; clear carry
         sbc hl,de                       ; hl=dx-de (/2 for odd numbers!)
         ;; and, finally, for dy use bc and bc' as storage!
         pop bc                          ; bc=dy
@@ -256,6 +261,7 @@ dli_recursion:
         pop hl                          ; hl=(also) dy
         srl b                           ; bc=dy/2
         rr c
+        or a                            ; clear carry
         sbc hl,bc                       ; hl=dy-dy/2
         ;; we have it all!
         ;; only return address left on staqck at this point, leave it!
@@ -291,6 +297,11 @@ dli_wait_gdp:
         ;; set deltas!
         ld a,b
         out (#EF9367_DX),a
+dli_wait_gdp2:
+        ;; wait for GDP
+        in a,(#EF9367_STS)
+        and #EF9367_STS_READY
+        jr z,dli_wait_gdp2
         ld a,c
         out (#EF9367_DY),a
         pop af
@@ -319,12 +330,10 @@ cmd_wait_sts:
         ;;  1   ... set
         ;;  2   ... xor (or with clr or set)
         ;; input:   b = mode
-        ;; affect:  af, hl, bc, byte@sdm_cache
+        ;; affects: af, hl, bc, byte@sdm_cache
 ef9367_set_dmode:
         ;; wait for GDP
-        in a,(#EF9367_STS)              ; read the status register
-        and #EF9367_STS_READY           ; get ready flag
-        jr z,ef9367_set_dmode
+        call wait_for_gdp
         ;; ready!
         ld a,(#sdm_cache)               ; get cached value
         cp b                            ; compare to current mode
@@ -359,6 +368,17 @@ sdm_done:
         ;; now put pen down (default!)
         ld a,#EF9367_CMD_PEN_DOWN
         call ef9367_cmd
-		ret
+        ret
 sdm_cache:
         .db 0xff                        ; default mode is undefined (0xff)
+
+
+        ;; wait for the GDP to finish 
+        ;; previous operation
+        ;; affects: a
+wait_for_gdp:
+        ;; make sure GDP is free
+        in a,(#EF9367_STS)              ; read the status register
+        and #EF9367_STS_READY           ; get ready flag
+        jr z,wait_for_gdp
+        ret

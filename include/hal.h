@@ -13,7 +13,7 @@
 #ifndef __HAL_H__
 #define __HAL_H__
 
-#include <yos.h>
+#include <stdint.h>
 
 /* Initialize graphics mode. This function resets the resolution
 to max resolution, switches off text mode (Partner only), and

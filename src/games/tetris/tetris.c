@@ -29,9 +29,9 @@ void stateInit() {
 	steps = 0;
 	score = 0;
 	fullLines = 0;
-	time(&timer);
+	timer = clock();
 	timeLeft = 0;
-	srand(time(NULL));
+	srand(clock());
 	for (int i = 0; i < 7; i++) { 
 		stats[i] = 0; 
 	}
@@ -40,22 +40,29 @@ void stateInit() {
 // key
 
 key getKey() {
-	if (!kbhit()) { return KEY_NONE; }
-	byte key = getch();
+	char key;
+	if (!(key = kbhit())) { return KEY_NONE; }
 	switch (key) {
 	case 'a':
+	case 'A':
 		return KEY_LEFT;
 	case 'd':
+	case 'D':
 		return KEY_RIGHT;
 	case 'w':
+	case 'W':
 		return KEY_ROTATE;
-	case 's': 
+	case 's':
+	case 'S': 
 		return KEY_DROP;
 	case 'r':
+	case 'R':
 		return KEY_RESTART;
 	case 'p':
+	case 'P':
 		return KEY_PAUSE;
 	case 'n':
+	case 'N':
 		return KEY_SHOW_NEXT;
 	case '+':
 		return KEY_SPEED_UP;
@@ -204,10 +211,10 @@ void renderClearBlock() {
 }
 
 void renderBlock() {
-	for (sbyte r = (sbyte)-1; r < 4; r++) {
+	for (sbyte r = -1; r < 4; r++) {
 		if (blockPosY + r >= 0 && blockPosY + r < 20) {
 			uint16_t addr = avdc_get_pointer(blockPosY + r, 30 + ((blockPosX - 1) < 0 ? 0 : (blockPosX - 1)));
-			for (sbyte c = (sbyte)-1; c < 5; c++) {
+			for (sbyte c = -1; c < 5; c++) {
 				if (blockPosX + c >= 0 && blockPosX + c < 10) {
 					if (c < 0 || c > 3 || r < 0 || r > 3) {
 						avdc_write_at_pointer(addr++, playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
@@ -227,19 +234,19 @@ void renderBlock() {
 void renderStats() {
 	for (byte i = 0; i < 7; i++) {
 		sprintf(buffer, "%d", stats[i]);
-		avdc_write_str_at_position(6 + 1, 0, buffer, NULL);
+		avdc_write_str_at_position(6 + i, 0, buffer, NULL);
 	}
 }
 
 // block
 
 void blockInit() {
-	blockType = (sbyte)-1;
+	blockType = -1;
 	blockRot = 0;
 	blockPosX = 3;
-	blockPosY = (sbyte)-1;
+	blockPosY = -1;
 
-	nextBlockType = (sbyte)-1;
+	nextBlockType = -1;
 }
 
 bool blockMoveLeft() {
@@ -303,13 +310,13 @@ bool blockDrop() {
 }
 
 bool blockNext() {
-	if (nextBlockType == (sbyte)-1) {
+	if (nextBlockType == -1) {
 		nextBlockType = rand() % 7;
 	}
 	blockType = nextBlockType;
 	blockRot = 0;
 	blockPosX = 3;
-	blockPosY = (sbyte)-1;
+	blockPosY = -1;
 	stats[blockType]++;
 	if (stats[blockType] > 1428) { stats[blockType] = 1428; } // prevent overflow (also of the overall sum)
 	renderStats();
@@ -323,12 +330,11 @@ bool blockNext() {
 // timer
 
 void timerReset() {
-	time(&timer);
+	timer = clock();
 }
 
 bool timerDone() {
-	time_t now;
-	time(&now);
+	clock_t now = clock();
 	long span = (10 - level) * 50;
 	return now - timer >= span;
 }
@@ -349,7 +355,7 @@ void init() {
 // game logic
 
 bool play() {
-	time_t now;
+	clock_t now;
 	key key;
 	if (gameState == STATE_PLAY) {
 		key = getKey();
@@ -368,7 +374,7 @@ bool play() {
 			break;
 		case KEY_PAUSE: 
 			{
-				time(&now);
+				now = clock();
 				timeLeft = now - timer;
 				renderPause();
 				gameState = STATE_PAUSE;
@@ -412,7 +418,7 @@ bool play() {
 		key = getKey();
 		if (key == KEY_RESTART || key == KEY_PAUSE) {
 			renderClearPause();
-			time(&now); 
+			now = clock(); 
 			timer = now - timeLeft;
 			gameState = STATE_PLAY;
 		}
@@ -441,22 +447,38 @@ bool play() {
 
 int main()
 {
-	// init();
-	// while (play()) {
-	// 	// sleep?
+	init();
+	while (play());
+
+	// sbyte a = -1;
+	// sbyte b = -1;
+	// sprintf(buffer, "%d", a);
+	// avdc_write_str_at_pointer(avdc_get_pointer(3, 1), buffer, NULL);
+	// sprintf(buffer, "%d", b);
+	// avdc_write_str_at_pointer(avdc_get_pointer(0, 0), buffer, NULL);
+	// avdc_write_str_at_pointer(avdc_get_pointer(2, 0), buffer, NULL);
+	// char k;
+	// while (!(k = kbhit()));
+
+	// sprintf(buffer, "%c", k);
+	// avdc_write_str_at_pointer(avdc_get_pointer(4, 0), buffer, NULL);
+
+	// clock_t t;
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	t = clock();
+	// 	sprintf(buffer, "%d", t);
+	// 	avdc_write_str_at_pointer(avdc_get_pointer(5 + i, 0), buffer, NULL);	
 	// }
-	sbyte a = -1;
-	avdc_write_str_at_pointer(avdc_get_pointer(0, 0), "Vrstica 1", NULL);
-	avdc_write_str_at_pointer(avdc_get_pointer(2, 0), "Vrstica 3", NULL);
-	avdc_write_str_at_pointer(avdc_get_pointer(3, 1), "Vrstica 4, zamik 1", NULL);
+
+	// srand(clock());
+	// for (int i = 0; i < 5; i++)
+	// {
+	// 	byte r = rand() % 7;
+	// 	sprintf(buffer, "%d", r);
+	// 	avdc_write_str_at_pointer(avdc_get_pointer(10 + i, 0), buffer, NULL);	
+	// }
+
+
 	return 0;
 }
-
-// extern char cpm_getchar_nonblock();
-
-// void main() {
-//     clrscr();
-//     cputs("Press any key to abort...\n\r");
-//     while (!kbhit());
-//     cputs("\n\r");
-// }

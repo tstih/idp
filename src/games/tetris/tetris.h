@@ -6,9 +6,9 @@
 
 // basics 
 
-typedef int8_t sbyte;
+typedef int8_t sbyte; 
 typedef uint8_t byte;
-typedef uint8_t* pbyte;
+typedef uint8_t* pstr;
 typedef uint8_t bool;
 
 #define TRUE 1
@@ -30,7 +30,7 @@ byte level;
 byte steps;
 long score;
 byte fullLines;
-time_t timer;
+clock_t timer;
 long timeLeft;
 uint16_t stats[7];
 
@@ -80,7 +80,7 @@ void renderStats();
 
 // block
 
-pbyte blockShapes[][4][4] = {
+pstr blockShapes[][4][4] = {
 	{
 		{ "0000","0111","0100","0000" },
 		{ "0010","0010","0011","0000" },

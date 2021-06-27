@@ -16,7 +16,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+
+#define PRINT_BUF_LEN 64
+
+
 extern int putchar(int c);
+
 
 static void outputchar(char **str, char c)
 {
@@ -64,8 +69,6 @@ static int prints(char **out, const char *string, int width, int flags)
 	return pc;
 }
 
-#define PRINT_BUF_LEN 64
-
 static int outputi(char **out, long long i, int base, int sign, int width, int flags, int letbase)
 {
 	char print_buf[PRINT_BUF_LEN];
@@ -108,7 +111,6 @@ static int outputi(char **out, long long i, int base, int sign, int width, int f
 
 	return pc + prints (out, s, width, flags);
 }
-
 
 static int vsprintf(char **out, char *format, va_list ap)
 {

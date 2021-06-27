@@ -17,9 +17,8 @@
 
 #include <stdint.h>
 
-typedef unsigned int                    size_t;
-typedef long                            ssize_t;
-typedef long                            off_t;
-typedef uint16_t                        intptr_t; 
+typedef unsigned int    size_t;
+typedef long            ssize_t;
+typedef long            off_t;
 
 #endif /* __STDDEF_H__ */

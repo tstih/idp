@@ -19,7 +19,7 @@ $(BUILD_DIR)/%.rel:	%.s
 	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(basename $*).rel $*.s
 
 $(BUILD_DIR)/%.rel: %.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) -D__PARTNER__
 
 $(BUILD_DIR)/%.rel: %.h
 

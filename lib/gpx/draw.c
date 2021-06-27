@@ -1,68 +1,70 @@
 /*
- * draw.c
+ * draw.h
  *
- * drawing routines.
- * 
- * TODO:
- *  optimize functions for id partner
+ * Graphics drawing functions. These functions call HAL
+ * (hardware abstract layer) primitives to get the job done.
+ * In addition they do clipping, coordinates validation, etc.
  *
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
  *
- * 08.04.2021   tstih
+ * 30.05.2021   tstih
  *
  */
-#include "draw.h"
+#include <gpx.h>
+#include <hal.h>
 
-byte_t draw_pixel(graphics_t *d, coord_t x0, coord_t y0, byte_t mode)
-{
-    gdp_setpixel(x0,y0);
-    return 0;
+void gpx_draw_pixel(graphics_t *g, coord x, coord y, uint8_t mode) {
+    g;
+    hal_hires_set_pixel(x,y,mode);
 }
 
-void draw_line(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern)
+void gpx_draw_text(graphics_t* g, char *s, font_t *font, coord x, coord y, uint8_t mode)
 {
-    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-    int err = dx + dy, e2; /* error value e_xy */
-
-    for (;;)
-    { /* loop */
-        draw_pixel(d, x0, y0, mode);
-        if (x0 == x1 && y0 == y1)
-            break;
-        e2 = 2 * err;
-        if (e2 >= dy)
-        {
-            err += dy;
-            x0 += sx;
-        } /* e_xy+e_x > 0 */
-        if (e2 <= dx)
-        {
-            err += dx;
-            y0 += sy;
-        } /* e_xy+e_y < 0 */
+    g;
+    uint8_t* gstart=((uint8_t *)font) + sizeof(font_t);
+    while (*s) {
+        uint16_t index = ((*s)-font->first_ascii) * font->height * font->stride;
+        hal_hires_put_raster(
+            gstart+index, 
+            font->stride, 
+            x, 
+            y, 
+            font->width, 
+            font->height, 
+            mode);
+        x+=(font->width);
+        s++;
     }
 }
 
-void draw_circle(graphics_t *d, coord_t x0, coord_t y0, coord_t radius, byte_t mode, byte_t pattern)
+void gpx_draw_line(
+    graphics_t *g, 
+    coord x0, 
+    coord y0, 
+    coord x1, 
+    coord y1, 
+    uint8_t mode,
+    uint8_t mask) {
+    g;
+    hal_hires_line(x0,y0,x1,y1,mode,mask);
+}
+
+void gpx_draw_circle(graphics_t *g, coord x0, coord y0, coord radius, uint8_t mode)
 {
+    g;
     int f = 1 - radius;
     int ddF_x = 1;
     int ddF_y = -2 * radius;
     int x = 0;
     int y = radius;
 
-    draw_pixel(d, x0, y0 + radius, mode);
-    draw_pixel(d, x0, y0 - radius, mode);
-    draw_pixel(d, x0 + radius, y0, mode);
-    draw_pixel(d, x0 - radius, y0, mode);
+    hal_hires_set_pixel(x0, y0 + radius, mode);
+    hal_hires_set_pixel(x0, y0 - radius, mode);
+    hal_hires_set_pixel(x0 + radius, y0, mode);
+    hal_hires_set_pixel(x0 - radius, y0, mode);
     while (x < y)
     {
-        /*  ddF_x == 2 * x + 1;
-        ddF_y == -2 * y;
-        f == x*x + y*y - radius*radius + 2*x - y + 1;
-    */
         if (f >= 0)
         {
             y--;
@@ -72,13 +74,13 @@ void draw_circle(graphics_t *d, coord_t x0, coord_t y0, coord_t radius, byte_t m
         x++;
         ddF_x += 2;
         f += ddF_x;
-        draw_pixel(d, x0 + x, y0 + y, mode);
-        draw_pixel(d, x0 - x, y0 + y, mode);
-        draw_pixel(d, x0 + x, y0 - y, mode);
-        draw_pixel(d, x0 - x, y0 - y, mode);
-        draw_pixel(d, x0 + y, y0 + x, mode);
-        draw_pixel(d, x0 - y, y0 + x, mode);
-        draw_pixel(d, x0 + y, y0 - x, mode);
-        draw_pixel(d, x0 - y, y0 - x, mode);
+        hal_hires_set_pixel(x0 + x, y0 + y, mode);
+        hal_hires_set_pixel(x0 - x, y0 + y, mode);
+        hal_hires_set_pixel(x0 + x, y0 - y, mode);
+        hal_hires_set_pixel(x0 - x, y0 - y, mode);
+        hal_hires_set_pixel(x0 + y, y0 + x, mode);
+        hal_hires_set_pixel(x0 - y, y0 + x, mode);
+        hal_hires_set_pixel(x0 + y, y0 - x, mode);
+        hal_hires_set_pixel(x0 - y, y0 - x, mode);
     }
 }

@@ -1,3 +1,11 @@
+# Notes from 28. may 2021
+
+The monitor vendor is Matsushita M-12021NB (12"), green phosphor 60Hz
+and horiz. sync frequency 15.75 kHz. 
+
+The assumption is that it is the 625 line model (with 512 lines displayed),
+but we don't have a confirmation of that.
+
 # Notes from 06. apr 2021
 
 ## Thomson code analysis in bios

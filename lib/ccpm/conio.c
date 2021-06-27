@@ -90,7 +90,7 @@ void gotoxy(int x, int y) {
         case T_VT52:
             puts("\x1b<"); /* Enter ansi mode */
         case T_ANSI:
-            printf("\x1b[%d;%dH", y, x);
+            printf("\x1b[%d;%dH", y + 1, x + 1);
             break;
         case T_PARTNER:
         default:

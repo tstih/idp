@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Idp.Gpx.Partnerize": {
+      "commandName": "Project",
+      "commandLineArgs": "bin -o power_on_wav -f wav\\power_on.wav"
+    }
+  }
+}

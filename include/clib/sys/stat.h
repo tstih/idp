@@ -36,6 +36,7 @@ struct stat
 #define S_SYSTEM        0x2000          /* file is marked system */
 #define S_ARCHIVE       0x4000          /* file has been written to */
 
+/* Tests */
 #define S_ISLNK(m)  (((m) & S_IFMT) == S_IFLNK)
 #define S_ISREG(m)  (((m) & S_IFMT) == S_IFREG)
 #define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
@@ -44,10 +45,10 @@ struct stat
 #define S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
 #define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
 
-/* TODO:
+/* Set file mode. */
 extern int chmod(const char *path, mode_t mode);
-*/
 
+/* Get file info. */
 extern int stat(char *path, struct stat *buf);
 
 #endif /* __SYS_STAT_H__ */

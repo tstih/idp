@@ -80,7 +80,7 @@ _argv::
         .ds 16                          ; max 8 argv arguments
 
         .area	_STACK
-	    .ds	512
+	    .ds	1024
 stack:
 
 

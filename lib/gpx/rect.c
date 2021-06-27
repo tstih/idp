@@ -13,13 +13,16 @@
  * 07.10.2013   tstih
  *
  */
-#include "rect.h"
+#include <gpx.h>
 
-boolean_t rect_contains(rect_t *r, coord_t x, coord_t y) {
+#define MAX(a,b) (a>b?a:b)
+#define MIN(a,b) (a<b?a:b)
+
+bool rect_contains(rect_t *r, coord x, coord y) {
 	return (r->x0 <= x && r->x1 >= x && r->y0 <= y && r->y1 >=y );
 }
 
-boolean_t rect_overlap(rect_t *a, rect_t *b) {
+bool rect_overlap(rect_t *a, rect_t *b) {
 	return !(a->y1 < b->y0 || a->y0 > b->y1 || a->x1 < b->x0 || a->x0 > b->x1);
 }
 
@@ -33,11 +36,12 @@ rect_t* rect_intersect(rect_t *a, rect_t *b, rect_t *intersect) {
 	} else return NULL;
 }
 
-rect_t* rect_inflate(rect_t* rect, coord_t dx, coord_t dy) {
+rect_t* rect_inflate(rect_t* rect, coord dx, coord dy) {
 	rect->x0-=dx;
 	rect->x1+=dx;
 	rect->y0-=dy;
 	rect->y1+=dy;
+    return rect;
 }
 
 rect_t* rect_rel2abs(rect_t* abs, rect_t* rel, rect_t* out) {
@@ -45,13 +49,14 @@ rect_t* rect_rel2abs(rect_t* abs, rect_t* rel, rect_t* out) {
 	out->x1=abs->x1+rel->x1;
 	out->y0=abs->y0+rel->y0;
 	out->y1=abs->y1+rel->y1;
+    return out;
 }
 
 void rect_subtract(
 	rect_t *outer, 		/* outer rect */
 	rect_t *inner, 		/* inner rect */
 	rect_t *result,		/* rect array (4!) */
-	byte_t *num) {		/* returns actual rects in result */
+	uint8_t *num) {		/* returns actual rects in result */
 
 	*num = 0;		/* assume */
 	if (outer->y0 < inner->y0) {
@@ -89,7 +94,7 @@ void rect_subtract(
 }
 
 /* TODO: careful at scren edges */
-void rect_delta_offset(rect_t *rect, coord_t oldx, coord_t newx, coord_t oldy, coord_t newy, coord_t size_only) {
+void rect_delta_offset(rect_t *rect, coord oldx, coord newx, coord oldy, coord newy, coord size_only) {
 	if (oldx > newx) { /* move left */
 		if (!size_only) rect->x0 = rect->x0 - (oldx-newx);
 		rect->x1 = rect->x1 - (oldx-newx);

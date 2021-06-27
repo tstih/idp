@@ -3,120 +3,132 @@
 # idp-dev
 
 Welcome to the **idp-dev**, a repository, dedicated to the 
-Iskra Delta Partner development.
+*Iskra Delta Partner* development.
 
  ![Iskra Delta Partner](doc/img/partner.jpg)
 
 We are a group of volunteers, providing tools and tutorials to developers
-writing software for the Iskra Delta Partner computer.
+writing software for the *Iskra Delta Partner* computer.
 
 > The repository is currently under construction. Things change. 
 
 # Table of Contents
 
 - [Projects](#projects)
-  * [The C Runtime](#the-c-runtime)
-    + [Startup Code](#startup-code)
-    + [SDCC Auxiliary Library](#sdcc-auxiliary-library)
-    + [Standard C Library](#standard-c-library)
-    + [Hello Partner Project](#hello-partner-project)
-  * [The CP/M Test Framework](#tests)
+  * [The C runtime](#the-c-runtime)
+    + [Startup code](#startup-code)
+    + [SDCC auxiliary library](#sdcc-auxiliary-library)
+    + [Standard C library](#standard-c-library)
+    + [Hello Partner project](#hello-partner-project)
+  * [The test framework](#the-test-framework)
+  * [The hardware abstraction library](#the-hardware-abstraction-library)
   * [GPX](#gpx)
   * [xyz](#xyz)
-  * [TETRIS](#tetris)
+  * [Utilities](#utilities)
+  * [Games](#games)
+    + [TETRIS](#tetris)
+    + [PONG](#pong)
 - [Building](#building)
-  * [On Linux](#on-linux)
+- * [Prerequisites](#prerequisites)
+  * [Make](#make)
+  * [Other make targets](#other-make-targets)
 - [Internals](#internals)
-- [Creating disks](#creating-disks)
+- [Creating disks manually](#creating-disks-manually)
   * [Create hard drive](#create-hard-drive)
   * [Create floppy drive](#create-floppy-drive)
   * [Add local files to disk](#add-local-files-to-disk)
   * [Remove files from disk](#remove-files-from-disk)
 - [The Emulator](#the-emulator)
 - [Thank you](#thank-you)
+- [The team](#the-team)
 
 # Projects
 
-## The C Runtime
+## The C runtime
 
-The goal of this project is to create a C11 compiler and a standard C library 
-for the Iskra Delta Partner. We are adjusting the SDCC compiler suite to
-generate (.COM) files for Iskra Delta Partner. 
+The goal of this project is to create a *C11* compiler and a standard C library 
+for the *Iskra Delta Partner*. We have adjusted the *SDCC* compiler suite to
+generate `.com` files for *Iskra Delta Partner.* 
 
-It consists of three main modules:
+The adjustment consists of three modules:
 
 | Module                     | Status (complete) |
 |----------------------------|-------------------|
 | The startup code           | ![100%](https://progress-bar.dev/100/)|
 | The SDCC auxiliary library | ![100%](https://progress-bar.dev/100/)|
-| The Standard C library     | ![80%](https://progress-bar.dev/80/)|  
+| The Standard C library     | ![100%](https://progress-bar.dev/100/)|  
+|-|-|
 
-To compile your source code, you must strip it of all SDCC defaults, and
-use Partner defaults instead. Following switches should be used.
+To compile your program code, you must strip it of all *SDCC* defaults, and
+use *Partner* defaults instead. Following switches should be used.
 
- * `--no-std-crt0`. This switch tells the compiler not to include the SDCC
+ * `--no-std-crt0`. This switch tells the compiler not to include the *SDCC*
    C startup file `crt0.s`. You replace it by adding the `scripts/crt0cpm.s`
    as the first file to your project.
- * `--nostdinc`. This will prevent the SDCC to include standard headers from
-   the SDCC standard library. You can use the `-I` to redirect to Partner's
-   standard library headers `-I /include/clib` instead.
- * `--nostdlib`. This will tell the SDCC linker no to link the SDCC standard
+ * `--nostdinc`. This will prevent the *SDCC* to include standard headers from
+   the SDCC version of the standard library. You can use the `-I` to redirect 
+   to *Partner's* standard library headers `-I /include/clib` instead.
+ * `--nostdlib`. This will tell the *SDCC* linker no to link the *SDCC* standard
    library. You can replace it by instructing the linker to search the `build/`
    folder for `libsdcc`, and `libccpm`, like this `-Lbuild -llibsdcc -llibcpm`  
 
 Consult the `hello` chapter for complete command line to use to compile your
-C source code to Iskra Delta Partner binary.
+C source code to *Iskra Delta Partner* binary.
 
 ### Startup Code
 
 The startup code is file `scripts/crt0cpm.s`. This code should compile 
 to the `0x100` address. It initializes the stack and the heap, reads and
 stores the command line arguments (if any!), calls your `main()` function 
-and, after it completes, calls the CP/M (BDOS) `exit()`. 
+and, after it completes, calls the *CP/M* (*BDOS*) `exit()`. 
 
 ### SDCC Auxiliary Library
 
 The `libsdcc` auxiliary library is located in the `lib/sdcc/` folder.
 
-This library is the glue betweeen the SDCC C compiler and the
-Z80 processor. Z80 lacks instructions for integer multiplication 
+This library is the glue betweeen the *SDCC* C compiler and the
+*Z80* processor. *Z80* lacks instructions for integer multiplication 
 and division, and for handling long integers and floating point 
 numbers.
 
-To mitigate it, the SDCC C compiler replaces these non-existing
+To mitigate it, the *SDCC* C compiler replaces these non-existing
 instructions with calls to special functions (such as: `__mulint`).
 Invisible to you, the linker then links these special functions 
 with your code.
 
-This works in the SDCC realm, but if you prevent the compiler to link
-default SDCC libraries (by using directives `--nostdlib`, `--nostdinc`, 
+This works in the *SDCC* realm, but if you prevent the compiler to link
+default *SDCC* libraries (by using directives `--nostdlib`, `--nostdinc`, 
 and `--no-std-crt0`) then you need to provide these special functions,
 and the `libsdcc` does that.
 
 ### Standard C Library
 
-The Standard C Library for Iskra Delta Partner is called `libccpm`.
+The *Standard C Library* for *Iskra Delta Partner* is called `libccpm`.
 In addition to standard functions it also implements some non-standard 
 extensions.  
 
-*You can check the contents of standard header files by expanding them.*
+ > You can check the implementation scope by expanding the 
+ > standard header files bellow.
 
 <details><summary>conio.h/</summary>
 
 ~~~cpp
-/* Terminal type. */
-#define T_PARTNER    0x00
-#define T_VT52       0x01
-#define T_ANSI       0x02
+/* Terminal type */
+#define T_PARTNER           0x00
+#define T_VT52              0x01
+#define T_ANSI              0x02
 
-/* Text attributes. */
-#define AT_NONE         0x00
-#define AT_BOLD         0x01
-#define AT_UNDERLINE    0x04
-#define AT_BLINK        0x05
-#define AT_INVERSE      0x07
+/* Text attributes - these are loosely compatible with
+VT52 SGR attributes */
+#define AT_NONE             0x00
+#define AT_BOLD             0x01
+#define AT_HIGHLIGHT        0x02
+#define AT_BOLD_HIGHLIGHT   0x03
+#define AT_UNDERLINE        0x04
+#define AT_BLINK            0x05
+#define AT_INVERSE          0x07
 
-/* Basic info about the terminal. */
+/* Basic info about the terminal */
 struct text_info {
     unsigned char screenwidth;
     unsigned char screenheight;
@@ -136,13 +148,13 @@ extern int getch(void);
 /* Puts char back so that getch returns it again. */
 extern int ungetch(int);
 
-/* Move cursor. */
+/* Move cursor */
 extern void gotoxy(int x, int y);
 
 /* Put char. */
 extern int putch(int c);
 
-/* Put string. */
+/* Put string */
 extern int cputs(char *s);
 
 /* Hide cursor. */
@@ -155,13 +167,25 @@ extern void showcursor();
 extern int kbhit();
 
 /* Delete until end of line. */
-void clreol();
+extern void clreol();
 
-/* Delete current line. */
-void delline();
+/* Delete current line/ */
+extern void delline();
 
 /* Set text attributes. */
-void textattr(unsigned char attr);
+extern void textattr(unsigned char attr);
+
+/* DEC Duble-Width, Double-Height Line top */
+extern void decdhl_top();
+
+/* DEC Duble-Width, Double-Height Line bottom */
+extern void decdhl_bottom();
+
+/* DEC Duble-Width, Single-Height Line */
+extern void decdwl();
+
+/* DEC Single-Width, Single-Height Line top */
+extern void decswl();
 ~~~
 
 </details>  
@@ -185,10 +209,36 @@ extern int tolower(int c);
 
 <details><summary>errno.h/</summary>
 
+~~~cpp
+#define ENOENT      2       /* no such file or directory */
+#define	EIO         5       /* I/O error */
+#define	E2BIG       7       /* argument list too long */
+#define EBADF       9       /* bad file descriptor */
+#define	EAGAIN      11      /* try again */
+#define EWOULDBLOCK EAGAIN  /* -"- */
+#define	ENOMEM      12      /* out of memory */
+#define EINVAL      22      /* negative offset or offset beyond end of file? Invalid address */
+#define ENFILE      23      /* too many open files (file table overflow) */
+#define	ENOTTY      25      /* not a typewriter */
+#define	EPIPE       32      /* broken pipe */
+
+/* global error code */
+extern int errno;
+~~~
 </details>  
 
 <details><summary>fcntl.h/</summary>
 
+~~~cpp
+#define O_RDONLY    0
+#define O_WRONLY    1
+#define O_RDWR      2
+#define O_TRUNC     4
+
+#define SEEK_SET    0
+#define SEEK_CUR    1
+#define SEEK_END    2
+~~~
 </details>  
 
 <details><summary>limits.h/</summary>
@@ -237,6 +287,11 @@ extern int tolower(int c);
 
 <details><summary>stddef.h/</summary>
 
+~~~cpp
+typedef unsigned int    size_t;
+typedef long            ssize_t;
+typedef long            off_t;
+~~~
 </details>  
 
 <details><summary>stdint.h/</summary>
@@ -248,12 +303,62 @@ typedef int             int16_t;
 typedef unsigned int    uint16_t;
 typedef long            int32_t;
 typedef unsigned long   uint32_t;
-typedef unsigned int*   uintptr_t;
 ~~~
 </details>  
 
 <details><summary>stdio.h/</summary>
 
+~~~cpp
+#define EOF         0x1A	
+#define SEEK_SET    0
+#define SEEK_CUR    1
+#define SEEK_END    2
+
+#define FILE        void
+extern FILE *stdin;
+extern FILE *stdout;
+extern FILE *stderr;
+
+/* Open file. */
+extern FILE *fopen(const char *path, const char *mode);
+
+/* Move to fpos. */
+extern int fseek(FILE *stream, long offset, int whence);
+
+/* Read a record. */
+extern size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+
+/* EOF reached? */
+extern int feof(FILE *stream);
+
+/* Close a file. */
+extern int fclose(FILE *stream);
+
+/* Get file position. */
+extern long ftell(FILE *stream);
+
+/* Write a record. */
+extern size_t fwrite(
+    const void *ptr, 
+    size_t size, 
+    size_t nmemb, 
+    FILE *stream);
+
+/* Prints a string. */
+extern int puts(const char *s);
+
+/* Print formatted string to stdout. */
+extern int printf(char *fmt, ...);
+
+/* Prints formated string to a string. */
+extern int sprintf(char *buf, char *fmt, ...);
+
+/* Prints a char. */
+extern void putchar(int c);
+
+/* Reads a char (blocks. */
+extern int getchar(void);
+~~~
 </details>  
 
 <details><summary>stdlib.h/</summary>
@@ -270,6 +375,9 @@ extern void exit(int status);
 /* String to long using base. */
 extern long strtol(char *nptr, char **endptr, int base);
 
+/* Covert ascii to integer. */
+extern int atoi(const char *str);
+
 /* Strin to unsigned long using base, */
 extern unsigned long int strtoul(const char *nptr, char **endptr, int base);
 
@@ -281,6 +389,15 @@ extern int rand(void);
 
 /* Set random seed. */
 extern void srand(unsigned int seed);
+
+/* Memory allocation. */
+extern void *malloc(size_t size);
+
+/* Allocate zero initialized block. */
+extern void *calloc (size_t num, size_t size);
+
+/* Free allocated memory block. */
+extern void free(void *ptr);
 ~~~
 </details>  
 
@@ -425,24 +542,57 @@ extern off_t lseek(int fd, off_t offset, int whence);
 ~~~
 </details>  
 
-
-<details><summary>sys/ioctl.h/</summary>
-
-</details>  
-
 <details><summary>sys/stat.h/</summary>
 
+~~~cpp
+struct stat
+{
+    short   st_mode;                    /* flags */
+    long    st_atime;                   /* access time */
+    long    st_mtime;                   /* modification time */
+    long    st_size;                    /* file size in bytes */
+};
+
+/* Flag bits in st_mode */
+#define S_IFMT          0x600           /* type bits */
+#define S_IFDIR         0x400           /* is a directory */
+#define S_IFREG         0x200           /* is a regular file */
+#define S_IREAD         0400            /* file can be read */
+#define S_IWRITE        0200            /* file can be written */
+#define S_IEXEC         0100            /* file can be executed */
+#define S_HIDDEN        0x1000          /* file is hidden */
+#define S_SYSTEM        0x2000          /* file is marked system */
+#define S_ARCHIVE       0x4000          /* file has been written to */
+
+/* Tests */
+#define S_ISLNK(m)  (((m) & S_IFMT) == S_IFLNK)
+#define S_ISREG(m)  (((m) & S_IFMT) == S_IFREG)
+#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
+#define S_ISCHR(m)  (((m) & S_IFMT) == S_IFCHR)
+#define S_ISBLK(m)  (((m) & S_IFMT) == S_IFBLK)
+#define S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
+#define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
+
+/* Set file mode. */
+extern int chmod(const char *path, mode_t mode);
+
+/* Get file info. */
+extern int stat(char *path, struct stat *buf);
+~~~
 </details>  
 
 <details><summary>sys/types.h/</summary>
 
+~~~cpp
+typedef uint32_t mode_t;
+~~~
 </details>  
 
-<br/>
 
 ### Hello Partner Project
 
-The Iskra Delta Partner Hello World program is located in the `src/hello` folder.
+The *Iskra Delta Partner* **Hello World** program is located in the 
+`src/hello` folder.
 
 ~~~cpp
 #include <stdio.h>
@@ -457,7 +607,7 @@ and does what every **Hello World** program in the world should do.
 
 ![Hello World](doc/img/hello.jpg)
 
-## Tests
+## The test framework
 
 There are two types of tests in the `test` folder: *automated unit tests* that
 automatically verify test results against expected results. And *experiments*,
@@ -467,54 +617,115 @@ the results.
 Automated unit tests use the [tiny test framework of Eric Radman](https://eradman.com/posts/tdd-in-c.html), based on [the original MinUnit by John Brewer](http://www.jera.com/techinfo/jtns/jtn002.html). The name of automated unit tests ends in `-test` (i.e. `std-test.com`).
 
 Experiments may create some files, display some data, draw some graphics, etc.
-Experiments end with -xp i.e. `setup-xp.com`.
+Experiments end with `-xp` i.e. `setup-xp.com`.
 
 At time of writing, forllowing tests are available: 
- * `stdlib/std-test.c` The Standard C Library auto unit tests.
- * `hw/setup-xp.c` Displays real time clock and battery powered RAM bytes.
+ * `stdlib/std-test.c` The *Standard C Library* auto unit tests.
+ * `stdlib/file-xp.c` Creating a test text file: `ZDRAVA.TXT`
+ * `stdlib/mem-xp.c` Allocating memory with `malloc`, freeing with `free` test.
+ * `stdlib/rnd-xp.c` Random numbers tests.
+ * `stdlib/tme-test` Testing the `time.h` functions. **Warning:** sets system time to 1.1.1980.
+ * `stdlib/conio-xp.c` Console output tests.
  * `gpx/gpx-xp.c` Drawing experiments (in graphics mode).
+
+## The hardware abstraction library
+
+The hardware abstraction library (`libhal.lib`) abstracts 
+*Iskra Delta Partner* hardware. 
+
+> **Note:** The *Standard C Library* does not depend on the 
+> *The Hardware Abstraction Library*, it depends on the *CP/M BDOS* calls.
 
 ## GPX
 
-The goal of this project is to create fast graphical library for Iskra Delta
-Partner.
+The goal of this project is to create fast graphical library for 
+*Iskra Delta Partner*.
 
 ![Under construction.](doc/img/under-construction.jpg)
 
 ## xyz
 
-The goal of this project is to create a graphical, multitasking operating system
-to replace the CP/M on Iskra Delta Partner.
+The goal of this ambitious project is to create a graphical, 
+multitasking operating system to replace the *CP/M* on *Iskra Delta Partner*.
 
 ![Under construction.](doc/img/under-construction.jpg)
 
-## TETRIS
+## Utilities
 
-Porting terminal version of the game of Tetris.
+Small utilities to make your (developers') life easier.
+
+| Utility      | Description                         |
+|--------------|-------------------------------------|
+| MEMDUMP.COM  | Dump memory contents. |
+| PORTDUMP.COM | Read and dump port values. |
+|-|-|
+
+## Games
+
+### PONG
+
+Terminal version of the *Atari PONG*. 
+
+ > This was a viability test and the conclusion is that terminal emulation
+   on *Iskra Delta Partner* is too slow for games.
+
+### TETRIS
+
+A version of the game of *Tetris*.
 
 ![Under construction.](doc/img/under-construction.jpg)
 
 # Building
 
-## On Linux
+## Prerequisites
 
-Make sure you have gcc, sdcc, and cpmtools installed.
+At present the build environment is *Linux* with following tools installed: 
+`sdcc`, `cpmtools`, `gcc`, and `sed`. 
 
-Compile with 
+ > The *Standard C Library* requires latest version of *SDCC* (**4.1.6**). 
+ > You are going to have to [build it from the sources]
+ > (http://sdcc.sourceforge.net/). To make things more complicated, 
+ > the build process also requires an exact version of the `automake` tools 
+ > (**1.16.2**) and will not compile with other versions.
+
+## Make
+
+Commpile everything with 
 
 `make`
 
-Create disk image for the emulator with
+After you are done compiling, create disk image for the emulator with
 
 `make install`
 
-All output will go to the build folder. Disk image that you 
-can import into Partner emulator (using Alt+O) is called `fddb.img`.
+All output will go to the `build` folder. Disk image that you 
+can import into the Partner emulator (using **Alt+O**) is called `fddb.img`.
+
+## Other make targets
+
+For comfortable work following targets can also be used. Each
+of them creates a `bin` folder, copies the `.com`, `.lib` and `crt0cpm.rel` 
+files into it. And then creates a image of the floppy disk called 
+`fddb.img` with all the `.com` files to the floppy image, 
+   
+
+ * `make install` Create the `bin` folder and standard floppy (with `.com` files).
+ * `make ccp` Add `ccp.com` to the floppy. CP/M allows programs to overwrite its'
+   command shell called the CCP. When the program ends the CP/M reloads the shell
+   and if not present on the disk displays an error (prompts for disk change). 
+ * `make boot` Uses a bootable floppy for *std. partner* as a base for creating
+   the disk image. 
+ * `make bootg` Uses a bootable floppy for *graphical partner* as a base for
+   creating the disk image
+ * `make dex` Calls `make install` and copies the floppy image to a user
+   folder (`~/Dex/`). Use this if you work in *Linux* and need to exchange 
+   the image with enother environment (i.e. a *Windows* where the emulator
+   is running). *In case you wonder, dex stands for Data EXchange.*
 
 # Internals
 
-While reverse engineering the Partner and writing code, we keep notes 
-on its internal functioning. While these are not well structured,
+While reverse engineering the Partner and writing code, we are keeping 
+notes on its internal functioning. While these are not well structured,
 they are a rich source of information about inner functioning of
 Iskra Delta Partner and the softwares.
 
@@ -527,20 +738,20 @@ Iskra Delta Partner and the softwares.
  * [Real time clock](doc/notes/rtclock-notes.md)
  * [Porting software plans](doc/notes/porting-notes.md)
 
-# Creating disks
+# Creating Disks Manually
 
-Use cpmtools to create your own disks for the emulator.
+Use the `cpmtools` package to create your own disks for the emulator.
 
 http://www.moria.de/~michael/cpmtools/
 
 Disk definitions for Partner floppy and hard drives are in
 the the `scripts\diskdefs` file.
- * idpfdd for floppy drive
- * idphdd for the hard disk
+ * `idpfdd` for floppy drive
+ * `idphdd` for the hard disk
 
 ## Create hard drive
 
-*Note: -f is disk format and can be idphdd or idpfdd.*
+Note: `-f` is disk format and can be `idphdd` or `idpfdd`.
 
 `mkfs.cpm.exe -f idphdd -t hdda.img`
 
@@ -550,7 +761,7 @@ the the `scripts\diskdefs` file.
 
 ## Add local files to disk
 
-*Following command adds file test.com to area 0: of floppy drive fddb.img.*
+Following command adds file `hello.com` to area 0: of floppy drive `fddb.img`.
 
 `cpmcp -f idpfdd fddb.img test.com 0:test.com`
 
@@ -564,7 +775,8 @@ You can download the emulator from here.
 
 http://matejhorvat.si/sl/slorac/delta/partner/index.htm
 
-Once you are in the emulator, press Alt+O and select the `fddb.img` file. This will create `B:` drive. Finally, type...
+Once you are in the emulator, press Alt+O to select the `fddb.img` file. 
+This will create a `B:` drive. Finally, type...
 
 ~~~
 B:
@@ -576,13 +788,15 @@ And, voila...
 
 ![Hello World](doc/img/hello.jpg)
 
-# Thank you
-
-**Miha Grcar** for keeping a Partner Revival Slack, testing, and sharing his findings.
+# Thank You
 
 **Matej Horvat** for sharing technical details about his emulator and code samples.
 
-**Tomaz Stih**, 22.05.2021
+# The Team
+
+**Tomaz Stih** (lead) 
+
+**Miha Grcar**
 
 
 [language.url]:   https://en.wikipedia.org/wiki/ANSI_C

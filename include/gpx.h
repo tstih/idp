@@ -10,31 +10,16 @@
  * 23.03.2021   tstih
  *
  */
-#ifndef _GPX_H
-#define _GPX_H
+#ifndef __GPX_H__
+#define __GPX_H__
 
-#include "yos.h"
-
-
-/* 
- * screen constants
- */
-#if __LINUX_SDL2__
-#define SCREEN_WIDTH    1024
-#define SCREEN_HEIGHT   512
-#elif __ID_PARTNER__
-#define SCREEN_WIDTH    1024
-#define SCREEN_HEIGHT   512
-#elif __ZX_SPECTRUM__
-#define SCREEN_WIDTH    256
-#define SCREEN_HEIGHT   192
-#endif
+#include <yos.h>
 
 
 /*
  * extra gpx types
  */
-typedef word_t coord_t;
+typedef int16_t coord;
 
 
 /* 
@@ -43,10 +28,10 @@ typedef word_t coord_t;
 
 /* the rectangle */
 typedef struct rect_s {
-	coord_t x0;
-	coord_t y0;
-	coord_t x1;
-	coord_t y1;
+	coord x0;
+	coord y0;
+	coord x1;
+	coord y1;
 } rect_t;
 
 /* the display */
@@ -88,36 +73,118 @@ typedef struct graphics_s {
 #define TPV_MOVE            0x10        /* just move */
 
 /* drawing mode */
-#define DWM_SET             0x00
-#define DWM_RESET           0x00
+#define DWM_RESET           0
+#define DWM_SET             1
+#define DWM_XOR             2
+
+/* official list masks (will work fast!) */
+#define DMSK_SOLID          0xff
+#define DMSK_DOTTED         0xaa
+#define DMSK_DASHED         0xee
+#define DMSK_DOT_DASH       0xe4
+
+typedef struct gpy_generation_s {
+    unsigned int gcls:3;                /* glyph class */
+    unsigned int gdwm:2;                /* drawing mode */
+    unsigned int reserved:3;            /* up to 1 byte */
+} gpy_generation_t;
+
+/* each glyph file starts with glyph envelope */
+typedef struct gpy_envelope_s {
+    gpy_generation_t generation;
+    uint16_t width;
+    uint16_t height;
+    uint8_t reserved;                   /* number of glyphs following */
+} gpy_envelope_t;
+
+/* font_s struct is a gpy_envelope_s */
+typedef struct font_s {
+    gpy_generation_t generation;
+    uint16_t width;
+    uint16_t height;
+    union {
+        uint8_t stride;                     /* bytes per glyph row for raster fonts */   
+        uint8_t reserved;
+    };
+    uint8_t first_ascii;
+    uint8_t last_ascii;
+} font_t;
+
+
+/*
+ * initialization and screen functions
+ */
+
+/* initialize the graphics system */
+extern graphics_t* gpx_init();
+
+/* exit graphics mode */
+extern void gpx_exit(graphics_t* g);
+
+/* clear screen */
+extern void gpx_cls(graphics_t *g);
 
 
 /*
  * drawing functions
  */
 
-/* initialize the graphics system */
-extern graphics_t* graphics_init();
+/* Draw single pixel 
+   TODO: implement mode - SET, RESET, or XOR ... currently it is ignored
+*/
+extern void gpx_draw_pixel(graphics_t *g, coord x, coord y, uint8_t mode);
 
-/* special line type (horizontal) */
-extern void draw_hline(graphics_t* d, coord_t y, coord_t x0, coord_t x1, byte_t mode, byte_t pattern);
+/* draw text on screen */
+extern void gpx_draw_text(
+    graphics_t* g, 
+    char *s, 
+    font_t *font, 
+    coord x, 
+    coord y,
+    uint8_t mode); 
 
-/* special line type (vertical) */
-extern void draw_vline(graphics_t* d, coord_t x, coord_t y0, coord_t y1, byte_t mode, byte_t pattern);
+/* draw fast line */
+extern void gpx_draw_line(
+    graphics_t *g, 
+    coord x0, 
+    coord y0, 
+    coord x1, 
+    coord y1, 
+    uint8_t mode,
+    uint8_t mask);
 
-/* draw individual pixel */
-extern byte_t draw_pixel(graphics_t* d, coord_t x0, coord_t y0, byte_t mode);
+/* draw slow circle */
+extern void gpx_draw_circle(
+    graphics_t *g, 
+    coord x0, 
+    coord y0, 
+    coord radius, 
+    uint8_t mode);
 
-/* draw line */
-extern void draw_line(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern);
+/*
+ * rectangle management functions
+ */
 
-/* draw circle with radius */
-extern void draw_circle(graphics_t *d, coord_t x0, coord_t y0, coord_t radius, byte_t mode, byte_t pattern);
+/* Does rectangle contains point? */
+extern bool rect_contains(rect_t *r, coord x, coord y);
 
-/* draw ellipse with rectangle */
-extern void draw_ellipse(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern);
+/* Do rectangles overlap? */
+extern bool rect_overlap(rect_t *a, rect_t *b);
 
-/* draws a rectangle */
-extern void draw_rectangle(graphics_t *d, coord_t x0, coord_t y0, coord_t x1, coord_t y1, byte_t mode, byte_t pattern);
+/* Inflate coordinates by dx and dy */
+extern rect_t* rect_inflate(rect_t* rect, coord dx, coord dy);
 
-#endif /* _GPX_H */
+/* Get intersect rectangle. */
+extern rect_t* rect_intersect(rect_t *a, rect_t *b, rect_t *intersect);
+
+/* Convert relative to absolute coordinates for parent and child rectangle. */
+extern rect_t* rect_rel2abs(rect_t* abs, rect_t* rel, rect_t* out);
+
+/* Subtract rectangles and return what's left. */
+extern void rect_subtract(rect_t *outer, rect_t *inner, rect_t *result,	uint8_t *num);
+
+/* Offset rectangle. */
+extern void rect_delta_offset(rect_t *rect, 
+    coord oldx, coord newx, coord oldy, coord newy, coord size_only);
+
+#endif /* __GPX_H__ */

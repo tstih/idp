@@ -32,6 +32,9 @@ extern void exit(int status);
 /* String to long using base. */
 extern long strtol(char *nptr, char **endptr, int base);
 
+/* Covert ascii to integer. */
+extern int atoi(const char *str);
+
 /* Strin to unsigned long using base, */
 extern unsigned long int strtoul(const char *nptr, char **endptr, int base);
 
@@ -52,8 +55,5 @@ extern void *calloc (size_t num, size_t size);
 
 /* Free allocated memory block. */
 extern void free(void *ptr);
-
-/* Covert ascii to integer. */
-extern int atoi(const char *str);
 
 #endif /* __STDLIB_H__ */

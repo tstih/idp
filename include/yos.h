@@ -9,58 +9,34 @@
  * 07.04.2021   tstih
  *
  */
-#ifndef _YOS_H
-#define _YOS_H
+#ifndef __YOS_H__
+#define __YOS_H__
 
-/* yos types */
-#if __LINUX_SDL2__
 #include <stdint.h>
-typedef uint8_t     byte_t;
-typedef uint16_t    word_t;
-typedef byte_t      boolean_t;
-typedef uint8_t *   string_t;
-typedef byte_t      result_t;
-typedef void *      addr_t;
-typedef int         addr_size_t;
-typedef addr_t      handle_t;
-#elif __ID_PARTNER__
-#include <stdint.h>
-typedef uint8_t     byte_t;
-typedef uint16_t    word_t;
-typedef byte_t      boolean_t;
-typedef uint8_t *   string_t;
-typedef byte_t      result_t;
-typedef void *      addr_t;
-typedef int         addr_size_t;
-typedef addr_t      handle_t;
-#elif __ZX_SPECTRUM__
-#endif
+#include <stdbool.h>
+#include <stddef.h>
 
-/* yos definitions */
+/* yos specific types */
+typedef void *          handle;
+typedef uint8_t         result;
+
+/* NULL def. as int */
 #ifndef NULL
-#define NULL ((addr_t)0)
+#define NULL 0
 #endif
 
-#ifndef TRUE
-#define TRUE ((byte_t)1)
-#endif
-
-#ifndef FALSE
-#define FALSE ((byte_t)0)
-#endif
-
-/* API */
+/* yos API */
 #define YOS_API "yos"
 
 typedef struct yos_s
 {
     /* memory allocation */
-    void *(*malloc)(addr_size_t size);
-    void (*free)(void *);
+    void *(*malloc)(size_t size);
+    void (*free)(void *p);
 
     /* string */
-    addr_size_t (*strlen)(char *str);
-    char *(*strcpy)(char *dest, const char *src);
+    size_t (*strlen)(char *str);
+    char *(*strcpy)(char *dest, char *src);
     int (*strcmp)(char *s1, char *s2);
 
     /* system lists */
@@ -70,9 +46,8 @@ typedef struct yos_s
 	void* (*lremfirst)(void **first);
 
     /* system wide errors */
-    result_t (*geterr)();
-    result_t (*seterr)(result_t err);
-
+    result (*geterr)();
+    result (*seterr)(result err);
 } yos_t;
 
 /* error codes */
@@ -87,4 +62,4 @@ typedef struct yos_s
  */
 void *query_api(char *name);
 
-#endif /* _YOS_H */
+#endif /* __YOS_H__ */

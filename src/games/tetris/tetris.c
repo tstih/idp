@@ -20,6 +20,10 @@ void srand(unsigned int seed);
 // print.c
 int sprintf(char *buf, char *fmt, ...);
 
+// string str_buffer
+
+byte str_buffer[133];
+
 // state
 
 void stateInit() {
@@ -32,9 +36,13 @@ void stateInit() {
 	timer = clock();
 	timeLeft = 0;
 	srand(clock());
-	for (int i = 0; i < 7; i++) { 
+	for (byte i = 0; i < 7; i++) { 
 		stats[i] = 0; 
 	}
+	for (byte i = 0; i < 24; i++) {
+		row_addr[i] = avdc_get_pointer(i, 0);
+	}
+	avdc_done();
 }
 
 // key
@@ -133,94 +141,102 @@ byte playfieldCollapse() {
 // render
 
 void renderInit() {
-	avdc_write_str_at_position(0, 0, "This is renderInit", NULL);
+	avdc_set_cursor_write_str(0, 0, "This is renderInit", NULL);
+	avdc_done();
 }
 
 void renderPlayfield() {
 	for (byte i = 0; i < 20; i++) {
-		uint16_t addr = avdc_get_pointer(i, 30);
+		avdc_set_cursor(i, 30);
 		for (int j = 0; j < 10; j++) {
-			avdc_write_at_pointer(addr++, playfieldBkgr[i][j], DEFAULT_ATTR);
+			avdc_write_at_cursor(playfieldBkgr[i][j], DEFAULT_ATTR);
 		}
 	}
+	avdc_done();
 }
 
 void renderPause() {
-	avdc_write_str_at_position(1, 0, "PAUSED", NULL);
+	avdc_set_cursor_write_str(1, 0, "PAUSED", NULL);
+	avdc_done();
 }
 
 void renderClearPause() {
-	avdc_write_str_at_position(1, 0, "      ", NULL);
+	avdc_set_cursor_write_str(1, 0, "      ", NULL);
+	avdc_done();
 }
 
 void renderNextBlock() {
 	for (byte r = 0; r < 4; r++) {
-		int16_t addr = avdc_get_pointer(10 + r, 4);
+		avdc_set_cursor(10 + r, 4);
 		for (byte c = 0; c < 4; c++) {
-			avdc_write_at_pointer(
-				addr++,
+			avdc_write_at_cursor(
 				blockShapes[nextBlockType][0][r][c] == '0' ? ' ' : blockShapes[nextBlockType][blockRot][r][c],
 				DEFAULT_ATTR
 			);
 		}
 	}
+	avdc_done();
 }
 
 void renderClearNextBlock() {
 	for (byte r = 0; r < 4; r++) {
-		avdc_write_str_at_position(10 + r, 4, "    ", NULL);
+		avdc_set_cursor_write_str(10 + r, 4, "    ", NULL);
 	}
+	avdc_done();
 }
 
-byte buffer[132];
-
 void renderLevel() {
-	sprintf(buffer, "Level: %d", level);
-	avdc_write_str_at_position(2, 0, buffer, NULL);
+	sprintf(str_buffer, "Level: %d", level);
+	avdc_set_cursor_write_str(2, 0, str_buffer, NULL);
+	avdc_done();
 }
 
 void renderScore() {
-	sprintf(buffer, "Score: %d", score);
-	avdc_write_str_at_position(3, 0, buffer, NULL);
+	sprintf(str_buffer, "Score: %d", score);
+	avdc_set_cursor_write_str(3, 0, str_buffer, NULL);
+	avdc_done();
 }
 
 void renderFullLines() {
-	sprintf(buffer, "Full lines: %d", fullLines);
-	avdc_write_str_at_position(4, 0, buffer, NULL);
+	sprintf(str_buffer, "Full lines: %d", fullLines);
+	avdc_set_cursor_write_str(4, 0, str_buffer, NULL);
+	avdc_done();
 }
 
 void renderGameOver() {
-	avdc_write_str_at_position(5, 0, "GAME OVER", NULL);
+	avdc_set_cursor_write_str(5, 0, "GAME OVER", NULL);
+	avdc_done();
 }
 
 void renderGoodbye() {
-	avdc_write_str_at_position(5, 0, "GOODBYE !", NULL);
+	avdc_set_cursor_write_str(5, 0, "GOODBYE !", NULL);
+	avdc_done();
 }
 
 void renderClearBlock() {
 	for (byte r = 0; r < 4; r++) {
 		if (blockPosY + r >= 0 && blockPosY + r < 20) {
-			uint16_t addr = avdc_get_pointer(blockPosY + r, 30 + (blockPosX < 0 ? 0 : blockPosX));
+			avdc_set_cursor(blockPosY + r, 30 + (blockPosX < 0 ? 0 : blockPosX));
 			for (byte c = 0; c < 4; c++) {
 				if (blockPosX + c >= 0 && blockPosX + c < 10) {
-					avdc_write_at_pointer(addr++, playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
+					avdc_write_at_cursor(playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
 				}
 			}
 		}
 	}
+	avdc_done();
 }
 
 void renderBlock() {
 	for (sbyte r = -1; r < 4; r++) {
 		if (blockPosY + r >= 0 && blockPosY + r < 20) {
-			uint16_t addr = avdc_get_pointer(blockPosY + r, 30 + ((blockPosX - 1) < 0 ? 0 : (blockPosX - 1)));
+			avdc_set_cursor(blockPosY + r, 30 + ((blockPosX - 1) < 0 ? 0 : (blockPosX - 1)));
 			for (sbyte c = -1; c < 5; c++) {
 				if (blockPosX + c >= 0 && blockPosX + c < 10) {
 					if (c < 0 || c > 3 || r < 0 || r > 3) {
-						avdc_write_at_pointer(addr++, playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
+						avdc_write_at_cursor(playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
 					} else {
-						avdc_write_at_pointer(
-							addr++, 
+						avdc_write_at_cursor(
 							blockShapes[blockType][blockRot][r][c] == '0' ? playfieldBkgr[blockPosY + r][blockPosX + c] : blockShapes[blockType][blockRot][r][c],
 							DEFAULT_ATTR
 						);
@@ -229,13 +245,15 @@ void renderBlock() {
 			}
 		}
 	}
+	avdc_done();
 }
 
 void renderStats() {
 	for (byte i = 0; i < 7; i++) {
-		sprintf(buffer, "%d", stats[i]);
-		avdc_write_str_at_position(6 + i, 0, buffer, NULL);
+		sprintf(str_buffer, "%d", stats[i]);
+		avdc_set_cursor_write_str(6 + i, 0, str_buffer, NULL);
 	}
+	avdc_done();
 }
 
 // block
@@ -445,38 +463,52 @@ bool play() {
 
 // main game loop
 
-int main()
-{
-	init();
-	while (play());
+int main() {
+
+	// init();
+	// while (play());
+	avdc_cursor_off();
+	for (int j = 0; j < 1000; j++) {
+		for (byte i = 0; i < 24; i++) {
+			row_addr[i] = avdc_get_pointer(i, 0);
+		}
+	}
+
+	for (int j = 0; j < 1000; j++)
+	{
+		avdc_set_cursor_write_str(0, 0, "This is renderInit", NULL);
+	}
+
+	avdc_done();
+	avdc_cursor_on();
 
 	// sbyte a = -1;
 	// sbyte b = -1;
-	// sprintf(buffer, "%d", a);
-	// avdc_write_str_at_pointer(avdc_get_pointer(3, 1), buffer, NULL);
-	// sprintf(buffer, "%d", b);
-	// avdc_write_str_at_pointer(avdc_get_pointer(0, 0), buffer, NULL);
-	// avdc_write_str_at_pointer(avdc_get_pointer(2, 0), buffer, NULL);
+	// sprintf(str_buffer, "%d", a);
+	// avdc_write_str_at_pointer(avdc_set_cursor(3, 1), str_buffer, NULL);
+	// sprintf(str_buffer, "%d", b);
+	// avdc_write_str_at_pointer(avdc_set_cursor(0, 0), str_buffer, NULL);
+	// avdc_write_str_at_pointer(avdc_set_cursor(2, 0), str_buffer, NULL);
 	// char k;
 	// while (!(k = kbhit()));
 
-	// sprintf(buffer, "%c", k);
-	// avdc_write_str_at_pointer(avdc_get_pointer(4, 0), buffer, NULL);
+	// sprintf(str_buffer, "%c", k);
+	// avdc_write_str_at_pointer(avdc_set_cursor(4, 0), str_buffer, NULL);
 
 	// clock_t t;
 	// for (int i = 0; i < 5; i++)
 	// {
 	// 	t = clock();
-	// 	sprintf(buffer, "%d", t);
-	// 	avdc_write_str_at_pointer(avdc_get_pointer(5 + i, 0), buffer, NULL);	
+	// 	sprintf(str_buffer, "%d", t);
+	// 	avdc_write_str_at_pointer(avdc_set_cursor(5 + i, 0), str_buffer, NULL);	
 	// }
 
 	// srand(clock());
 	// for (int i = 0; i < 5; i++)
 	// {
 	// 	byte r = rand() % 7;
-	// 	sprintf(buffer, "%d", r);
-	// 	avdc_write_str_at_pointer(avdc_get_pointer(10 + i, 0), buffer, NULL);	
+	// 	sprintf(str_buffer, "%d", r);
+	// 	avdc_write_str_at_pointer(avdc_set_cursor(10 + i, 0), str_buffer, NULL);	
 	// }
 
 

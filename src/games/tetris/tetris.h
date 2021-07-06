@@ -1,20 +1,12 @@
 #ifndef __TETRIS_H__
 #define __TETRIS_H__
 
-#include <time.h>
 #include <stdint.h>
+#include <stdbool.h>
 
-// basics 
+// types 
 
-typedef int8_t sbyte; 
-typedef uint8_t byte;
-typedef uint8_t* pstr;
-typedef uint8_t bool;
-
-#define TRUE 1
-#define FALSE 0
-
-#define NULL (void *)0
+typedef uint8_t* puint8_t;
 
 // state
 
@@ -24,15 +16,16 @@ typedef enum {
 	STATE_GAME_OVER
 } state;
 
-state gameState;
-bool showNext;
-byte level;
-byte steps;
-long score;
-byte fullLines;
-clock_t timer;
-long timeLeft;
-uint16_t stats[7];
+extern state gameState;
+extern bool showNext;
+extern uint8_t level;
+extern uint8_t steps;
+extern long score;
+extern uint8_t fullLines;
+extern clock_t timer;
+extern long timeLeft;
+extern uint16_t stats[7];
+extern uint16_t row_addr[24];
 
 void stateInit();
 
@@ -51,19 +44,22 @@ typedef enum {
 	KEY_OTHER
 } key;
 
-key getKey();
+key keyGet();
 
 // playfield
 
-byte playfieldBkgr[20][10];
+extern uint8_t playfieldBkgr[20][10];
 
 void playfieldInit();
 void playfieldUpdateBkgr();
-byte playfieldCollapse();
+void playfieldClearRow(uint8_t row);
+void playfieldMoveRow(uint8_t rowSrc, uint8_t rowDst);
+uint8_t playfieldCollapse();
 
 // render
 
 void renderInit();
+void renderPlayfieldRow(uint8_t row);
 void renderPlayfield();
 void renderPause();
 void renderClearPause();
@@ -80,57 +76,14 @@ void renderStats();
 
 // block
 
-pstr blockShapes[][4][4] = {
-	{
-		{ "0000","0111","0100","0000" },
-		{ "0010","0010","0011","0000" },
-		{ "0001","0111","0000","0000" },
-		{ "0110","0010","0010","0000" }
-	},
-	{
-		{ "0000","2222","0000","0000" },
-		{ "0020","0020","0020","0020" },
-		{ "0000","2222","0000","0000" },
-		{ "0020","0020","0020","0020" }
-	},
-	{
-		{ "0000","0333","0030","0000" },
-		{ "0030","0033","0030","0000" },
-		{ "0030","0333","0000","0000" },
-		{ "0030","0330","0030","0000" }
-	},
-	{
-		{ "0000","0044","0440","0000" },
-		{ "0040","0044","0004","0000" },
-		{ "0000","0044","0440","0000" },
-		{ "0040","0044","0004","0000" }
-	},
-	{
-		{ "0000","0550","0055","0000" },
-		{ "0005","0055","0050","0000" },
-		{ "0000","0550","0055","0000" },
-		{ "0005","0055","0050","0000" }
-	},
-	{
-		{ "0000","0660","0660","0000" },
-		{ "0000","0660","0660","0000" },
-		{ "0000","0660","0660","0000" },
-		{ "0000","0660","0660","0000" }
-	},
-	{
-		{ "0000","0777","0007","0000" },
-		{ "0077","0070","0070","0000" },
-		{ "0700","0777","0000","0000" },
-		{ "0070","0070","0770","0000" }
-	}
-};
+extern puint8_t blockShapes[][4][4];
 
-sbyte blockType;
-byte blockRot;
-sbyte blockPosX;
-sbyte blockPosY;
+extern int8_t blockType;
+extern uint8_t blockRot;
+extern int8_t blockPosX;
+extern int8_t blockPosY;
 
-sbyte nextBlockType;
+extern int8_t nextBlockType;
 
 void blockInit();
 bool blockMoveLeft();
@@ -138,7 +91,7 @@ bool blockMoveRight();
 bool blockMoveDown();
 bool blockRotate();
 bool blockDrop();
-bool blockCheck(sbyte posX, sbyte posY, byte rot);
+bool blockCheck(int8_t posX, int8_t posY, uint8_t rot);
 bool blockNext();
 
 // timer
@@ -146,12 +99,9 @@ bool blockNext();
 void timerReset();
 bool timerDone();
 
-// init game
+// game
 
-void init();
-
-// game logic
-
-bool play();
+void gameInit();
+bool gamePlay();
 
 #endif

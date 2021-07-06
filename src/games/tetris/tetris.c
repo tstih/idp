@@ -1,14 +1,5 @@
-/*
- * tetris.c
- *
- * Tetris.
- *
- * copyright (c) 2021 tomaz stih
- *
- * 23.05.2021   mgrcar
- *
- */
-
+#include <time.h>
+#include <stdlib.h>
 #include <conio.h>
 #include "tetris.h"
 #include "avdc.h"
@@ -20,15 +11,25 @@ void srand(unsigned int seed);
 // print.c
 int sprintf(char *buf, char *fmt, ...);
 
-// string str_buffer
+// string buffer
 
-byte str_buffer[133];
+uint8_t str_buffer[133];
 
 // state
 
+state gameState;
+bool showNext;
+uint8_t level;
+uint8_t steps;
+long score;
+uint8_t fullLines;
+clock_t timer;
+long timeLeft;
+uint16_t stats[7];
+
 void stateInit() {
 	gameState = STATE_PLAY;
-	showNext = FALSE;
+	showNext = false;
 	level = 0;
 	steps = 0;
 	score = 0;
@@ -36,18 +37,14 @@ void stateInit() {
 	timer = clock();
 	timeLeft = 0;
 	srand(clock());
-	for (byte i = 0; i < 7; i++) { 
+	for (uint8_t i = 0; i < 7; i++) { 
 		stats[i] = 0; 
 	}
-	for (byte i = 0; i < 24; i++) {
-		row_addr[i] = avdc_get_pointer(i, 0);
-	}
-	avdc_done();
 }
 
 // key
 
-key getKey() {
+key keyGet() {
 	char key;
 	if (!(key = kbhit())) { return KEY_NONE; }
 	switch (key) {
@@ -81,18 +78,18 @@ key getKey() {
 
 // playfield
 
+uint8_t playfieldBkgr[20][10];
+
 void playfieldInit() {
-	for (byte i = 0; i < 20; i++) {
-		for (byte j = 0; j < 10; j++) {
-			playfieldBkgr[i][j] = '0';
-		}
+	for (uint8_t i = 0; i < 20; i++) {
+		playfieldClearRow(i);
 	}
 }
 
 void playfieldUpdateBkgr() {
-	for (byte r = 0; r < 4; r++) {
+	for (uint8_t r = 0; r < 4; r++) {
 		if (blockPosY + r >= 0 && blockPosY + r < 20) {
-			for (byte c = 0; c < 4; c++) {
+			for (uint8_t c = 0; c < 4; c++) {
 				if (blockPosX + c >= 0 && blockPosX + c < 10) {
 					if (blockShapes[blockType][blockRot][r][c] != '0') {
 						playfieldBkgr[blockPosY + r][blockPosX + c] = blockShapes[blockType][blockRot][r][c];
@@ -103,160 +100,205 @@ void playfieldUpdateBkgr() {
 	}
 }
 
-byte playfieldCollapse() {
-	//int[, ] tmp = new int[20, 10];
-	//int yTmp = 19;
-	//bool render = false;
-	//int fullLines = 0;
-	//for (int y = 19; y >= 0; y--)
-	//{
-	//	bool fullLine = true;
-	//	for (int x = 0; x < 10; x++)
-	//	{
-	//		if (mGrid[y, x] == 0) { fullLine = false; break; }
-	//	}
-	//	if (fullLine)
-	//	{
-	//		Array.Clear(mGrid, y * 10, 10);
-	//		Renderer.RenderRow(y);
-	//		render = true;
-	//		fullLines++;
-	//	}
-	//	else
-	//	{
-	//		Array.Copy(mGrid, y * 10, tmp, yTmp * 10, 10);
-	//		yTmp--;
-	//	}
-	//}
-	//if (render)
-	//{
-	//	Array.Copy(tmp, mGrid, tmp.Length);
-	//	Renderer.RenderPlayfield();
-	//}
-	//return fullLines;
+void playfieldClearRow(uint8_t row) {
+	for (uint8_t j = 0; j < 10; j++) {
+		playfieldBkgr[row][j] = '0';
+	}
+}
 
-	return 0;
+void playfieldMoveRow(uint8_t rowSrc, uint8_t rowDst) {
+	for (uint8_t j = 0; j < 10; j++) {
+		playfieldBkgr[rowDst][j] = playfieldBkgr[rowSrc][j];
+	}
+	playfieldClearRow(rowSrc);
+}
+
+uint8_t playfieldCollapse() {
+	uint8_t lines = 0;
+	for (int8_t y = 19; y >= 0; y--) {
+		bool fullLine = true;
+		for (uint8_t x = 0; x < 10; x++) {
+			if (playfieldBkgr[y][x] == '0') { fullLine = false; break; }
+		}
+		if (fullLine) {
+			lines++;
+			// clear line y
+			playfieldClearRow(y);
+			renderPlayfieldRow(y);
+			// shift lines
+			for (int8_t yy = y - 1; yy >= 0; yy--) {
+				// copy line from yy to yy + 1
+				playfieldMoveRow(yy, yy + 1);
+				renderPlayfieldRow(yy);
+				renderPlayfieldRow(yy + 1);
+			}
+			y++;
+		}
+	}
+	return lines;
 }
 
 // render
 
 void renderInit() {
 	avdc_set_cursor_write_str(0, 0, "This is renderInit", NULL);
-	avdc_done();
+}
+
+void renderPlayfieldRow(uint8_t row) {
+	avdc_set_cursor(row, 30);
+	for (uint8_t j = 0; j < 10; j++) {
+		avdc_write_at_cursor(playfieldBkgr[row][j], AVDC_DEFAULT_ATTR);
+	}
 }
 
 void renderPlayfield() {
-	for (byte i = 0; i < 20; i++) {
-		avdc_set_cursor(i, 30);
-		for (int j = 0; j < 10; j++) {
-			avdc_write_at_cursor(playfieldBkgr[i][j], DEFAULT_ATTR);
-		}
+	for (uint8_t i = 0; i < 20; i++) {
+		renderPlayfieldRow(i);
 	}
-	avdc_done();
 }
 
 void renderPause() {
 	avdc_set_cursor_write_str(1, 0, "PAUSED", NULL);
-	avdc_done();
 }
 
 void renderClearPause() {
 	avdc_set_cursor_write_str(1, 0, "      ", NULL);
-	avdc_done();
 }
 
 void renderNextBlock() {
-	for (byte r = 0; r < 4; r++) {
+	for (uint8_t r = 0; r < 4; r++) {
 		avdc_set_cursor(10 + r, 4);
-		for (byte c = 0; c < 4; c++) {
+		for (uint8_t c = 0; c < 4; c++) {
 			avdc_write_at_cursor(
 				blockShapes[nextBlockType][0][r][c] == '0' ? ' ' : blockShapes[nextBlockType][blockRot][r][c],
-				DEFAULT_ATTR
+				AVDC_DEFAULT_ATTR
 			);
 		}
 	}
-	avdc_done();
 }
 
 void renderClearNextBlock() {
-	for (byte r = 0; r < 4; r++) {
+	for (uint8_t r = 0; r < 4; r++) {
 		avdc_set_cursor_write_str(10 + r, 4, "    ", NULL);
 	}
-	avdc_done();
 }
 
 void renderLevel() {
 	sprintf(str_buffer, "Level: %d", level);
 	avdc_set_cursor_write_str(2, 0, str_buffer, NULL);
-	avdc_done();
 }
 
 void renderScore() {
 	sprintf(str_buffer, "Score: %d", score);
 	avdc_set_cursor_write_str(3, 0, str_buffer, NULL);
-	avdc_done();
 }
 
 void renderFullLines() {
 	sprintf(str_buffer, "Full lines: %d", fullLines);
 	avdc_set_cursor_write_str(4, 0, str_buffer, NULL);
-	avdc_done();
 }
 
 void renderGameOver() {
 	avdc_set_cursor_write_str(5, 0, "GAME OVER", NULL);
-	avdc_done();
 }
 
 void renderGoodbye() {
 	avdc_set_cursor_write_str(5, 0, "GOODBYE !", NULL);
-	avdc_done();
 }
 
 void renderClearBlock() {
-	for (byte r = 0; r < 4; r++) {
+	for (uint8_t r = 0; r < 4; r++) {
 		if (blockPosY + r >= 0 && blockPosY + r < 20) {
 			avdc_set_cursor(blockPosY + r, 30 + (blockPosX < 0 ? 0 : blockPosX));
-			for (byte c = 0; c < 4; c++) {
+			for (uint8_t c = 0; c < 4; c++) {
 				if (blockPosX + c >= 0 && blockPosX + c < 10) {
-					avdc_write_at_cursor(playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
+					avdc_write_at_cursor(playfieldBkgr[blockPosY + r][blockPosX + c], AVDC_DEFAULT_ATTR);
 				}
 			}
 		}
 	}
-	avdc_done();
 }
 
 void renderBlock() {
-	for (sbyte r = -1; r < 4; r++) {
+	for (int8_t r = -1; r < 4; r++) {
 		if (blockPosY + r >= 0 && blockPosY + r < 20) {
 			avdc_set_cursor(blockPosY + r, 30 + ((blockPosX - 1) < 0 ? 0 : (blockPosX - 1)));
-			for (sbyte c = -1; c < 5; c++) {
+			for (int8_t c = -1; c < 5; c++) {
 				if (blockPosX + c >= 0 && blockPosX + c < 10) {
 					if (c < 0 || c > 3 || r < 0 || r > 3) {
-						avdc_write_at_cursor(playfieldBkgr[blockPosY + r][blockPosX + c], DEFAULT_ATTR);
+						avdc_write_at_cursor(playfieldBkgr[blockPosY + r][blockPosX + c], AVDC_DEFAULT_ATTR);
 					} else {
 						avdc_write_at_cursor(
 							blockShapes[blockType][blockRot][r][c] == '0' ? playfieldBkgr[blockPosY + r][blockPosX + c] : blockShapes[blockType][blockRot][r][c],
-							DEFAULT_ATTR
+							AVDC_DEFAULT_ATTR
 						);
 					}
 				}
 			}
 		}
 	}
-	avdc_done();
 }
 
 void renderStats() {
-	for (byte i = 0; i < 7; i++) {
+	for (uint8_t i = 0; i < 7; i++) {
 		sprintf(str_buffer, "%d", stats[i]);
 		avdc_set_cursor_write_str(6 + i, 0, str_buffer, NULL);
 	}
-	avdc_done();
 }
 
 // block
+
+puint8_t blockShapes[][4][4] = {
+	{
+		{ "0000","0111","0100","0000" },
+		{ "0010","0010","0011","0000" },
+		{ "0001","0111","0000","0000" },
+		{ "0110","0010","0010","0000" }
+	},
+	{
+		{ "0000","2222","0000","0000" },
+		{ "0020","0020","0020","0020" },
+		{ "0000","2222","0000","0000" },
+		{ "0020","0020","0020","0020" }
+	},
+	{
+		{ "0000","0333","0030","0000" },
+		{ "0030","0033","0030","0000" },
+		{ "0030","0333","0000","0000" },
+		{ "0030","0330","0030","0000" }
+	},
+	{
+		{ "0000","0044","0440","0000" },
+		{ "0040","0044","0004","0000" },
+		{ "0000","0044","0440","0000" },
+		{ "0040","0044","0004","0000" }
+	},
+	{
+		{ "0000","0550","0055","0000" },
+		{ "0005","0055","0050","0000" },
+		{ "0000","0550","0055","0000" },
+		{ "0005","0055","0050","0000" }
+	},
+	{
+		{ "0000","0660","0660","0000" },
+		{ "0000","0660","0660","0000" },
+		{ "0000","0660","0660","0000" },
+		{ "0000","0660","0660","0000" }
+	},
+	{
+		{ "0000","0777","0007","0000" },
+		{ "0077","0070","0070","0000" },
+		{ "0700","0777","0000","0000" },
+		{ "0070","0070","0770","0000" }
+	}
+};
+
+int8_t blockType;
+uint8_t blockRot;
+int8_t blockPosX;
+int8_t blockPosY;
+
+int8_t nextBlockType;
 
 void blockInit() {
 	blockType = -1;
@@ -271,49 +313,49 @@ bool blockMoveLeft() {
 	if (blockCheck(blockPosX - 1, blockPosY, blockRot)) {
 		blockPosX--;
 		renderBlock();
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool blockMoveRight() {
 	if (blockCheck(blockPosX + 1, blockPosY, blockRot)) {
 		blockPosX++;
 		renderBlock();
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
-bool blockCheck(sbyte posX, sbyte posY, byte rot) {
-	for (sbyte blockY = 0, gridY = posY; blockY < 4; blockY++, gridY++) {
-		for (sbyte blockX = 0, gridX = posX; blockX < 4; blockX++, gridX++) {
+bool blockCheck(int8_t posX, int8_t posY, uint8_t rot) {
+	for (int8_t blockY = 0, gridY = posY; blockY < 4; blockY++, gridY++) {
+		for (int8_t blockX = 0, gridX = posX; blockX < 4; blockX++, gridX++) {
 			if (blockShapes[blockType][rot][blockY][blockX] != '0' && 
 				(gridX < 0 || gridY < 0 || gridX >= 10 || gridY >= 20 || playfieldBkgr[gridY][gridX] != '0')) {
-				return FALSE;
+				return false;
 			}
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 bool blockMoveDown() {
 	if (blockCheck(blockPosX, blockPosY + 1, blockRot)) {
 		blockPosY++;
 		renderBlock();
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool blockRotate() {
-	byte rot = (blockRot + 1) % 4;
+	uint8_t rot = (blockRot + 1) % 4;
 	if (blockCheck(blockPosX, blockPosY, rot)) {
 		blockRot = rot;
 		renderBlock();
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 bool blockDrop() {
@@ -321,7 +363,6 @@ bool blockDrop() {
 	if (success) {
 		renderClearBlock();
 		while (blockCheck(blockPosX, blockPosY + 1, blockRot)) { blockPosY++; }
-		playfieldUpdateBkgr();
 		renderBlock();
 	}
 	return success;
@@ -357,9 +398,9 @@ bool timerDone() {
 	return now - timer >= span;
 }
 
-// init
+// game
 
-void init() {
+void gameInit() {
 	stateInit();
 	playfieldInit();
 	blockInit();
@@ -367,16 +408,13 @@ void init() {
 	renderInit();
 	renderPlayfield();
 	blockNext();
-	//timerReset(); // redundant?
 }
 
-// game logic
-
-bool play() {
+bool gamePlay() {
 	clock_t now;
 	key key;
 	if (gameState == STATE_PLAY) {
-		key = getKey();
+		key = keyGet();
 		switch (key) {
 		case KEY_LEFT:
 			blockMoveLeft();
@@ -416,24 +454,24 @@ bool play() {
 				if (score > 99999) { score = 99999; } // prevent overflow
 				renderScore();
 				steps = 0;
+				playfieldUpdateBkgr();
 				fullLines += playfieldCollapse();
 				if (fullLines > 99) { fullLines = 99; } // prevent overflow
 				renderFullLines();
-				byte computedLevel = (fullLines - 1) / 10;
+				uint8_t computedLevel = (fullLines - 1) / 10;
 				level = computedLevel > level ? computedLevel : level;
 				renderLevel();
-				playfieldUpdateBkgr();
 				if (!blockNext()) {
 					renderGameOver();
 					gameState = STATE_GAME_OVER;
-					return TRUE;
+					return true;
 				}
 			}
 			else { steps++; }
 			timerReset();
 		}
 	} else if (gameState == STATE_PAUSE) {
-		key = getKey();
+		key = keyGet();
 		if (key == KEY_RESTART || key == KEY_PAUSE) {
 			renderClearPause();
 			now = clock(); 
@@ -442,7 +480,7 @@ bool play() {
 		}
 	}
 	else if (gameState == STATE_GAME_OVER) {
-		key = getKey();
+		key = keyGet();
 		if (key != KEY_NONE) {
 			if (key == KEY_RESTART) {
 				stateInit();
@@ -450,26 +488,27 @@ bool play() {
 				playfieldInit();
 				renderPlayfield();
 				blockNext();
-				timerReset();
 				gameState = STATE_PLAY;
 			} else {
 				renderGoodbye();
-				return FALSE;
+				return false;
 			}
 		}
 	}
-	return TRUE;
+	return true;
 }
 
 // main game loop
 
 int main() {
 
-	// init();
-	// while (play());
-	avdc_cursor_off();
+	avdc_init();
+
+	// gameInit();
+	// while (gamePlay());
+	
 	for (int j = 0; j < 1000; j++) {
-		for (byte i = 0; i < 24; i++) {
+		for (uint8_t i = 0; i < 24; i++) {
 			row_addr[i] = avdc_get_pointer(i, 0);
 		}
 	}
@@ -480,10 +519,9 @@ int main() {
 	}
 
 	avdc_done();
-	avdc_cursor_on();
 
-	// sbyte a = -1;
-	// sbyte b = -1;
+	// int8_t a = -1;
+	// int8_t b = -1;
 	// sprintf(str_buffer, "%d", a);
 	// avdc_write_str_at_pointer(avdc_set_cursor(3, 1), str_buffer, NULL);
 	// sprintf(str_buffer, "%d", b);
@@ -506,7 +544,7 @@ int main() {
 	// srand(clock());
 	// for (int i = 0; i < 5; i++)
 	// {
-	// 	byte r = rand() % 7;
+	// 	uint8_t r = rand() % 7;
 	// 	sprintf(str_buffer, "%d", r);
 	// 	avdc_write_str_at_pointer(avdc_set_cursor(10 + i, 0), str_buffer, NULL);	
 	// }

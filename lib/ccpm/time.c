@@ -114,11 +114,11 @@ char* asctime(const struct tm* pt) {
 
 /* Return current clock in 1/1000 seconds */
 clock_t clock(void) {
-    long clk = (_bcd2bin(_port_read(THOUS_S))>>4) +    /* 1/1000 s */
-        (_bcd2bin(_port_read(HUNDR_S))*10) +           /* 1/100 s */
-        (_bcd2bin(_port_read(SECOND))*1000) +         /* s */
-        (_bcd2bin(_port_read(MINUTE))*(long)60000) +  /* min */
-        (_bcd2bin(_port_read(HOUR))*(long)3600000); /* hrs */
+    long clk = (_port_read(THOUS_S)>>4) +       /* 1/1000 s */
+        (_bcd2bin(_port_read(HUNDR_S))*10L) +   /* 1/100 s */
+        (_bcd2bin(_port_read(SECOND))*1000L) +  /* s */
+        (_bcd2bin(_port_read(MINUTE))*60000L) + /* min */
+        (_bcd2bin(_port_read(HOUR))*3600000L);  /* hrs */
     return clk;
 }
 

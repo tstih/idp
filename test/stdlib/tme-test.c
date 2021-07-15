@@ -50,6 +50,17 @@ int clock_test() {
     return 0;
 }
 
+/* this test will [most likely] fail if rollovers are not handled correctly */
+int clock_rollover_test() {
+    long c1=clock();
+    for(int i=0;i<10000;i++) {
+        long c2=clock();
+        ASSERT(c2>=c1);
+        c1=c2;
+    }
+    return 0;
+}
+
 /* will block if it doesn't work */
 int time_test() {
     time_t t=time(NULL);
@@ -90,6 +101,7 @@ int mktime_test() {
 int all_tests() {
     VERIFY(setdatetime_test);
     VERIFY(clock_test);
+    VERIFY(clock_rollover_test);
     VERIFY(time_test);
     VERIFY(asc_test);
     VERIFY(mktime_test);

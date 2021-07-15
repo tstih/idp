@@ -112,14 +112,22 @@ char* asctime(const struct tm* pt) {
     return &(_at[0]); /* return ptr to internal buffer (unsafe, I know) */
 }
 
-/* Return current clock in 1/1000 seconds */
+/* Return current clock in 1/1000 seconds (last digit is always 0) */
 clock_t clock(void) {
-    long clk = (_port_read(THOUS_S)>>4) +       /* 1/1000 s */
-        (_bcd2bin(_port_read(HUNDR_S))*10L) +   /* 1/100 s */
-        (_bcd2bin(_port_read(SECOND))*1000L) +  /* s */
-        (_bcd2bin(_port_read(MINUTE))*60000L) + /* min */
-        (_bcd2bin(_port_read(HOUR))*3600000L);  /* hrs */
-    return clk;
+    while (true) {
+        uint8_t second = _port_read(SECOND);
+        uint8_t minute = _port_read(MINUTE);
+        uint8_t hour = _port_read(HOUR);
+        uint8_t hundr_s =  _port_read(HUNDR_S);
+        uint8_t second_check = _port_read(SECOND);
+        if (second_check == second) {
+            return
+                (_bcd2bin(hundr_s)*10L) +   /* 1/100 s */
+                (_bcd2bin(second)*1000L) +  /* s */
+                (_bcd2bin(minute)*60000L) + /* min */
+                (_bcd2bin(hour)*3600000L);  /* hrs */
+        }
+    }
 }
 
 /* Convert current time to textual representation using the following
@@ -209,17 +217,25 @@ time_t time(time_t *arg) {
 
     /* init... */
     struct tm tim;
+    uint8_t y;
 
-    /* populate from ports */
-    tim.tm_sec=_bcd2bin(_port_read(SECOND));
-    tim.tm_min=_bcd2bin(_port_read(MINUTE));
-    tim.tm_hour=_bcd2bin(_port_read(HOUR));
+    while (true) {
+        /* populate from ports */
+        tim.tm_sec=_bcd2bin(_port_read(SECOND));
+        tim.tm_min=_bcd2bin(_port_read(MINUTE));
+        tim.tm_hour=_bcd2bin(_port_read(HOUR));
 
-    tim.tm_mday=_bcd2bin(_port_read(MDAY));
-    tim.tm_mon=_bcd2bin(_port_read(MONTH))-1; /* Normalize */
+        tim.tm_mday=_bcd2bin(_port_read(MDAY));
+        tim.tm_mon=_bcd2bin(_port_read(MONTH))-1; /* Normalize */
 
-    /* read fake year from nvram */
-    uint8_t y=_bcd2bin(_port_read(YEAR));
+        /* read fake year from nvram */
+        y=_bcd2bin(_port_read(YEAR));
+        
+        uint8_t second_check = _bcd2bin(_port_read(SECOND));
+
+        if (tim.tm_sec == second_check) { break; }
+    }
+    
     if (y<70) y+=100;
     tim.tm_year=y;
 
@@ -241,6 +257,7 @@ void setdatetime(struct tm *ptim) {
     _port_write(0xb2,0xff);
 
     /* and set all values */
+    _port_write(SECOND,0); /* prevent rollover */
     _port_write(YEAR,_bin2bcd((ptim->tm_year)%100));
     _port_write(MONTH,_bin2bcd(ptim->tm_mon+1));
     _port_write(WDAY,_bin2bcd(_dow(ptim)));

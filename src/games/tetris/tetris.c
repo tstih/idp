@@ -12,58 +12,9 @@ void srand(unsigned int seed);
 // print.c
 int sprintf(char *buf, char *fmt, ...);
 
-uint8_t _port_read(uint8_t addr);
-uint8_t _bcd2bin(uint8_t bcd);
-
 // string buffer
 
 uint8_t str_buffer[133];
-
-/* Partner ports */
-#define THOUS_S 0xa0
-#define HUNDR_S 0xa1
-#define SECOND  0xa2
-#define MINUTE  0xa3
-#define HOUR    0xa4
-#define WDAY    0xa5
-#define MDAY    0xa6
-#define MONTH   0xa7
-#define YEAR    0xa9 /* fake 2 digit year, from CMOS memory */
-
-clock_t my_clock(void) {
-	while (true) {
-		uint8_t second_check = _port_read(SECOND);
-		uint8_t minute = _port_read(MINUTE);
-		uint8_t hour = _port_read(HOUR);
-		uint8_t hundr_s = _port_read(HUNDR_S);
-		uint8_t second = _port_read(SECOND);
-		if (second == second_check) {
-	    	return 
-	    		(_bcd2bin(hundr_s) * 10L) +
-	        	(_bcd2bin(second) * 1000L) +
-	        	(_bcd2bin(minute) * 60000L) +
-	        	(_bcd2bin(hour) * 3600000L);
-		}
-	}
-}
-
-clock_t my_clock_ex(uint8_t *thous_s, uint8_t *hundr_s, uint8_t *second, uint8_t *minute, uint8_t *hour) {
-	while (true) {
-		*thous_s = 0;
-		uint8_t second_check = _port_read(SECOND);
-		*minute = _port_read(MINUTE);
-		*hour = _port_read(HOUR);
-		*hundr_s = _port_read(HUNDR_S);
-		*second = _port_read(SECOND);
-		if (*second == second_check) {
-	    	return 
-	    		(_bcd2bin(*hundr_s) * 10L) +
-	        	(_bcd2bin(*second) * 1000L) +
-	        	(_bcd2bin(*minute) * 60000L) +
-	        	(_bcd2bin(*hour) * 3600000L);
-		}
-	}
-}
 
 // state
 
@@ -84,9 +35,9 @@ void stateInit() {
 	steps = 0;
 	score = 0;
 	fullLines = 0;
-	timer = clock();
+	//timer = clock();
 	timeLeft = 0;
-	srand(clock());
+	//srand(clock());
 	for (uint8_t i = 0; i < 7; i++) { 
 		stats[i] = 0; 
 	}
@@ -96,7 +47,7 @@ void stateInit() {
 
 key keyGet() {
 	char key;
-	if (!(key = kbhit())) { return KEY_NONE; }
+	//if (!(key = kbhit())) { return KEY_NONE; }
 	switch (key) {
 	case 'a':
 	case 'A':
@@ -234,17 +185,17 @@ void renderClearNextBlock() {
 }
 
 void renderLevel() {
-	sprintf(str_buffer, "Level: %d", level);
+	//sprintf(str_buffer, "Level: %d", level);
 	avdc_set_cursor_write_str(2, 0, str_buffer, NULL);
 }
 
 void renderScore() {
-	sprintf(str_buffer, "Score: %d", score);
+	//sprintf(str_buffer, "Score: %d", score);
 	avdc_set_cursor_write_str(3, 0, str_buffer, NULL);
 }
 
 void renderFullLines() {
-	sprintf(str_buffer, "Full lines: %d", fullLines);
+	//sprintf(str_buffer, "Full lines: %d", fullLines);
 	avdc_set_cursor_write_str(4, 0, str_buffer, NULL);
 }
 
@@ -291,13 +242,13 @@ void renderBlock() {
 
 void renderStats() {
 	for (uint8_t i = 0; i < 7; i++) {
-		sprintf(str_buffer, "%d", stats[i]);
+		//sprintf(str_buffer, "%d", stats[i]);
 		avdc_set_cursor_write_str(6 + i, 0, str_buffer, NULL);
 	}
 }
 
 void renderTimer() {
-	sprintf(str_buffer, "%d", timer);
+	//sprintf(str_buffer, "%d", timer);
 	avdc_set_cursor_write_str(21, 0, str_buffer, NULL);
 }
 
@@ -444,22 +395,12 @@ bool blockNext() {
 // timer
 
 void timerReset() {
-	timer = clock();
+	//timer = clock();
 }
 
-clock_t old_clock = 0;
-int issue = 0;
-
 bool timerDone() {
-	clock_t now = clock();
-	if (now < timer) { issue++; }
+	clock_t now = 0;//clock();
 	long span = (10 - level) * 50;
-	// render timer
-	//sprintf(str_buffer, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x", _port_read(0xa0), _port_read(0xa1), _port_read(0xa2), _port_read(0xa3), _port_read(0xa4), _port_read(0xa5), _port_read(0xa6), _port_read(0xa7), _port_read(0xa8), _port_read(0xa9), _port_read(0xaa));
-	//avdc_set_cursor_write_str(21, 0, str_buffer, NULL);
-	sprintf(str_buffer, "%d", issue);
-	avdc_set_cursor_write_str(22, 0, str_buffer, NULL);
-	// --
 	return now - timer >= span;
 }
 
@@ -495,7 +436,7 @@ bool gamePlay() {
 			break;
 		case KEY_PAUSE: 
 			{
-				now = clock();
+				//now = clock();
 				timeLeft = now - timer;
 				renderPause();
 				gameState = STATE_PAUSE;
@@ -539,7 +480,7 @@ bool gamePlay() {
 		key = keyGet();
 		if (key == KEY_RESTART || key == KEY_PAUSE) {
 			renderClearPause();
-			now = clock(); 
+			//now = clock(); 
 			timer = now - timeLeft;
 			gameState = STATE_PLAY;
 		}
@@ -566,111 +507,12 @@ bool gamePlay() {
 // main game loop
 
 int main() {
-
-
 	avdc_init();
-
 	gdp_cls();
 
+	gameInit();
+	while (gamePlay());
 
-
-
-
-
-
-
-	// int count_ok = 0;
-	// int count_err = 0;
-	// uint8_t th, hu, se, mi, hr;
-	// uint8_t old_th, old_hu, old_se, old_mi, old_hr;
-	// clock_t old_c = 0;
-	// for (int i = 0; i < 10000; i++) {
-	// 	clock_t c = my_clock_ex(&th, &hu, &se, &mi, &hr);
-	// 	if (old_c > c) {
-	// 		sprintf(str_buffer, "%02x %02x %02x %02x %02x %lu %lu", old_th, old_hu, old_se, old_mi, old_hr, old_c, my_compute_clock(old_th, old_hu, old_se, old_mi, old_hr));
-	// 		avdc_set_cursor_write_str(0, 0, str_buffer, NULL);
-	// 		sprintf(str_buffer, "%02x %02x %02x %02x %02x %lu %lu", th, hu, se, mi, hr, c, my_compute_clock(th, hu, se, mi, hr));
-	// 		avdc_set_cursor_write_str(1, 0, str_buffer, NULL);
-	// 		c = my_clock_ex(&th, &hu, &se, &mi, &hr);
-	// 		sprintf(str_buffer, "%02x %02x %02x %02x %02x %lu %lu", th, hu, se, mi, hr, c, my_compute_clock(th, hu, se, mi, hr));
-	// 		avdc_set_cursor_write_str(2, 0, str_buffer, NULL);
-	// 		c = my_clock_ex(&th, &hu, &se, &mi, &hr);
-	// 		sprintf(str_buffer, "%02x %02x %02x %02x %02x %lu %lu", th, hu, se, mi, hr, c, my_compute_clock(th, hu, se, mi, hr));
-	// 		avdc_set_cursor_write_str(3, 0, str_buffer, NULL);
-	// 		c = my_clock_ex(&th, &hu, &se, &mi, &hr);
-	// 		sprintf(str_buffer, "%02x %02x %02x %02x %02x %lu %lu", th, hu, se, mi, hr, c, my_compute_clock(th, hu, se, mi, hr));
-	// 		avdc_set_cursor_write_str(4, 0, str_buffer, NULL);
-	// 		return 0;
-	// 	}
-	// 	old_c = c;
-	// 	old_th = th;
-	// 	old_hu = hu;
-	// 	old_se = se;
-	// 	old_mi = mi;
-	// 	old_hr = hr;
-	// }
-
-
-
-	//gdp_init();
-	//gdp_draw_line(0, 0, 100, 100);
-
-	
-
-	// for (int i = 0; i < 26; i++) {
-	// 	sprintf(str_buffer, "%d", i);
-	// 	avdc_set_cursor_write_str(i, 0, str_buffer, NULL);
-	// }
-
-	// while (!kbhit());
-
-	// avdc_done();
-
-	//gameInit();
-	//while (gamePlay());
-	
-	// for (int j = 0; j < 1000; j++) {
-	// 	for (uint8_t i = 0; i < 24; i++) {
-	// 		row_addr[i] = avdc_get_pointer(i, 0);
-	// 	}
-	// }
-
-	// for (int j = 0; j < 1000; j++)
-	// {
-	// 	avdc_set_cursor_write_str(0, 0, "This is renderInit", NULL);
-	// }
-
-	
-
-	// int8_t a = -1;
-	// int8_t b = -1;
-	// sprintf(str_buffer, "%d", a);
-	// avdc_write_str_at_pointer(avdc_set_cursor(3, 1), str_buffer, NULL);
-	// sprintf(str_buffer, "%d", b);
-	// avdc_write_str_at_pointer(avdc_set_cursor(0, 0), str_buffer, NULL);
-	// avdc_write_str_at_pointer(avdc_set_cursor(2, 0), str_buffer, NULL);
-	// char k;
-	// while (!(k = kbhit()));
-
-	// sprintf(str_buffer, "%c", k);
-	// avdc_write_str_at_pointer(avdc_set_cursor(4, 0), str_buffer, NULL);
-
-	// clock_t t;
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	t = clock();
-	// 	sprintf(str_buffer, "%d", t);
-	// 	avdc_write_str_at_pointer(avdc_set_cursor(5 + i, 0), str_buffer, NULL);	
-	// }
-
-	// srand(clock());
-	// for (int i = 0; i < 5; i++)
-	// {
-	// 	uint8_t r = rand() % 7;
-	// 	sprintf(str_buffer, "%d", r);
-	// 	avdc_write_str_at_pointer(avdc_set_cursor(10 + i, 0), str_buffer, NULL);	
-	// }
-
-	//avdc_done();
+	avdc_done();
 	return 0;
 }

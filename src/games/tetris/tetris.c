@@ -1,16 +1,8 @@
-#include <time.h>
 #include <stdlib.h>
-#include <conio.h>
 #include "tetris.h"
 #include "avdc.h"
 #include "gdp.h"
-
-// random.c
-int rand(void);
-void srand(unsigned int seed);
-
-// print.c
-int sprintf(char *buf, char *fmt, ...);
+#include "utils.h"
 
 // string buffer
 
@@ -24,8 +16,7 @@ uint8_t level;
 uint8_t steps;
 long score;
 uint8_t fullLines;
-clock_t timer;
-long timeLeft;
+long timePassed;
 uint16_t stats[7];
 
 void stateInit() {
@@ -35,9 +26,9 @@ void stateInit() {
 	steps = 0;
 	score = 0;
 	fullLines = 0;
-	//timer = clock();
-	timeLeft = 0;
-	//srand(clock());
+	timer_reset(0); 
+	timePassed = 0;
+	srand(_timer());
 	for (uint8_t i = 0; i < 7; i++) { 
 		stats[i] = 0; 
 	}
@@ -47,7 +38,7 @@ void stateInit() {
 
 key keyGet() {
 	char key;
-	//if (!(key = kbhit())) { return KEY_NONE; }
+	if (!(key = cpm_getchar_nonblock())) { return KEY_NONE; }
 	switch (key) {
 	case 'a':
 	case 'A':
@@ -185,18 +176,18 @@ void renderClearNextBlock() {
 }
 
 void renderLevel() {
-	//sprintf(str_buffer, "Level: %d", level);
-	avdc_set_cursor_write_str(2, 0, str_buffer, NULL);
+	avdc_set_cursor_write_str(2, 0, "Level: ", NULL);
+	avdc_set_cursor_write_str(2, 7, itoa(level, str_buffer), NULL);
 }
 
 void renderScore() {
-	//sprintf(str_buffer, "Score: %d", score);
-	avdc_set_cursor_write_str(3, 0, str_buffer, NULL);
+	avdc_set_cursor_write_str(3, 0, "Score: ", NULL);
+	avdc_set_cursor_write_str(3, 7, itoa(score, str_buffer), NULL);
 }
 
 void renderFullLines() {
-	//sprintf(str_buffer, "Full lines: %d", fullLines);
-	avdc_set_cursor_write_str(4, 0, str_buffer, NULL);
+	avdc_set_cursor_write_str(4, 0, "Full lines: ", NULL);
+	avdc_set_cursor_write_str(4, 12, itoa(fullLines, str_buffer), NULL);
 }
 
 void renderGameOver() {
@@ -242,14 +233,8 @@ void renderBlock() {
 
 void renderStats() {
 	for (uint8_t i = 0; i < 7; i++) {
-		//sprintf(str_buffer, "%d", stats[i]);
-		avdc_set_cursor_write_str(6 + i, 0, str_buffer, NULL);
+		avdc_set_cursor_write_str(6 + i, 0, itoa(stats[i], str_buffer), NULL);
 	}
-}
-
-void renderTimer() {
-	//sprintf(str_buffer, "%d", timer);
-	avdc_set_cursor_write_str(21, 0, str_buffer, NULL);
 }
 
 // block
@@ -394,14 +379,9 @@ bool blockNext() {
 
 // timer
 
-void timerReset() {
-	//timer = clock();
-}
-
 bool timerDone() {
-	clock_t now = 0;//clock();
-	long span = (10 - level) * 50;
-	return now - timer >= span;
+	long span = (10 - level) * 5;
+	return timer_diff() >= span;
 }
 
 // game
@@ -417,7 +397,6 @@ void gameInit() {
 }
 
 bool gamePlay() {
-	clock_t now;
 	key key;
 	if (gameState == STATE_PLAY) {
 		key = keyGet();
@@ -436,8 +415,7 @@ bool gamePlay() {
 			break;
 		case KEY_PAUSE: 
 			{
-				//now = clock();
-				timeLeft = now - timer;
+				timePassed = timer_diff();
 				renderPause();
 				gameState = STATE_PAUSE;
 			}
@@ -474,14 +452,13 @@ bool gamePlay() {
 				}
 			}
 			else { steps++; }
-			timerReset();
+			timer_reset(0);
 		}
 	} else if (gameState == STATE_PAUSE) {
 		key = keyGet();
 		if (key == KEY_RESTART || key == KEY_PAUSE) {
-			renderClearPause();
-			//now = clock(); 
-			timer = now - timeLeft;
+			renderClearPause(); 
+			timer_reset(-timePassed);
 			gameState = STATE_PLAY;
 		}
 	}

@@ -22,10 +22,8 @@ extern uint8_t level;
 extern uint8_t steps;
 extern long score;
 extern uint8_t fullLines;
-extern clock_t timer;
-extern long timeLeft;
+extern long timePassed;
 extern uint16_t stats[7];
-//extern uint16_t row_addr[26];
 
 void stateInit();
 
@@ -73,7 +71,6 @@ void renderGoodbye();
 void renderBlock();
 void renderClearBlock();
 void renderStats();
-void renderTimer();
 
 // block
 
@@ -97,7 +94,6 @@ bool blockNext();
 
 // timer
 
-void timerReset();
 bool timerDone();
 
 // game

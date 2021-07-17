@@ -26,9 +26,11 @@ void _stdlib_init() {
     /* initialize file system */
     _fds_init();
 
+#ifndef LEAN
     /* initialize stdio */
     _stdio_init();
 
     /* initialize conio */
     _conio_init();
+#endif
 }

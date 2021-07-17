@@ -25,7 +25,7 @@ extern uint8_t fullLines;
 extern clock_t timer;
 extern long timeLeft;
 extern uint16_t stats[7];
-extern uint16_t row_addr[24];
+//extern uint16_t row_addr[26];
 
 void stateInit();
 
@@ -73,6 +73,7 @@ void renderGoodbye();
 void renderBlock();
 void renderClearBlock();
 void renderStats();
+void renderTimer();
 
 // block
 

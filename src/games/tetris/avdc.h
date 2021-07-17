@@ -3,25 +3,27 @@
 
 #include <stdint.h>
 
-typedef union {
-    uint16_t u16;
-    uint8_t u8[2];
-} U16_U8;
+#define AVDC_DEFAULT_ATTR 0x00
 
-#define AVDC_DEFAULT_ATTR     0x00
-
-#define AVDC_STATUS_READY     0x20
-#define AVDC_ACCESS_FLAG      0x10
+#define AVDC_STATUS_READY 0x20
+#define AVDC_ACCESS_FLAG  0x10
 
 #define AVDC_CMD_CUR_OFF      0x30
 #define AVDC_CMD_CUR_ON       0x31
 #define AVDC_CMD_READ_AT_PTR  0xA4
 #define AVDC_CMD_SET_PTR_REG  0x1A
+#define AVDC_CMD_SET_MODE_REG 0x15
 #define AVDC_CMD_WRITE_AT_PTR 0xA2
 #define AVDC_CMD_WRITE_AT_CUR 0xAB
+#define AVDC_CMD_WRITE_C2P    0xBB
 
-#define EI __asm__ ("EI")
-#define DI __asm__ ("DI")
+#define EI __asm__ ("NOP")
+#define DI __asm__ ("NOP")
+
+typedef enum {
+	AVDC_MODE_80 = 80,
+	AVDC_MODE_132 = 132
+} avdc_mode;
 
 __sfr __at 0x39 AVDC_CMD;     // W: command 
 __sfr __at 0x39 AVDC_STATUS;  // R: status (ready)
@@ -33,16 +35,21 @@ __sfr __at 0x35 AVDC_ATTR;    // R/W: attribute register
 __sfr __at 0x3C AVDC_CUR_LWR; // W: cursor address lower
 __sfr __at 0x3D AVDC_CUR_UPR; // W: cursor address upper
 
-extern uint16_t row_addr[24];
+extern uint16_t row_addr[26];
 
 void avdc_init();
-void avdc_done();
 
 void avdc_wait_access(); // WARNME: disables interrupts (you need to call EI to re-enable them)
 void avdc_wait_ready();
 
 void avdc_cursor_off();
 void avdc_cursor_on();
+
+void avdc_fill_screen(uint8_t ch);
+void avdc_fill_row(uint8_t row, uint8_t ch);
+
+void avdc_set_mode(avdc_mode mode);
+void avdc_restore_mode();
 
 uint16_t avdc_get_pointer(uint8_t row, uint8_t col);
 uint16_t avdc_get_pointer_cached(uint8_t row, uint8_t col);
@@ -58,5 +65,7 @@ void avdc_set_cursor(uint8_t row, uint8_t col);
 void avdc_write_at_cursor(uint8_t chr, uint8_t attr);
 void avdc_write_str_at_cursor(uint8_t *str, uint8_t *attr);
 void avdc_set_cursor_write_str(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr);
+
+void avdc_done();
 
 #endif

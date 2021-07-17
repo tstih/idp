@@ -1,16 +1,24 @@
 #include "avdc.h"
 
-uint16_t row_addr[24];
+typedef union {
+   uint16_t u16;
+   uint8_t u8[2];
+} addr_t;
+
+uint16_t row_addr[26];
 
 void avdc_init() {
-    for (uint16_t i = 0; i < 24; i++) {
+    for (uint8_t i = 0; i < 26; i++) {
         row_addr[i] = avdc_get_pointer(i, 0);
+        if (row_addr[i] == 0xFFFF) { // we are in Matej's emulator, so we do something that works until you scroll the screen
+            for (uint8_t j = 0; j < 26; j++) {
+                row_addr[j] = j * 132 + 450;
+            }
+            break;
+        }
     }
     avdc_cursor_off();
-}
-
-void avdc_done() {
-    avdc_cursor_on();
+    avdc_fill_screen(' ');
 }
 
 void avdc_wait_access() { // WARNME: disables interrupts
@@ -44,8 +52,46 @@ void avdc_cursor_on() {
     EI;
 }
 
+void avdc_fill_screen(uint8_t ch) {
+    for (uint8_t row = 0; row < 26; row++) {
+        avdc_fill_row(row, ch);
+    }
+}
+
+void avdc_fill_row(uint8_t row, uint8_t ch) {
+    avdc_wait_access();
+    avdc_wait_ready();
+    addr_t addr;
+    addr.u16 = avdc_get_pointer_cached(row, 0); 
+    // set cursor
+    AVDC_CUR_LWR = addr.u8[0];
+    AVDC_CUR_UPR = addr.u8[1];
+    // set pointer
+    addr.u16 += 132; 
+    AVDC_CMD = AVDC_CMD_SET_PTR_REG;
+    AVDC_INIT = addr.u8[0];
+    AVDC_INIT = addr.u8[1];
+    // write cursor to pointer
+    AVDC_CHR = ch; 
+    AVDC_ATTR = 0;
+    AVDC_CMD = AVDC_CMD_WRITE_C2P;
+    EI;
+}
+
+void avdc_set_mode(avdc_mode mode) { // THIS DOES NOT WORK. TEST ON REAL MACHINE!
+    avdc_wait_access();
+    avdc_wait_ready();
+    AVDC_CMD = AVDC_CMD_SET_MODE_REG;
+    AVDC_INIT = mode - 1;
+    EI;
+}
+
+void avdc_restore_mode() {
+    // ...
+}
+
 uint16_t avdc_get_pointer(uint8_t row, uint8_t col) {
-    U16_U8 row_addr;
+    addr_t row_addr;
     uint8_t dummy;
     avdc_read_at_pointer(row * 2, &row_addr.u8[0], &dummy);
     avdc_read_at_pointer(row * 2 + 1, &row_addr.u8[1], &dummy);
@@ -61,7 +107,7 @@ void avdc_read_at_pointer(uint16_t addr, uint8_t *chr, uint8_t *attr) {
     // CPU checks RDFLG status bit to assure that any delayed commands have been completed.
     avdc_wait_ready();
     // CPU writes addr into pointer registers.
-    U16_U8 val;
+    addr_t val;
     val.u16 = addr;
     AVDC_CMD = AVDC_CMD_SET_PTR_REG;
     AVDC_INIT = val.u8[0];
@@ -81,7 +127,7 @@ void avdc_write_at_pointer(uint16_t addr, uint8_t chr, uint8_t attr) {
     // CPU checks RDFLG status bit to assure that any delayed commands have been completed.
     avdc_wait_ready();
     // CPU writes addr into pointer registers.
-    U16_U8 val;
+    addr_t val;
     val.u16 = addr;
     AVDC_CMD = AVDC_CMD_SET_PTR_REG;
     AVDC_INIT = val.u8[0];
@@ -117,7 +163,7 @@ void avdc_write_str_at_position(uint8_t row, uint8_t col, uint8_t *str, uint8_t 
 
 void avdc_set_cursor(uint8_t row, uint8_t col) {
     avdc_wait_access();
-    U16_U8 addr;
+    addr_t addr;
     addr.u16 = avdc_get_pointer_cached(row, col);
     AVDC_CUR_LWR = addr.u8[0];
     AVDC_CUR_UPR = addr.u8[1];
@@ -154,4 +200,10 @@ void avdc_write_str_at_cursor(uint8_t *str, uint8_t *attr) {
 void avdc_set_cursor_write_str(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr) {
     avdc_set_cursor(row, col);
     avdc_write_str_at_cursor(str, attr);
+}
+
+void avdc_done() {
+    avdc_fill_screen(' ');
+    avdc_set_cursor(0, 0); // THIS DOES NOT WORK. TEST ON REAL MACHINE!
+    //avdc_cursor_on();
 }

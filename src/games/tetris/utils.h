@@ -9,10 +9,10 @@
 __sfr __at 0xa1 CTC_HUNDREDS; // R: clock, hundreds 
 __sfr __at 0xa2 CTC_SECONDS;  // R: clock, seconds
 
-extern int16_t _timer_start;
-extern int16_t _timer_offset;
+extern int16_t timer_start;
+extern int16_t timer_offset;
 
-int16_t _timer();
+int16_t timer();
 
 void timer_reset(int16_t offset);
 int16_t timer_diff();

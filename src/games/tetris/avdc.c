@@ -18,7 +18,7 @@ void avdc_init() {
         }
     }
     avdc_cursor_off();
-    avdc_fill_screen(' ');
+    avdc_clear_screen();
 }
 
 void avdc_wait_access() { // WARNME: disables interrupts
@@ -52,13 +52,13 @@ void avdc_cursor_on() {
     EI;
 }
 
-void avdc_fill_screen(uint8_t ch) {
+void avdc_clear_screen() {
     for (uint8_t row = 0; row < 26; row++) {
-        avdc_fill_row(row, ch);
+        avdc_clear_row(row);
     }
 }
 
-void avdc_fill_row(uint8_t row, uint8_t ch) {
+void avdc_clear_row(uint8_t row) {
     avdc_wait_access();
     avdc_wait_ready();
     addr_t addr;
@@ -72,22 +72,10 @@ void avdc_fill_row(uint8_t row, uint8_t ch) {
     AVDC_INIT = addr.u8[0];
     AVDC_INIT = addr.u8[1];
     // write cursor to pointer
-    AVDC_CHR = ch; 
+    AVDC_CHR = ' '; 
     AVDC_ATTR = 0;
     AVDC_CMD = AVDC_CMD_WRITE_C2P;
     EI;
-}
-
-void avdc_set_mode(avdc_mode mode) { // THIS DOES NOT WORK. TEST ON REAL MACHINE!
-    avdc_wait_access();
-    avdc_wait_ready();
-    AVDC_CMD = AVDC_CMD_SET_MODE_REG;
-    AVDC_INIT = mode - 1;
-    EI;
-}
-
-void avdc_restore_mode() {
-    // ...
 }
 
 uint16_t avdc_get_pointer(uint8_t row, uint8_t col) {
@@ -157,7 +145,7 @@ void avdc_write_str_at_pointer(uint16_t addr, uint8_t *str, uint8_t *attr) {
     }
 }
 
-void avdc_write_str_at_position(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr) { 
+void avdc_write_str_at_pointer_pos(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr) { 
     avdc_write_str_at_pointer(avdc_get_pointer_cached(row, col), str, attr);
 }
 
@@ -197,13 +185,13 @@ void avdc_write_str_at_cursor(uint8_t *str, uint8_t *attr) {
     }
 }
 
-void avdc_set_cursor_write_str(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr) {
+void avdc_write_str_at_cursor_pos(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr) {
     avdc_set_cursor(row, col);
     avdc_write_str_at_cursor(str, attr);
 }
 
 void avdc_done() {
-    avdc_fill_screen(' ');
+    avdc_clear_screen();
     avdc_set_cursor(0, 0); // THIS DOES NOT WORK. TEST ON REAL MACHINE!
     //avdc_cursor_on();
 }

@@ -6,7 +6,7 @@
 
 // types 
 
-typedef uint8_t* puint8_t;
+typedef uint8_t* p_uint8_t;
 
 // state
 
@@ -16,16 +16,16 @@ typedef enum {
 	STATE_GAME_OVER
 } state;
 
-extern state gameState;
-extern bool showNext;
+extern state game_state;
+extern bool show_next;
 extern uint8_t level;
 extern uint8_t steps;
 extern long score;
-extern uint8_t fullLines;
-extern long timePassed;
+extern uint8_t full_lines;
+extern long time_passed;
 extern uint16_t stats[7];
 
-void stateInit();
+void state_init();
 
 // key
 
@@ -42,63 +42,63 @@ typedef enum {
 	KEY_OTHER
 } key;
 
-key keyGet();
+key key_get();
 
 // playfield
 
-extern uint8_t playfieldBkgr[20][10];
+extern uint8_t playfield_bkgr[20][10];
 
-void playfieldInit();
-void playfieldUpdateBkgr();
-void playfieldClearRow(uint8_t row);
-void playfieldMoveRow(uint8_t rowSrc, uint8_t rowDst);
-uint8_t playfieldCollapse();
+void playfield_init();
+void playfield_update_bkgr();
+void playfield_clear_row(uint8_t row);
+void playfield_move_row(uint8_t row_src, uint8_t row_dst);
+uint8_t playfield_collapse();
 
 // render
 
-void renderInit();
-void renderPlayfieldRow(uint8_t row);
-void renderPlayfield();
-void renderPause();
-void renderClearPause();
-void renderNextBlock();
-void renderClearNextBlock();
-void renderLevel();
-void renderScore();
-void renderFullLines();
-void renderGameOver();
-void renderGoodbye();
-void renderBlock();
-void renderClearBlock();
-void renderStats();
+void render_init();
+void render_playfield_row(uint8_t row);
+void render_playfield();
+void render_pause();
+void render_clear_pause();
+void render_next_block();
+void render_clear_next_block();
+void render_level();
+void render_score();
+void render_full_lines();
+void render_game_over();
+void render_goodbye();
+void render_block();
+void render_clear_block();
+void render_stats();
 
 // block
 
-extern puint8_t blockShapes[][4][4];
+extern p_uint8_t block_shapes[][4][4];
 
-extern int8_t blockType;
-extern uint8_t blockRot;
-extern int8_t blockPosX;
-extern int8_t blockPosY;
+extern int8_t block_type;
+extern uint8_t block_rot;
+extern int8_t block_pos_x;
+extern int8_t block_pos_y;
 
-extern int8_t nextBlockType;
+extern int8_t block_type_next;
 
-void blockInit();
-bool blockMoveLeft();
-bool blockMoveRight();
-bool blockMoveDown();
-bool blockRotate();
-bool blockDrop();
-bool blockCheck(int8_t posX, int8_t posY, uint8_t rot);
-bool blockNext();
+void block_init();
+bool block_move_left();
+bool block_move_right();
+bool block_move_down();
+bool block_rotate();
+bool block_drop();
+bool block_check(int8_t pos_x, int8_t pos_y, uint8_t rot);
+bool block_next();
 
 // timer
 
-bool timerDone();
+bool timer_done();
 
 // game
 
-void gameInit();
-bool gamePlay();
+void game_init();
+bool game_play();
 
 #endif

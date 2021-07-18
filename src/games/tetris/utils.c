@@ -1,11 +1,13 @@
 #include "utils.h"
 
-int16_t _timer_start;
-int16_t _timer_offset;
+// timer
+
+int16_t timer_start;
+int16_t timer_offset;
 
 extern uint8_t _bcd2bin(uint8_t);
 
-int16_t _timer() {
+int16_t timer() {
 	while (true) {
 		uint8_t seconds = CTC_SECONDS;
 		uint8_t hundreds = CTC_HUNDREDS;
@@ -17,15 +19,17 @@ int16_t _timer() {
 }
 
 void timer_reset(int16_t offset) {
-	_timer_start = _timer();
-	_timer_offset = offset;
+	timer_start = timer();
+	timer_offset = offset;
 }
 
 int16_t timer_diff() {
-	int16_t now = _timer();
-	if (now >= _timer_start) { return now - (_timer_start + _timer_offset); }
-	return (now + 6000) - (_timer_start + _timer_offset); 
+	int16_t now = timer();
+	if (now >= timer_start) { return now - (timer_start + timer_offset); }
+	return (now + 6000) - (timer_start + timer_offset); 
 }
+
+// GDP
 
 void gdp_wait_ready() {
     uint8_t status = 0;
@@ -38,6 +42,8 @@ void gdp_cls() {
     gdp_wait_ready();
     GDP_CMD = GDP_CMD_CLS;
 }
+
+// other
 
 uint8_t* itoa(long val, uint8_t* buffer) {
 	if (val < 0) { *buffer = '-'; itoa(-val, buffer + 1); return buffer; }

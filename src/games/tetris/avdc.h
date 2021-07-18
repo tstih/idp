@@ -20,10 +20,10 @@
 #define EI __asm__ ("NOP")
 #define DI __asm__ ("NOP") // WARNME: test if DI f* up the keyboard
 
-typedef enum {
-	AVDC_MODE_80 = 80,
-	AVDC_MODE_132 = 132
-} avdc_mode;
+// typedef enum { // TODO: check mode on start-up, ask user to switch
+// 	AVDC_MODE_80 = 80,
+// 	AVDC_MODE_132 = 132
+// } avdc_mode;
 
 __sfr __at 0x39 AVDC_CMD;     // W: command 
 __sfr __at 0x39 AVDC_STATUS;  // R: status (ready)
@@ -45,11 +45,8 @@ void avdc_wait_ready();
 void avdc_cursor_off();
 void avdc_cursor_on();
 
-void avdc_fill_screen(uint8_t ch);
-void avdc_fill_row(uint8_t row, uint8_t ch);
-
-void avdc_set_mode(avdc_mode mode);
-void avdc_restore_mode();
+void avdc_clear_screen();
+void avdc_clear_row(uint8_t row);
 
 uint16_t avdc_get_pointer(uint8_t row, uint8_t col);
 uint16_t avdc_get_pointer_cached(uint8_t row, uint8_t col);
@@ -58,13 +55,13 @@ void avdc_read_at_pointer(uint16_t addr, uint8_t *chr, uint8_t *attr);
 
 void avdc_write_at_pointer(uint16_t addr, uint8_t chr, uint8_t attr);
 void avdc_write_str_at_pointer(uint16_t addr, uint8_t *str, uint8_t *attr);
-void avdc_write_str_at_position(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr);
+void avdc_write_str_at_pointer_pos(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr);
 
 void avdc_set_cursor(uint8_t row, uint8_t col);
 
 void avdc_write_at_cursor(uint8_t chr, uint8_t attr);
 void avdc_write_str_at_cursor(uint8_t *str, uint8_t *attr);
-void avdc_set_cursor_write_str(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr);
+void avdc_write_str_at_cursor_pos(uint8_t row, uint8_t col, uint8_t *str, uint8_t *attr);
 
 void avdc_done();
 

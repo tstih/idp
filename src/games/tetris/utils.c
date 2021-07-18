@@ -27,6 +27,18 @@ int16_t timer_diff() {
 	return (now + 6000) - (_timer_start + _timer_offset); 
 }
 
+void gdp_wait_ready() {
+    uint8_t status = 0;
+    while ((status & GDP_STATUS_READY) == 0) {
+        status = GDP_STATUS;
+    }
+}
+
+void gdp_cls() {
+    gdp_wait_ready();
+    GDP_CMD = GDP_CMD_CLS;
+}
+
 uint8_t* itoa(long val, uint8_t* buffer) {
 	if (val < 0) { *buffer = '-'; itoa(-val, buffer + 1); return buffer; }
 	uint8_t* ptr = buffer;

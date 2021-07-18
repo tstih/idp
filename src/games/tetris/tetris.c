@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include "tetris.h"
 #include "avdc.h"
-#include "gdp.h"
 #include "utils.h"
 
 // string buffer

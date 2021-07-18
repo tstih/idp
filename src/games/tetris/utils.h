@@ -17,6 +17,17 @@ int16_t _timer();
 void timer_reset(int16_t offset);
 int16_t timer_diff();
 
+// GDP
+
+#define GDP_STATUS_READY 0x04
+#define GDP_CMD_CLS      0x04 
+
+__sfr __at 0x20 GDP_STATUS; // R: status (ready)
+__sfr __at 0x20 GDP_CMD;    // W: command 
+
+void gdp_wait_ready();
+void gdp_cls();
+
 // other
 
 // random.c

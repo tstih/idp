@@ -18,7 +18,7 @@
 #define AVDC_CMD_WRITE_C2P    0xBB
 
 #define EI __asm__ ("NOP")
-#define DI __asm__ ("NOP")
+#define DI __asm__ ("NOP") // WARNME: test if DI f* up the keyboard
 
 typedef enum {
 	AVDC_MODE_80 = 80,

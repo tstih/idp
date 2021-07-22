@@ -18,6 +18,7 @@ typedef enum {
 
 extern state game_state;
 extern bool show_next;
+extern bool show_text;
 extern uint8_t level;
 extern uint8_t steps;
 extern long score;
@@ -39,6 +40,8 @@ typedef enum {
 	KEY_SHOW_NEXT,
 	KEY_SPEED_UP,
 	KEY_RESTART,
+	KEY_HIDE_TEXT,
+	KEY_EXIT,
 	KEY_OTHER
 } key;
 
@@ -67,10 +70,11 @@ void render_level();
 void render_score();
 void render_full_lines();
 void render_game_over();
-void render_goodbye();
 void render_block();
 void render_clear_block();
 void render_stats();
+void render_show_text();
+void render_hide_text();
 
 // block
 

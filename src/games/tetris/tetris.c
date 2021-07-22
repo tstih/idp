@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "tetris.h"
 #include "avdc.h"
 #include "utils.h"
@@ -11,6 +12,7 @@ uint8_t str_buffer[133];
 
 state game_state;
 bool show_next;
+bool show_text;
 uint8_t level;
 uint8_t steps;
 long score;
@@ -21,6 +23,7 @@ uint16_t stats[7];
 void state_init() {
 	game_state = STATE_PLAY;
 	show_next = false;
+	show_text = true;
 	level = 0;
 	steps = 0;
 	score = 0;
@@ -41,27 +44,36 @@ key key_get() {
 	switch (key) {
 	case 'a':
 	case 'A':
+	case '7':
 		return KEY_LEFT;
 	case 'd':
 	case 'D':
+	case '9':
 		return KEY_RIGHT;
 	case 'w':
 	case 'W':
+	case '8':
 		return KEY_ROTATE;
 	case 's':
-	case 'S': 
+	case 'S':
+	case '5':
+	case ' ': 
 		return KEY_DROP;
-	case 'r':
-	case 'R':
+	case 'n':
+	case 'N':
 		return KEY_RESTART;
 	case 'p':
 	case 'P':
 		return KEY_PAUSE;
-	case 'n':
-	case 'N':
+	case '1':
 		return KEY_SHOW_NEXT;
-	case '+':
+	case '4':
 		return KEY_SPEED_UP;
+	case '0': 
+		return KEY_HIDE_TEXT;
+	case 'x':
+	case 'X':
+		return KEY_EXIT;
 	default:
 		return KEY_OTHER;
 	}
@@ -131,14 +143,43 @@ uint8_t playfield_collapse() {
 
 // render
 
+// Č 132 84 č 148 94
+// Š 140 8C š 156 9C
+// Ž 142 8E ž 158 9E
+
+const uint8_t V_POS = 2; 
+const uint8_t H_POS = 0; 
+
 void render_init() {
-	avdc_write_str_at_cursor_pos(0, 0, "This is render_init", NULL);
+	avdc_write_str_at_cursor_pos(V_POS, H_POS,     "POLNIH VRSTIC:  0", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 1, H_POS, "STOPNJA:        0", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 2, H_POS, "  TO\x84KE:     0", NULL);
+	for (uint8_t i = 0; i < 20; i++) {
+		avdc_write_str_at_cursor_pos(V_POS + i, H_POS + 26, "<!", NULL);
+		avdc_write_str_at_cursor_pos(V_POS + i, H_POS + 48, "!>", NULL);
+	}
+	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS + 26, "<!====================!>", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 21, H_POS + 28, "\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/", NULL);
+	avdc_write_str_at_cursor_pos(V_POS,     H_POS + 53, "7: LEVO    9: DESNO", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 1, H_POS + 53, "     8: OBRNI", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 2, H_POS + 53, "4: POJA\x84""AJ 5: ZABIJ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 3, H_POS + 53, "1: POKA\x8EI NASLEDNJO", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 53, "0: SKRIJ  TA  TEKST", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 5, H_POS + 53, "PRESLEDNICA - ZABIJ", NULL);
+	render_clear_next_block();
+	// clear "game over"
+	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "            ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "            ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "        ", NULL);
 }
 
 void render_playfield_row(uint8_t row) {
-	avdc_set_cursor(row, 30);
+	avdc_set_cursor(V_POS + row, H_POS + 28);
 	for (uint8_t j = 0; j < 10; j++) {
-		avdc_write_at_cursor(playfield_bkgr[row][j], AVDC_DEFAULT_ATTR);
+		avdc_write_str_at_cursor(
+			playfield_bkgr[row][j] == '0' ? " ." : "[]", 
+			AVDC_DEFAULT_ATTR
+		);	
 	}
 }
 
@@ -149,19 +190,23 @@ void render_playfield() {
 }
 
 void render_pause() {
-	avdc_write_str_at_cursor_pos(1, 0, "PAUSED", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "PAVZA ZA KAVICO", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "P/N: NADALJUJ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "X: IZHOD", NULL);
 }
 
 void render_clear_pause() {
-	avdc_write_str_at_cursor_pos(1, 0, "      ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "               ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "             ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "        ", NULL);
 }
 
 void render_next_block() {
 	for (uint8_t r = 0; r < 4; r++) {
-		avdc_set_cursor(10 + r, 4);
+		avdc_set_cursor(V_POS + 9 + r, H_POS + 17);
 		for (uint8_t c = 0; c < 4; c++) {
-			avdc_write_at_cursor(
-				block_shapes[block_type_next][0][r][c] == '0' ? ' ' : block_shapes[block_type_next][0][r][c],
+			avdc_write_str_at_cursor(
+				block_shapes[block_type_next][0][r][c] == '0' ? "  " : "[]",
 				AVDC_DEFAULT_ATTR
 			);
 		}
@@ -170,40 +215,38 @@ void render_next_block() {
 
 void render_clear_next_block() {
 	for (uint8_t r = 0; r < 4; r++) {
-		avdc_write_str_at_cursor_pos(10 + r, 4, "    ", NULL);
+		avdc_write_str_at_cursor_pos(V_POS + 9 + r, H_POS + 17, "        ", NULL);
 	}
 }
 
 void render_level() {
-	avdc_write_str_at_cursor_pos(2, 0, "Level: ", NULL);
-	avdc_write_str_at_cursor_pos(2, 7, itoa(level, str_buffer), NULL);
+	itoa(level, str_buffer);
+	avdc_write_str_at_cursor_pos(V_POS + 1, H_POS + 17 - strlen(str_buffer), str_buffer, NULL);
 }
 
 void render_score() {
-	avdc_write_str_at_cursor_pos(3, 0, "Score: ", NULL);
-	avdc_write_str_at_cursor_pos(3, 7, itoa(score, str_buffer), NULL);
+	itoa(score, str_buffer);
+	avdc_write_str_at_cursor_pos(V_POS + 2, H_POS + 14 - strlen(str_buffer), str_buffer, NULL);
 }
 
 void render_full_lines() {
-	avdc_write_str_at_cursor_pos(4, 0, "Full lines: ", NULL);
-	avdc_write_str_at_cursor_pos(4, 12, itoa(full_lines, str_buffer), NULL);
+	itoa(full_lines, str_buffer);
+	avdc_write_str_at_cursor_pos(V_POS, H_POS + 17 - strlen(str_buffer), str_buffer, NULL);
 }
 
 void render_game_over() {
-	avdc_write_str_at_cursor_pos(5, 0, "GAME OVER", NULL);
-}
-
-void render_goodbye() {
-	avdc_write_str_at_cursor_pos(5, 0, "GOODBYE !", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "IGRA KON\x84""ANA", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "N: NOVA IGRA", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "X: IZHOD", NULL);
 }
 
 void render_clear_block() {
 	for (uint8_t r = 0; r < 4; r++) {
 		if (block_pos_y + r >= 0 && block_pos_y + r < 20) {
-			avdc_set_cursor(block_pos_y + r, 30 + (block_pos_x < 0 ? 0 : block_pos_x));
+			avdc_set_cursor(V_POS + block_pos_y + r, H_POS + 28 + 2 * ((block_pos_x < 0 ? 0 : block_pos_x)));
 			for (uint8_t c = 0; c < 4; c++) {
 				if (block_pos_x + c >= 0 && block_pos_x + c < 10) {
-					avdc_write_at_cursor(playfield_bkgr[block_pos_y + r][block_pos_x + c], AVDC_DEFAULT_ATTR);
+					avdc_write_str_at_cursor(playfield_bkgr[block_pos_y + r][block_pos_x + c] == '0' ? " ." : "[]", AVDC_DEFAULT_ATTR);
 				}
 			}
 		}
@@ -213,14 +256,16 @@ void render_clear_block() {
 void render_block() {
 	for (int8_t r = -1; r < 4; r++) {
 		if (block_pos_y + r >= 0 && block_pos_y + r < 20) {
-			avdc_set_cursor(block_pos_y + r, 30 + ((block_pos_x - 1) < 0 ? 0 : (block_pos_x - 1)));
+			avdc_set_cursor(V_POS + block_pos_y + r, H_POS + 28 + 2 * (((block_pos_x - 1) < 0 ? 0 : (block_pos_x - 1))));
 			for (int8_t c = -1; c < 5; c++) {
 				if (block_pos_x + c >= 0 && block_pos_x + c < 10) {
 					if (c < 0 || c > 3 || r < 0 || r > 3) {
-						avdc_write_at_cursor(playfield_bkgr[block_pos_y + r][block_pos_x + c], AVDC_DEFAULT_ATTR);
+						avdc_write_str_at_cursor(playfield_bkgr[block_pos_y + r][block_pos_x + c] == '0' ? " ." : "[]", AVDC_DEFAULT_ATTR);
 					} else {
-						avdc_write_at_cursor(
-							block_shapes[block_type][block_rot][r][c] == '0' ? playfield_bkgr[block_pos_y + r][block_pos_x + c] : block_shapes[block_type][block_rot][r][c],
+						avdc_write_str_at_cursor(
+							block_shapes[block_type][block_rot][r][c] == '0' 
+								? (playfield_bkgr[block_pos_y + r][block_pos_x + c] == '0' ? " ." : "[]")
+								: "[]",
 							AVDC_DEFAULT_ATTR
 						);
 					}
@@ -231,9 +276,17 @@ void render_block() {
 }
 
 void render_stats() {
-	for (uint8_t i = 0; i < 7; i++) {
-		avdc_write_str_at_cursor_pos(6 + i, 0, itoa(stats[i], str_buffer), NULL);
-	}
+	//for (uint8_t i = 0; i < 7; i++) {
+	//	avdc_write_str_at_cursor_pos(6 + i, 0, itoa(stats[i], str_buffer), NULL);
+	//}
+}
+
+void render_show_text() {
+	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 53, "0: SKRIJ  TA  TEKST", NULL);
+}
+
+void render_hide_text() {
+	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 53, "                   ", NULL);
 }
 
 // block
@@ -396,9 +449,16 @@ void game_init() {
 }
 
 bool game_play() {
-	key key;
+	key key = key_get();
+	if (key == KEY_HIDE_TEXT) {
+		show_text = !show_text;
+		if (show_text) {
+			render_show_text();
+		} else {
+			render_hide_text();
+		}
+	}
 	if (game_state == STATE_PLAY) {
-		key = key_get();
 		switch (key) {
 		case KEY_LEFT:
 			block_move_left();
@@ -454,27 +514,24 @@ bool game_play() {
 			timer_reset(0);
 		}
 	} else if (game_state == STATE_PAUSE) {
-		key = key_get();
 		if (key == KEY_RESTART || key == KEY_PAUSE) {
 			render_clear_pause(); 
 			timer_reset(-time_passed);
 			game_state = STATE_PLAY;
+		} else if (key == KEY_EXIT) {
+			return false;
 		}
 	}
 	else if (game_state == STATE_GAME_OVER) {
-		key = key_get();
-		if (key != KEY_NONE) {
-			if (key == KEY_RESTART) {
-				state_init();
-				render_init();
-				playfield_init();
-				render_playfield();
-				block_next();
-				game_state = STATE_PLAY;
-			} else {
-				render_goodbye();
-				return false;
-			}
+		if (key == KEY_RESTART) {
+			state_init();
+			render_init();
+			playfield_init();
+			render_playfield();
+			block_next();
+			game_state = STATE_PLAY;
+		} else if (key == KEY_EXIT) {
+			return false;
 		}
 	}
 	return true;

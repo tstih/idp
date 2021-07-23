@@ -148,33 +148,32 @@ uint8_t playfield_collapse() {
 // Ž 142 8E ž 158 9E
 
 const uint8_t V_POS = 2; 
-const uint8_t H_POS = 0; 
+const uint8_t H_POS = 3; 
 
 void render_init() {
 	avdc_write_str_at_cursor_pos(V_POS, H_POS,     "POLNIH VRSTIC:  0", NULL);
 	avdc_write_str_at_cursor_pos(V_POS + 1, H_POS, "STOPNJA:        0", NULL);
 	avdc_write_str_at_cursor_pos(V_POS + 2, H_POS, "  TO\x84KE:     0", NULL);
 	for (uint8_t i = 0; i < 20; i++) {
-		avdc_write_str_at_cursor_pos(V_POS + i, H_POS + 26, "<!", NULL);
-		avdc_write_str_at_cursor_pos(V_POS + i, H_POS + 48, "!>", NULL);
+		avdc_write_str_at_cursor_pos(V_POS + i, H_POS + 25, "<! . . . . . . . . . .!>", NULL);
 	}
-	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS + 26, "<!====================!>", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 21, H_POS + 28, "\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/", NULL);
-	avdc_write_str_at_cursor_pos(V_POS,     H_POS + 53, "7: LEVO    9: DESNO", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 1, H_POS + 53, "     8: OBRNI", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 2, H_POS + 53, "4: POJA\x84""AJ 5: ZABIJ", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 3, H_POS + 53, "1: POKA\x8EI NASLEDNJO", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 53, "0: SKRIJ  TA  TEKST", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 5, H_POS + 53, "PRESLEDNICA - ZABIJ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS + 25, "<!====================!>", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 21, H_POS + 27, "\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/", NULL);
+	avdc_write_str_at_cursor_pos(V_POS,     H_POS + 55, "7: LEVO    9: DESNO", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 1, H_POS + 55, "     8: OBRNI", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 2, H_POS + 55, "4: POJA\x84""AJ 5: ZABIJ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 3, H_POS + 55, "1: POKA\x8EI NASLEDNJO", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 55, "0: SKRIJ  TA  TEKST", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 5, H_POS + 55, "PRESLEDNICA - ZABIJ", NULL);
 	render_clear_next_block();
 	// clear "game over"
-	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "            ", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "            ", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "        ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 18, H_POS, "            ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 19, H_POS, "            ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS, "        ", NULL);
 }
 
 void render_playfield_row(uint8_t row) {
-	avdc_set_cursor(V_POS + row, H_POS + 28);
+	avdc_set_cursor(V_POS + row, H_POS + 27);
 	for (uint8_t j = 0; j < 10; j++) {
 		avdc_write_str_at_cursor(
 			playfield_bkgr[row][j] == '0' ? " ." : "[]", 
@@ -183,27 +182,21 @@ void render_playfield_row(uint8_t row) {
 	}
 }
 
-void render_playfield() {
-	for (uint8_t i = 0; i < 20; i++) {
-		render_playfield_row(i);
-	}
-}
-
 void render_pause() {
-	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "PAVZA ZA KAVICO", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "P/N: NADALJUJ", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "X: IZHOD", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 18, H_POS, "PAVZA ZA KAVO", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 19, H_POS, "P/N: NADALJUJ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS, "X: IZHOD", NULL);
 }
 
 void render_clear_pause() {
-	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "               ", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "             ", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "        ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 18, H_POS, "             ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 19, H_POS, "             ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS, "        ", NULL);
 }
 
 void render_next_block() {
 	for (uint8_t r = 0; r < 4; r++) {
-		avdc_set_cursor(V_POS + 9 + r, H_POS + 17);
+		avdc_set_cursor(V_POS + 9 + r, H_POS + 16);
 		for (uint8_t c = 0; c < 4; c++) {
 			avdc_write_str_at_cursor(
 				block_shapes[block_type_next][0][r][c] == '0' ? "  " : "[]",
@@ -215,7 +208,7 @@ void render_next_block() {
 
 void render_clear_next_block() {
 	for (uint8_t r = 0; r < 4; r++) {
-		avdc_write_str_at_cursor_pos(V_POS + 9 + r, H_POS + 17, "        ", NULL);
+		avdc_write_str_at_cursor_pos(V_POS + 9 + r, H_POS + 16, "        ", NULL);
 	}
 }
 
@@ -235,15 +228,15 @@ void render_full_lines() {
 }
 
 void render_game_over() {
-	avdc_write_str_at_cursor_pos(V_POS + 14, H_POS, "IGRA KON\x84""ANA", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 15, H_POS, "N: NOVA IGRA", NULL);
-	avdc_write_str_at_cursor_pos(V_POS + 16, H_POS, "X: IZHOD", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 18, H_POS, "IGRA KON\x84""ANA", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 19, H_POS, "N: NOVA IGRA", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 20, H_POS, "X: IZHOD", NULL);
 }
 
 void render_clear_block() {
 	for (uint8_t r = 0; r < 4; r++) {
 		if (block_pos_y + r >= 0 && block_pos_y + r < 20) {
-			avdc_set_cursor(V_POS + block_pos_y + r, H_POS + 28 + 2 * ((block_pos_x < 0 ? 0 : block_pos_x)));
+			avdc_set_cursor(V_POS + block_pos_y + r, H_POS + 27 + 2 * ((block_pos_x < 0 ? 0 : block_pos_x)));
 			for (uint8_t c = 0; c < 4; c++) {
 				if (block_pos_x + c >= 0 && block_pos_x + c < 10) {
 					avdc_write_str_at_cursor(playfield_bkgr[block_pos_y + r][block_pos_x + c] == '0' ? " ." : "[]", AVDC_DEFAULT_ATTR);
@@ -256,7 +249,7 @@ void render_clear_block() {
 void render_block() {
 	for (int8_t r = -1; r < 4; r++) {
 		if (block_pos_y + r >= 0 && block_pos_y + r < 20) {
-			avdc_set_cursor(V_POS + block_pos_y + r, H_POS + 28 + 2 * (((block_pos_x - 1) < 0 ? 0 : (block_pos_x - 1))));
+			avdc_set_cursor(V_POS + block_pos_y + r, H_POS + 27 + 2 * (((block_pos_x - 1) < 0 ? 0 : (block_pos_x - 1))));
 			for (int8_t c = -1; c < 5; c++) {
 				if (block_pos_x + c >= 0 && block_pos_x + c < 10) {
 					if (c < 0 || c > 3 || r < 0 || r > 3) {
@@ -282,11 +275,11 @@ void render_stats() {
 }
 
 void render_show_text() {
-	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 53, "0: SKRIJ  TA  TEKST", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 55, "0: SKRIJ  TA  TEKST", NULL);
 }
 
 void render_hide_text() {
-	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 53, "                   ", NULL);
+	avdc_write_str_at_cursor_pos(V_POS + 4, H_POS + 55, "                   ", NULL);
 }
 
 // block
@@ -444,7 +437,6 @@ void game_init() {
 	block_init();
 
 	render_init();
-	render_playfield();
 	block_next();
 }
 
@@ -452,11 +444,8 @@ bool game_play() {
 	key key = key_get();
 	if (key == KEY_HIDE_TEXT) {
 		show_text = !show_text;
-		if (show_text) {
-			render_show_text();
-		} else {
-			render_hide_text();
-		}
+		if (show_text) { render_show_text(); } 
+		else { render_hide_text(); }
 	}
 	if (game_state == STATE_PLAY) {
 		switch (key) {
@@ -527,7 +516,6 @@ bool game_play() {
 			state_init();
 			render_init();
 			playfield_init();
-			render_playfield();
 			block_next();
 			game_state = STATE_PLAY;
 		} else if (key == KEY_EXIT) {

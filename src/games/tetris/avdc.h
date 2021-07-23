@@ -20,11 +20,6 @@
 #define EI __asm__ ("NOP")
 #define DI __asm__ ("NOP") // WARNME: test if DI f* up the keyboard
 
-// typedef enum { // TODO: check mode on start-up, ask user to switch
-// 	AVDC_MODE_80 = 80,
-// 	AVDC_MODE_132 = 132
-// } avdc_mode;
-
 __sfr __at 0x39 AVDC_CMD;     // W: command 
 __sfr __at 0x39 AVDC_STATUS;  // R: status (ready)
 __sfr __at 0x36 AVDC_ACCESS;  // R: status (access)

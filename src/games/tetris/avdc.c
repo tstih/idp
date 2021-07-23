@@ -192,6 +192,5 @@ void avdc_write_str_at_cursor_pos(uint8_t row, uint8_t col, uint8_t *str, uint8_
 
 void avdc_done() {
     avdc_clear_screen();
-    avdc_set_cursor(0, 0); // THIS DOES NOT WORK. TEST ON REAL MACHINE!
-    //avdc_cursor_on();
+    //avdc_set_cursor(0, 0); // TODO: THIS DOES NOT WORK. TEST ON REAL MACHINE!
 }

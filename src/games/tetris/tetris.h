@@ -61,7 +61,6 @@ uint8_t playfield_collapse();
 
 void render_init();
 void render_playfield_row(uint8_t row);
-void render_playfield();
 void render_pause();
 void render_clear_pause();
 void render_next_block();

@@ -436,7 +436,6 @@ void game_init() {
 	state_init();
 	playfield_init();
 	block_init();
-
 	render_init();
 	block_next();
 }
@@ -517,11 +516,7 @@ bool game_play() {
 	}
 	else if (game_state == STATE_GAME_OVER) {
 		if (key == KEY_RESTART) {
-			state_init();
-			render_init();
-			playfield_init();
-			block_next();
-			game_state = STATE_PLAY;
+			game_init();
 		} else if (key == KEY_EXIT) {
 			return false;
 		}

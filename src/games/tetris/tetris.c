@@ -135,6 +135,7 @@ uint8_t playfield_collapse() {
 				render_playfield_row(yy);
 				render_playfield_row(yy + 1);
 			}
+			kbd_beep(FALSE);
 			y++;
 		}
 	}
@@ -491,7 +492,10 @@ bool game_play() {
 				if (full_lines > 99) { full_lines = 99; } // prevent overflow
 				render_full_lines();
 				uint8_t computed_level = (full_lines - 1) / 10;
-				level = computed_level > level ? computed_level : level;
+				if (computed_level > level) {
+					level = computed_level;
+					kbd_beep(TRUE);
+				}
 				render_level();
 				if (!block_next()) {
 					render_game_over();

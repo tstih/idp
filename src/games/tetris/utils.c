@@ -43,6 +43,20 @@ void gdp_cls() {
     GDP_CMD = GDP_CMD_CLS;
 }
 
+// keyboard
+
+void kbd_wait_ready() {
+    uint8_t status = 0;
+    while ((status & KBD_STATUS_READY) == 0) {
+        status = KBD_STATUS;
+    }
+}
+
+void kbd_beep(bool long_beep) {
+    kbd_wait_ready();
+    KBD_CMD = long_beep ? KBD_CMD_BEEP_LONG : KBD_CMD_BEEP;
+}
+
 // other
 
 uint8_t* itoa(long val, uint8_t* buffer) {

@@ -28,6 +28,18 @@ __sfr __at 0x20 GDP_CMD;    // W: command
 void gdp_wait_ready();
 void gdp_cls();
 
+// keyboard
+
+#define KBD_STATUS_READY  0x04
+#define KBD_CMD_BEEP      0x02
+#define KBD_CMD_BEEP_LONG 0x04
+
+__sfr __at 0xD9 KBD_STATUS; // R: status (ready)
+__sfr __at 0xD8 KBD_CMD;    // W: command 
+
+void kbd_wait_ready();
+void kbd_beep(bool long_beep);
+
 // other
 
 // random.c

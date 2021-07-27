@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = tetris pong 
+SUBDIRS = tetris pong
 
 # Rules.
 .PHONY: all

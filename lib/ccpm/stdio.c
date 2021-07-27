@@ -57,6 +57,10 @@ void _stdio_init() {
     stderr=(&filehandles[2]);
 }
 
+char *gets(char *str) {
+    return cpm_gets(str);
+}
+
 void putchar(int c) {
     cpm_putchar(c);
 }

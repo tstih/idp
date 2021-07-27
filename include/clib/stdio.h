@@ -66,6 +66,9 @@ extern size_t fwrite(
 /* Prints a string. */
 extern int puts(const char *s);
 
+/* Reads a string */
+extern char *gets(char *str);
+
 /* Print formatted string to stdout. */
 extern int printf(char *fmt, ...);
 

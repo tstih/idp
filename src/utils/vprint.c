@@ -62,6 +62,9 @@ void wait(char *s) {
 
 int main(int argc, char *argv[]) {
 
+    signed char a;
+    a=-1;
+
     /* Check command line arguments. */
     if (argc<3||argc>5) {
         printf("Usage: print <address> <text> [<attr.value>] [<repeat>]\n\r");

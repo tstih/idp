@@ -56,4 +56,7 @@ extern void *calloc (size_t num, size_t size);
 /* Free allocated memory block. */
 extern void free(void *ptr);
 
+/* Quick sort */
+extern void qsort(void *base, size_t nitems, size_t size, int (*compar)(const void *, const void*));
+
 #endif /* __STDLIB_H__ */

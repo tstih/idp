@@ -65,7 +65,7 @@ _ef9367_xy::
 		ret
 xy_internal:
         ;; make sure GDP is free
-        in a,(#EF9367_STS)              ; read the status register
+        in a,(#EF9367_STS_NI)           ; read the status register
         and #EF9367_STS_READY           ; get ready flag
         jr z,xy_internal
         ;; there is additional call on stack hence
@@ -291,7 +291,7 @@ dli_draw_delta:
         push af                         ; store command
 dli_wait_gdp:
         ;; wait for GDP
-        in a,(#EF9367_STS)
+        in a,(#EF9367_STS_NI)
         and #EF9367_STS_READY
         jr z,dli_wait_gdp
         ;; set deltas!
@@ -299,7 +299,7 @@ dli_wait_gdp:
         out (#EF9367_DX),a
 dli_wait_gdp2:
         ;; wait for GDP
-        in a,(#EF9367_STS)
+        in a,(#EF9367_STS_NI)
         and #EF9367_STS_READY
         jr z,dli_wait_gdp2
         ld a,c
@@ -315,7 +315,7 @@ dli_wait_gdp2:
 ef9367_cmd:
         push af
 cmd_wait_sts:
-        in a,(#EF9367_STS)              ; read the status register
+        in a,(#EF9367_STS_NI)           ; read the status register
         and #EF9367_STS_READY           ; get ready flag
         jr z,cmd_wait_sts
         pop af
@@ -378,7 +378,7 @@ sdm_cache:
         ;; affects: a
 wait_for_gdp:
         ;; make sure GDP is free
-        in a,(#EF9367_STS)              ; read the status register
+        in a,(#EF9367_STS_NI)           ; read the status register
         and #EF9367_STS_READY           ; get ready flag
         jr z,wait_for_gdp
         ret

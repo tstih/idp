@@ -1,6 +1,9 @@
-[submodule "tools/cpmtools"]
-	path = tools/cpmtools
-	url = https://github.com/lipro-cpm4l/cpmtools.git
-[submodule "tools/partner/lib/cxx_argp"]
-	path = tools/partner/lib/cxx_argp
-	url = https://github.com/pboettch/cxx_argp.git
+[submodule "lib/libsdcc-z80"]
+	path = lib/libsdcc-z80
+	url = https://github.com/tstih/libsdcc-z80.git
+[submodule "lib/libcpm3-z80"]
+	path = lib/libcpm3-z80
+	url = https://github.com/tstih/libcpm3-z80.git
+[submodule "lib/libgpx"]
+	path = lib/libgpx
+	url = https://github.com/tstih/libgpx.git

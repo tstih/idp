@@ -14,7 +14,18 @@
 #include <stdint.h>
 #include <string.h>
 
-extern uint8_t _port_read(uint8_t addr);
+uint8_t _port_read(uint8_t addr) __naked {
+    addr; /* compiler will think it's unreferenced, so reference it */
+    __asm
+        ld      hl,#2                   ; skip ret address
+        add     hl,sp                   ; hl points to first arg
+        ld      c,(hl)                  ; port to c
+        in      a,(c)                   ; read value to a
+        ld      h,#0                    ; hl=low
+        ld      l,a                     ; return value to l
+        ret
+    __endasm;
+}
 
 int main(int argc, char *argv[]) {
 

@@ -1,7 +1,7 @@
 /*
  * tme-test.c
  *
- * Standard C library tests.
+ * Standard C library time and msleep tests.
  * 
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include "../test.h"
 
@@ -30,30 +31,36 @@ void main() {
 
 /* set system date to 1.1.1980, 10:00:00 */
 int setdatetime_test() {
-    struct tm tme;
-    tme.tm_year=10; /* 1980 */
-    tme.tm_mon=1;
-    tme.tm_mday=1;
-    tme.tm_hour=10;
-    tme.tm_min=0;
-    tme.tm_sec=0;
-    setdatetime(&tme);
-    return 0;
+    struct tm tim;
+    tim.tm_year=10; /* years since 1970 ... 10 = 1980 */
+    tim.tm_mon=1;
+    tim.tm_mday=1;
+    tim.tm_hour=10;
+    tim.tm_min=0;
+    tim.tm_sec=0;
+    /* convert to time_t */
+    time_t t=mktime(&tim);
+    struct timeval tv = { t, 0 };
+    struct timezone tz = { 0,0 };
+    /* We'd need to get date and assert on compare, 
+       but the emulator can'd do it. */
+    ASSERT(settimeofday(&tv, &tz)==0);
 }
 
 /* this test will fail only at the very end of 24 hour period! */
 int clock_test() {
     long c1=clock();
-    for(int i=0;i<10000;i++) {} /* Delay */
+    msleep(1000); /* cca 1 second */
     long c2=clock();
-    ASSERT(c1<c2);
+    printf("Start clock %lu, end clock %lu.\n\r", c1, c2);
+    ASSERT(c1+100<c2 && c1+120>c2); /* must be in the vincinity */
     return 0;
 }
 
 /* this test will [most likely] fail if rollovers are not handled correctly */
 int clock_rollover_test() {
     long c1=clock();
-    for(int i=0;i<10000;i++) {
+    for(int i=0;i<100;i++) {
         long c2=clock();
         ASSERT(c2>=c1);
         c1=c2;
@@ -75,23 +82,23 @@ int time_test() {
 int asc_test() {
     time_t t=time(NULL);
     struct tm * ptme=gmtime(&t);
-    printf("Current time is %s\n\r", asctime(ptme));
+    printf("Current time is %s.\n\r", asctime(ptme));
     ASSERT(!strcmp(asctime(ptme),ctime(&t)));
     return 0;
 }
 
 extern uint8_t _dow(struct tm * ptim);
 int mktime_test() {
-    struct tm tme;
+    struct tm tim;
     /* First create time_t 25.05.2021 21:00:00 */
-    tme.tm_sec=0;
-    tme.tm_min=0;
-    tme.tm_hour=21;
-    tme.tm_mday=25;
-    tme.tm_mon=4; 
-    tme.tm_year=121;
-    tme.tm_wday=_dow(&tme);
-    time_t t=mktime(&tme);
+    tim.tm_sec=0;
+    tim.tm_min=0;
+    tim.tm_hour=21;
+    tim.tm_mday=25;
+    tim.tm_mon=4; 
+    tim.tm_year=121;
+    tim.tm_wday=_dow(&tim);
+    time_t t=mktime(&tim);
     struct tm *ptm;
     ptm=gmtime(&t);
     ASSERT(!strcmp(asctime(ptm),"Tue May 25 21:00:00 2021"));
@@ -99,11 +106,11 @@ int mktime_test() {
 }
 
 int all_tests() {
-    VERIFY(setdatetime_test);
     VERIFY(clock_test);
     VERIFY(clock_rollover_test);
     VERIFY(time_test);
     VERIFY(asc_test);
     VERIFY(mktime_test);
+    VERIFY(setdatetime_test);
     return 0;
 }

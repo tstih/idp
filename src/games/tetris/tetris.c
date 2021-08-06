@@ -40,7 +40,7 @@ void state_init() {
 
 key key_get() {
 	char key;
-	if (!(key = cpm_getchar_nonblock())) { return KEY_NONE; }
+	if (!(key = kbhit())) { return KEY_NONE; }
 	switch (key) {
 	case 'a':
 	case 'A':

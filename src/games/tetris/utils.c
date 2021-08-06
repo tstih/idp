@@ -5,15 +5,13 @@
 int16_t timer_start;
 int16_t timer_offset;
 
-extern uint8_t _bcd2bin(uint8_t);
-
 int16_t timer() {
 	while (true) {
 		uint8_t seconds = CTC_SECONDS;
 		uint8_t hundreds = CTC_HUNDREDS;
 		uint8_t seconds_check = CTC_SECONDS;
 		if (seconds == seconds_check) {
-			return _bcd2bin(hundreds) + 100 * _bcd2bin(seconds);
+			return bcd2bin(hundreds) + 100 * bcd2bin(seconds);
 		}
 	}
 }

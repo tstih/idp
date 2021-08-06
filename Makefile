@@ -9,11 +9,11 @@ K := $(foreach exec,$(REQUIRED),\
     $(if $(shell which $(exec)),,$(error "$(exec) not found. Please install or add to path.")))
 
 # Global settings: folders.
-ROOT = $(realpath .)
+export ROOT 		= 	$(realpath .)
 export BUILD_DIR	=	$(ROOT)/build
 export BIN_DIR		=	$(ROOT)/bin
 export INC_DIR		=	$(ROOT)/include 
-export STD_LIB_INC	=	$(ROOT)/include/clib
+export STD_LIB_INC	=	$(ROOT)/lib/libcpm3-z80/include
 export SCR_DIR		=	$(ROOT)/scripts
 
 # Globa settings: tools.
@@ -25,7 +25,7 @@ export AR			=	sdar
 export ARFLAGS		=	-rc
 
 # Subfolders for make.
-SUBDIRS = tools lib src test
+SUBDIRS = lib src test
 
 # .COM programs from IHX.
 IHX		=	$(wildcard $(BUILD_DIR)/*.ihx)
@@ -46,7 +46,7 @@ $(BUILD_DIR):
 
 .PHONY: $(SUBDIRS)
 $(SUBDIRS):
-	$(MAKE) -C $@
+	$(MAKE) -C $@ PLATFORM=partner
 	
 .PHONY: clean
 clean:
@@ -93,12 +93,12 @@ hfe:
 # Make .COM files (for CP/M).
 .PHONY: $(COM)
 $(COM):
-	$(BUILD_DIR)/load $(basename $@)
+	sdobjcopy -I ihex -O binary $(basename $@).ihx $(basename $@).com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ 0:$(@F)
 
 .PHONY: bin
 bin:
-	cp $(BUILD_DIR)/crt0cpm.rel $(BIN_DIR)
+	cp $(BUILD_DIR)/crt0cpm3-z80.rel $(BIN_DIR)
 	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)
 	cp $(BUILD_DIR)/fddb.img $(BIN_DIR)

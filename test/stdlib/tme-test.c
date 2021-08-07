@@ -41,10 +41,9 @@ int setdatetime_test() {
     /* convert to time_t */
     time_t t=mktime(&tim);
     struct timeval tv = { t, 0 };
-    struct timezone tz = { 0,0 };
     /* We'd need to get date and assert on compare, 
        but the emulator can'd do it. */
-    ASSERT(settimeofday(&tv, &tz)==0);
+    ASSERT(settimeofday(&tv)==0);
 }
 
 /* this test will fail only at the very end of 24 hour period! */
@@ -53,7 +52,7 @@ int clock_test() {
     msleep(1000); /* cca 1 second */
     long c2=clock();
     printf("Start clock %lu, end clock %lu.\n\r", c1, c2);
-    ASSERT(c1+100<c2 && c1+120>c2); /* must be in the vincinity */
+    ASSERT(c1+100<c2 && c1+200>c2); /* must be in the vincinity */
     return 0;
 }
 

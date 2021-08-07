@@ -53,8 +53,7 @@ void msleep(int millisec) {
 }
 
 /* Non standard function to set system date and time */
-int settimeofday(const struct timeval *tv, const struct timezone *tz) {
-    tz; /* Referenc unused arg. We ignore zone info.*/
+int settimeofday(const struct timeval *tv) {
     
     /* Convert time_t to date. */
     struct tm* tmi = gmtime( &(tv->tv_sec) );
@@ -81,10 +80,7 @@ int settimeofday(const struct timeval *tv, const struct timezone *tz) {
 }
 
 /* Get date and time (resolution: 1/100 s) */
-int gettimeofday(struct timeval *tv, struct timezone *tz) {
-    /* Zone info will be 0. */
-    tz->tz_minuteswest=0;
-    tz->tz_dsttime=0;
+int gettimeofday(struct timeval *tv) {
 
     /* We should read the status bit here to reset it,
        but it does not work in emulator so our hack is
@@ -94,7 +90,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz) {
 
     while(true) {
         /* Get hundreds. */
-        tv->tv_msec=bcd2bin(RTC_HUNDR_S);
+        tv->tv_hsec=bcd2bin(RTC_HUNDR_S);
 
         /* Get date and time, but no year */
         tim.tm_sec=bcd2bin(RTC_SECOND);

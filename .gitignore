@@ -62,3 +62,6 @@ tools/idpemu
 # Visual Studio
 .vs/
 .vscode/
+# Build results
+[Rr]elease/
+[Oo]bj/

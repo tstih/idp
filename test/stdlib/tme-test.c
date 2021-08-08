@@ -44,6 +44,7 @@ int setdatetime_test() {
     /* We'd need to get date and assert on compare, 
        but the emulator can'd do it. */
     ASSERT(settimeofday(&tv)==0);
+    return 0;
 }
 
 /* this test will fail only at the very end of 24 hour period! */

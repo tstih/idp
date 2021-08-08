@@ -9,14 +9,10 @@
  * 31.05.2021   tstih
  * 
  */
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using XYZ.Ex;
-using XYZ.Formats;
 using Idp.Gpx.Common.CmdLine;
 using System.IO;
 using Idp.Gpx.Common.Generators;
@@ -41,9 +37,6 @@ namespace Idp.Gpx.Partnerize.Commands
 
         [Argument(Aliases = "o,save", Required = false, Description = "Output filename without extension (default=ani, extension depends on format)")]
         public string Output { get; set; }
-
-        [Argument(Aliases = "l", Required = false, Description = "Line dither.")]
-        public bool Line { get; set; }
         #endregion // Command Line Arguments
 
         #region Properties
@@ -139,10 +132,7 @@ namespace Idp.Gpx.Partnerize.Commands
 
             // Load...
             GlyphProcessor gproc=new GlyphProcessor(Image.FromFile(fname) as Bitmap);
-            if (Line)
-                return gproc.LineDither();
-            else
-                return gproc.QuantDither(monochrome);
+            return gproc.QuantDither(monochrome);
         }
         #endregion // Helper(s)
     }

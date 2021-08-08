@@ -34,6 +34,7 @@ namespace Idp.Gpx.Partnerize.Commands
         #region Ctor
         public BinCmd()
         {
+            Author = "unknown,None,";
         }
         #endregion // Ctor
 
@@ -43,6 +44,12 @@ namespace Idp.Gpx.Partnerize.Commands
 
         [Argument(Aliases = "o,save", Required = false, Description = "Output filename without extension (default=bin)")]
         public string Output { get; set; }
+
+        [Argument(Aliases = "a", Required = false, Description = "File author in format short name, long name i.e. jblack,Joe Black")]
+        public string Author { get; set; }
+
+        [Argument(Aliases = "cpp", Required = false, Description = "If present then format will be cpp, else it will be c")]
+        public bool CPlusPlus{ get; set; }
         #endregion // Command Line Arguments
 
         #region Properties
@@ -52,7 +59,7 @@ namespace Idp.Gpx.Partnerize.Commands
         #endregion // Properties
 
         #region Override(s)
-        public override string Name { get { return "bin"; } }
+        public override string Name { get { return "cbin"; } }
         public override string Desc { get { return "Convert an file to C binary array."; } }
         public override int Execute(StringBuilder std, StringBuilder err)
         {
@@ -74,6 +81,13 @@ namespace Idp.Gpx.Partnerize.Commands
             // Load it.
             byte[] rawb = File.ReadAllBytes(fin);
 
+            // Separate author.
+            string[] authors=Author.Split(new char[] { ','});
+
+            // C or cpp?
+            string extension = CPlusPlus ? ".cpp" : ".c";
+            string include = CPlusPlus ? "cstdint" : "stdint.h";
+
             // Now generate C source code.
             StringBuilder sourceCode = new StringBuilder();
             string id = string.Format("{0}", Output);
@@ -81,8 +95,9 @@ namespace Idp.Gpx.Partnerize.Commands
             string mainComment = string.Format("Format is {0}, size (in bytes) is {1}.", Path.GetExtension(fin), rawb.Length);
             string arrayHead = string.Format("uint8_t {0}[] = {{", id), arrayTail = "};";
             gen
-                .AddHeader(id, string.Format("{0} raw binary.", Path.GetExtension(fin)), ".cpp", "tstih", "Tomaz Stih", cpp:true)
-                .LineOfCode("#include <cstdint>")
+                .AddHeader(id, string.Format("Converted {0} file as {1} source.", Path.GetExtension(fin), extension), extension, 
+                    authors[0], authors[1] + " " + authors[2], cpp:true)
+                .LineOfCode(string.Format("#include <{0}>", include))
                 .NextLine()
                 .CommentOnly(mainComment, 0, true)
                 .LineOfCode(arrayHead)
@@ -91,7 +106,7 @@ namespace Idp.Gpx.Partnerize.Commands
 
 
             // And save as text.
-            File.WriteAllText(Output + ".cpp", sourceCode.ToString());
+            File.WriteAllText(Output + extension, sourceCode.ToString());
         }
         #endregion // Helper(s)
     }

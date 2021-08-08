@@ -34,6 +34,7 @@ namespace Idp.Gpx.Partnerize.Commands
         #region Ctor
         public ThreeCmd()
         {
+            Width = 1024; Height = 512;
         }
         #endregion // Ctor
 
@@ -50,10 +51,10 @@ namespace Idp.Gpx.Partnerize.Commands
         [Argument(Aliases = "h", Required = false, Description = "Fit to this height.")]
         public int Height { get; set; }
 
-        [Argument(Aliases = "de,dark", Required = false, Description = "Draw dark edges.")]
+        [Argument(Aliases = "d,dark", Required = false, Description = "Draw dark edges.")]
         public bool DarkEdge { get; set; }
 
-        [Argument(Aliases = "le,light", Required = false, Description = "Draw light edges.")]
+        [Argument(Aliases = "l,light", Required = false, Description = "Draw light edges.")]
         public bool LightEdge { get; set; }
 
         #endregion // Command Line Arguments
@@ -178,7 +179,7 @@ namespace Idp.Gpx.Partnerize.Commands
             CannyEdgeDetector filter = new CannyEdgeDetector();
             // apply the filter
             Bitmap edges = filter.Apply(bmp);
-            edges.Save("edges.png");
+            edges.Save(string.Format("{0}-edges.png", Output));
             Bitmap normalEdges=ChangeFormat(edges, PixelFormat.Format24bppRgb);
             // New bitmap.
             Bitmap finalBmp = new Bitmap(bmp.Width, bmp.Height);

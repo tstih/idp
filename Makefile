@@ -26,6 +26,7 @@ export ARFLAGS		=	-rc
 
 # Subfolders for make.
 SUBDIRS = lib src test
+TOOLDIRS = tools/gpxtools
 
 # .COM programs from IHX.
 IHX		=	$(wildcard $(BUILD_DIR)/*.ihx)
@@ -34,6 +35,9 @@ COM		=	$(patsubst %.ihx,%.com,$(IHX))
 # Rules.
 .PHONY: all
 all:	$(BUILD_DIR) $(SUBDIRS)
+
+.PHONY: tools
+tools:	$(BUILD_DIR) $(TOOLDIRS)
 
 .PHONY: $(BUILD_DIR)
 $(BUILD_DIR):
@@ -111,3 +115,8 @@ after:
 .PHONY: dex
 dex:	install
 	cp $(BUILD_DIR)/fddb.img ~/Dex/fddb.img
+
+.PHONY: $(TOOLDIRS)
+$(TOOLDIRS):
+	$(MAKE) -C $@
+	

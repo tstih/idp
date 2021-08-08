@@ -84,6 +84,92 @@ namespace Idp.Gpx.Common.Utils
             return result;
         }
 
+        public Bitmap LineDither()
+        {
+            int x, y;
+
+            // First obtain 3 colors from dither.
+            HashSet<int> colors = new HashSet<int>();
+            for (y = 0; y < _bmp.Height; y++)
+                for (x = 0; x < _bmp.Width; x++)
+                {
+                    Color c = _bmp.GetPixel(x, y);
+                    int mid = (c.R + c.G + c.B) / 3;
+                    colors.Add(mid);
+                }
+
+            if (colors.Count != 3)
+                throw new Exception("Image is no in 3 color format");
+
+            Bitmap result = new Bitmap(_bmp.Width, _bmp.Height);
+           
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.Clear(Color.White);
+
+                int prev, n;
+                for (y = 0; y < _bmp.Height; y++)
+                {
+                    // Get previous pixel.
+                    n = 1;
+                    Color c = _bmp.GetPixel(0, y);
+                    prev = (c.R + c.G + c.B) / 3;
+
+                    for (x = 1; x < _bmp.Width; x++)
+                    {
+                        // Get current pixel.
+                        c = _bmp.GetPixel(x, y);
+                        int curr = (c.R + c.G + c.B) / 3;
+                        if (curr == prev)
+                            n++;
+                        else
+                        {
+                            PartnerLine(g, colors.ToArray(), prev, x, y, n);
+                            n = 1;
+                        }
+
+                        //result.SetPixel(x, y, transformedPixel);
+                        prev = curr;
+                    }
+
+                    // Conclude line if any left.
+                    if (n > 1)
+                    {
+                        PartnerLine(g, colors.ToArray(), prev, x, y, n);
+                    }
+                }
+            }
+            return result;
+        }
+
+        private void PartnerLine(Graphics g, int[] colors, int pixel, int x, int y, int n)
+        {
+            /* Find index of pixel */
+            int index = 0;
+            while (colors[index] != pixel) index++;
+
+            /* Now adjust gray... */
+            Color baseColor=Color.Black; float[] pattern = null;
+            switch (index)
+            {
+                case 1:
+                    baseColor = Color.Black;
+                    pattern = new float[] { 1, 1 };
+                    break;
+                case 2:
+                    baseColor = Color.White;
+                    break;
+            }
+            using (Pen p=new Pen(baseColor))
+            {
+                if (pattern!=null)
+                    p.DashPattern = pattern;
+                int x0 = x - n + 1, x1 = x0 + n - 1;
+                if (y % 2 == 1) x0++;
+                g.DrawLine(p, x0, y, x1, y);
+            }
+        }
+
 
         public byte[] ToTiny(ref byte maxw)
         {

@@ -26,6 +26,7 @@ namespace Idp.Gpx.Partnerize
             new DitherCmd()
             ,new BgraCmd()
             ,new BinCmd()
+            ,new ThreeCmd()
         };
 
         static public void Main(string[] args)

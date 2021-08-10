@@ -29,8 +29,10 @@ SUBDIRS = lib src test
 TOOLDIRS = tools/gpxtools
 
 # .COM programs from IHX.
-IHX		=	$(wildcard $(BUILD_DIR)/*.ihx)
-COM		=	$(patsubst %.ihx,%.com,$(IHX))
+IHX					=	$(wildcard $(BUILD_DIR)/*.ihx)
+COM					=	$(patsubst %.ihx,%.com,$(IHX))
+APPS 				= 	$(filter-out %test.com,$(COM))
+TESTS				= 	$(filter %test.com,$(COM))
 
 # Rules.
 .PHONY: all
@@ -58,16 +60,16 @@ clean:
 	rm -f diskdefs
 
 .PHONY: install
-install: floppy $(COM) bin hfe after
+install: floppy $(APPS) $(TESTS) bin hfe after
 
 .PHONY: ccp
-ccp: floppy-ccp $(COM) bin hfe after
+ccp: floppy-ccp $(APPS) $(TESTS) bin hfe after
 
 .PHONY: boot
-boot: floppy-boot $(COM) bin hfe after
+boot: floppy-boot $(APPS) $(TESTS) bin hfe after
 
 .PHONY: bootg
-bootg: floppy-bootg $(COM) bin hfe after
+bootg: floppy-bootg $(APPS) $(TESTS) bin hfe after
 
 .PHONY: floppy
 floppy:
@@ -94,11 +96,15 @@ floppy-bootg:
 hfe:
 	-hxcfe -uselayout:IDP -conv:HXC_HFE -finput:$(BUILD_DIR)/fddb.img -foutput:$(BUILD_DIR)/fddb.hfe
 
-# Make .COM files (for CP/M).
-.PHONY: $(COM)
-$(COM):
+.PHONY: $(APPS)
+$(APPS):
 	sdobjcopy -I ihex -O binary $(basename $@).ihx $(basename $@).com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ 0:$(@F)
+
+.PHONY: $(TESTS)
+$(TESTS):
+	sdobjcopy -I ihex -O binary $(basename $@).ihx $(basename $@).com
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ 1:$(@F)
 
 .PHONY: bin
 bin:

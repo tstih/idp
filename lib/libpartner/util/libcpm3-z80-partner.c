@@ -4,7 +4,7 @@
  * Platform specific functions for z80-partner platform.
  * 
  * TODO:
- *  Add time zone info. Currently it's being ignored.
+ *  progname doesn't work.
  *
  * MIT License (see: LICENSE)
  * copyright (c) 2021 tomaz stih
@@ -19,7 +19,12 @@
 #include <util/mm58167a.h>
 
 /* initialize partner library, called from the standard library! */
-void libinit() {}
+extern void _init_conio();
+void libinit() {
+
+    /* Initialize console. */
+    _init_conio();
+}
 
 /* Non standard function to sleep (in milliseconds) */
 void msleep(int millisec) {

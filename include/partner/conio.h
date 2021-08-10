@@ -72,6 +72,6 @@ extern int wherey(void);
 #define NOCURSOR        0
 #define NORMALCURSOR    1
 #define SOLIDCURSOR     2
-void setcursortype(int cur_t);
+extern void setcursortype(int cur_t);
 
 #endif /* __CONIO_H__ */

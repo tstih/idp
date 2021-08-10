@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = stdlib
+SUBDIRS = stdlib partner
 
 # Rules.
 .PHONY: all

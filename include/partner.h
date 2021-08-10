@@ -17,5 +17,6 @@
 
 #include <partner/conio.h>
 #include <partner/bcd.h>
+#include <partner/sysinfo.h>
 
 #endif /* __PARTNER_H__ */

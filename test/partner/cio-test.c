@@ -9,8 +9,6 @@
  * 11.08.2021   tstih
  *
  */
-#include <conio.h>
-
 void main() {
 
 }

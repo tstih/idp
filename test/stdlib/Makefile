@@ -17,7 +17,7 @@ TARGETS	=	$(patsubst %.c,$(BUILD_DIR)/%.ihx,$(SRC))
 # Rules.
 .PHONY: all
 all: $(TARGETS)
-	cp *.tst $(BUILD_DIR)
+	cp *.tst $(BUILD_DIR)  2>/dev/null || :
 
 $(BUILD_DIR)/%.ihx: $(BUILD_DIR)/%.rel
 	$(LD) $(LDFLAGS) -o $@ $(BUILD_DIR)/$(CRT0).rel $<

@@ -9,12 +9,17 @@
  * 08.08.2021   tstih
  *
  */
+#include <stdint.h>
+#include <stdbool.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <stdlib.h>
 
 #include "../test.h"
 
 extern int all_tests();
+
+static uint8_t buf[512];
 
 static int tests_run = 0;
 
@@ -54,7 +59,53 @@ int fname_parse_test() {
     return 0;
 }
 
+int read1_test() {
+    int fd=open("fio1.tst",O_RDONLY); ASSERT(fd>2);
+    /* Read 1 byte. */
+    int bread=read(fd,buf,1); ASSERT(bread==1);
+    ASSERT(close(fd)==0);
+    return 0;
+}
+
+int read100_test() {
+    int fd=open("fio1.tst",O_RDONLY); ASSERT(fd>2);
+    /* Read too many bytes! EOF should work!
+       Returned bytes will be 128 because this is
+       DMA size (CP/M problem with file sizes) */
+    int bread=read(fd,buf,256); ASSERT(bread==128);
+    /* Read again. Should still be EOF. */
+    bread=read(fd,buf,256); ASSERT(bread==0);
+    ASSERT(close(fd)==0);
+    return 0;
+}
+
+int read400_test() {
+    /* Heavy burden for the stack. */
+    int fd=open("fio400.tst",O_RDONLY); ASSERT(fd>2);
+    /* Read exactly 400 bytes. */
+    int bread=read(fd,buf,400); ASSERT(bread==400);
+    ASSERT(close(fd)==0);
+    return 0;
+}
+
+int read50k_test() {
+    /* Read 2k, chunk by chunk */
+    uint16_t pos=0;
+    int fd=open("fio50000.tst",O_RDONLY); ASSERT(fd>2);
+    while (pos<50000) {
+        /* Next 500 bytes. */
+        int bread=read(fd,buf,500); ASSERT(bread==500);
+        pos+=500;
+    }
+    ASSERT(close(fd)==0);
+    return 0;
+}
+
 int all_tests() {
     VERIFY(fname_parse_test);
+    VERIFY(read1_test);
+    VERIFY(read100_test);
+    VERIFY(read400_test);
+    VERIFY(read50k_test);
     return 0;
 }

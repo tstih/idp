@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include "leanmean.h"
 #include "../test.h"
 
 extern int all_tests();
@@ -23,11 +24,17 @@ extern int all_tests();
 static int tests_run = 0;
 
 void main() {
+#ifndef LEAN_AND_MEAN
     int result = all_tests();
     if (result == 0)
         printf("PASSED\n\r");
     printf("Tests run: %d\n\r", tests_run);
+#else
+    printf("This library has been compiled with SLIM option and has no time.h\n\r");
+#endif
 }
+
+#ifndef LEAN_AND_MEAN
 
 /* set system date to 1.1.1980, 10:00:00 */
 int setdatetime_test() {
@@ -114,3 +121,5 @@ int all_tests() {
     VERIFY(setdatetime_test);
     return 0;
 }
+
+#endif /* LEAN_AND_MEAN */

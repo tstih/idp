@@ -16,6 +16,8 @@
 #include <time.h>
 #include <partner.h>
 
+#include <util/leanmean.h>
+
 #include <util/mm58167a.h>
 
 /* initialize partner library, called from the standard library! */
@@ -56,6 +58,8 @@ void msleep(int millisec) {
         jr      nz,msl_loop             ; 12/7 t-states
     __endasm;
 }
+
+#ifndef LEAN_AND_MEAN
 
 /* Non standard function to set system date and time */
 int settimeofday(const struct timeval *tv) {
@@ -117,3 +121,5 @@ int gettimeofday(struct timeval *tv) {
     tv->tv_sec = mktime(&tim);
     return 0;
 }
+
+#endif /* LEAN_AND_MEAN */

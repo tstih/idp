@@ -28,11 +28,16 @@ export ARFLAGS		=	-rc
 SUBDIRS = lib src test
 TOOLDIRS = tools/gpxtools
 
-# .COM programs from IHX.
+# Program data (to deploy): IHX->COM, TST
 IHX					=	$(wildcard $(BUILD_DIR)/*.ihx)
 COM					=	$(patsubst %.ihx,%.com,$(IHX))
-APPS 				= 	$(filter-out %test.com,$(COM))
-TESTS				= 	$(filter %test.com,$(COM))
+APPS 				= 	$(filter-out %test.com %xp.com,$(COM))
+TESTS				= 	$(filter %test.com %xp.com,$(COM))
+TEST_DATA			=	$(wildcard $(BUILD_DIR)/*.tst)
+
+# CP/M User areas.
+APP_USER			=	0
+TEST_USER			=	15
 
 # Rules.
 .PHONY: all
@@ -60,16 +65,16 @@ clean:
 	rm -f diskdefs
 
 .PHONY: install
-install: floppy $(APPS) $(TESTS) bin hfe after
+install: floppy $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: ccp
-ccp: floppy-ccp $(APPS) $(TESTS) bin hfe after
+ccp: floppy-ccp $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: boot
-boot: floppy-boot $(APPS) $(TESTS) bin hfe after
+boot: floppy-boot $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: bootg
-bootg: floppy-bootg $(APPS) $(TESTS) bin hfe after
+bootg: floppy-bootg $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: floppy
 floppy:
@@ -80,7 +85,7 @@ floppy:
 floppy-ccp:
 	cp $(ROOT)/scripts/diskdefs .
 	mkfs.cpm -f idpfdd -t $(BUILD_DIR)/fddb.img
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(SCR_DIR)/CCP.COM 0:CCP.COM
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $(SCR_DIR)/CCP.COM $(APP_USER):CCP.COM
 
 .PHONY: floppy-boot
 floppy-boot:
@@ -99,12 +104,17 @@ hfe:
 .PHONY: $(APPS)
 $(APPS):
 	sdobjcopy -I ihex -O binary $(basename $@).ihx $(basename $@).com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ 0:$(@F)
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ $(APP_USER):$(@F)
 
 .PHONY: $(TESTS)
 $(TESTS):
 	sdobjcopy -I ihex -O binary $(basename $@).ihx $(basename $@).com
-	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ 1:$(@F)
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ $(TEST_USER):$(@F)
+
+.PHONY: $(TEST_DATA)
+$(TEST_DATA):
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ $(TEST_USER):$(@F)
+
 
 .PHONY: bin
 bin:
@@ -112,6 +122,7 @@ bin:
 	cp $(BUILD_DIR)/*.lib $(BIN_DIR)
 	cp $(BUILD_DIR)/*.com $(BIN_DIR)
 	cp $(BUILD_DIR)/fddb.img $(BIN_DIR)
+	cp $(BUILD_DIR)/*.tst $(BIN_DIR)
 
 .PHONY: after
 after:

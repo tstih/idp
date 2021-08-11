@@ -17,12 +17,12 @@ TARGETS	=	$(patsubst %.c,$(BUILD_DIR)/%.ihx,$(SRC))
 # Rules.
 .PHONY: all
 all: $(TARGETS)
+	cp *.tst $(BUILD_DIR)
 
 $(BUILD_DIR)/%.ihx: $(BUILD_DIR)/%.rel
 	$(LD) $(LDFLAGS) -o $@ $(BUILD_DIR)/$(CRT0).rel $<
 	$(L2FIX) $(basename $<).lk > $(basename $<).link
 	$(L2) $(L2FLAGS) $(basename $<).link
-
 
 $(BUILD_DIR)/%.rel: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)

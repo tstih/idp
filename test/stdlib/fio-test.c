@@ -14,14 +14,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "../test.h"
 
 extern int all_tests();
-
-static uint8_t buf[512];
-
 static int tests_run = 0;
+
+/* Structures for testing */
+static uint8_t buf[512];
+struct stat statbuf;
+
 
 void main() {
     int result = all_tests();
@@ -29,6 +32,7 @@ void main() {
         printf("PASSED\n\r");
     printf("Tests run: %d\n\r", tests_run);
 }
+
 
 /* Should parse filenames correctly 
    filname is */
@@ -59,6 +63,7 @@ int fname_parse_test() {
     return 0;
 }
 
+
 int read1_test() {
     int fd=open("fio1.tst",O_RDONLY); ASSERT(fd>2);
     /* Read 1 byte. */
@@ -67,8 +72,9 @@ int read1_test() {
     return 0;
 }
 
+
 int read100_test() {
-    int fd=open("fio1.tst",O_RDONLY); ASSERT(fd>2);
+    int fd=open("fio100.tst",O_RDONLY); ASSERT(fd>2);
     /* Read too many bytes! EOF should work!
        Returned bytes will be 128 because this is
        DMA size (CP/M problem with file sizes) */
@@ -79,6 +85,7 @@ int read100_test() {
     return 0;
 }
 
+
 int read400_test() {
     /* Heavy burden for the stack. */
     int fd=open("fio400.tst",O_RDONLY); ASSERT(fd>2);
@@ -88,10 +95,11 @@ int read400_test() {
     return 0;
 }
 
-int read50k_test() {
+
+int read100k_test() {
     /* Read 2k, chunk by chunk */
     uint16_t pos=0;
-    int fd=open("fio50000.tst",O_RDONLY); ASSERT(fd>2);
+    int fd=open("fio100k.tst",O_RDONLY); ASSERT(fd>2);
     while (pos<50000) {
         /* Next 500 bytes. */
         int bread=read(fd,buf,500); ASSERT(bread==500);
@@ -101,11 +109,31 @@ int read50k_test() {
     return 0;
 }
 
+
+int stat_test() {
+
+    ASSERT(stat("fio1.tst", &statbuf)==0);
+    ASSERT(statbuf.st_size==1);
+    ASSERT(stat("fio100.tst", &statbuf)==0);
+    ASSERT(statbuf.st_size==100);
+    ASSERT(stat("fio400.tst", &statbuf)==0);
+    ASSERT(statbuf.st_size==400);
+    ASSERT(stat("fio16k.tst", &statbuf)==0);
+    ASSERT(statbuf.st_size==16384);
+    ASSERT(stat("fio100k.tst", &statbuf)==0);
+    /* NOTE: Files over 64K don't have
+       exact size? */
+    
+    return 0;
+}
+
+
 int all_tests() {
     VERIFY(fname_parse_test);
     VERIFY(read1_test);
     VERIFY(read100_test);
     VERIFY(read400_test);
-    VERIFY(read50k_test);
+    VERIFY(read100k_test);
+    VERIFY(stat_test);
     return 0;
 }

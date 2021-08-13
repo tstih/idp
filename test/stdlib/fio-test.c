@@ -29,8 +29,8 @@ struct stat statbuf;
 void main() {
     int result = all_tests();
     if (result == 0)
-        printf("PASSED\n\r");
-    printf("Tests run: %d\n\r", tests_run);
+        printf("PASSED\n");
+    printf("Tests run: %d\n", tests_run);
 }
 
 

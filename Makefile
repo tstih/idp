@@ -12,8 +12,7 @@ K := $(foreach exec,$(REQUIRED),\
 export ROOT 		= 	$(realpath .)
 export BUILD_DIR	=	$(ROOT)/build
 export BIN_DIR		=	$(ROOT)/bin
-export INC_DIR		=	$(ROOT)/include 
-export STD_LIB_INC	=	$(ROOT)/lib/libcpm3-z80/include
+export INC_DIR		=	$(ROOT)/include $(ROOT)/lib/libcpm3-z80/include $(ROOT)/lib/libgpx/include
 export SCR_DIR		=	$(ROOT)/scripts
 
 # Build reduced version of libraries?
@@ -21,7 +20,7 @@ export SLIM			=
 
 # Globa settings: tools.
 export CC			=	sdcc
-export CFLAGS		=	--std-c11 -mz80 -I$(STD_LIB_INC) -I. -I$(INC_DIR) --no-std-crt0 --nostdinc --nostdlib --debug -D SLIM=$(SLIM)
+export CFLAGS		=	--std-c11 -mz80 -I. $(addprefix -I,$(INC_DIR)) --no-std-crt0 --nostdinc --nostdlib --debug -D SLIM=$(SLIM)
 export AS			=	sdasz80
 export ASFLAGS		=	-xlos -g
 export AR			=	sdar

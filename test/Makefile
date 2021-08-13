@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = stdlib partner
+SUBDIRS = stdlib partner gpx
 
 # Rules.
 .PHONY: all

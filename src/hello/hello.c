@@ -12,5 +12,5 @@
 #include <stdio.h>
 
 void main() {
-    printf("Hello world!\n\r");
+    printf("Hello world!\n");
 }

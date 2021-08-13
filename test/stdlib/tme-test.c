@@ -27,10 +27,10 @@ void main() {
 #ifndef LEAN_AND_MEAN
     int result = all_tests();
     if (result == 0)
-        printf("PASSED\n\r");
-    printf("Tests run: %d\n\r", tests_run);
+        printf("PASSED\n");
+    printf("Tests run: %d\n", tests_run);
 #else
-    printf("This library has been compiled with SLIM option and has no time.h\n\r");
+    printf("This library has been compiled with SLIM option and has no time.h\n");
 #endif
 }
 
@@ -59,7 +59,7 @@ int clock_test() {
     long c1=clock();
     msleep(1000); /* cca 1 second */
     long c2=clock();
-    printf("Start clock %lu, end clock %lu.\n\r", c1, c2);
+    printf("Start clock %lu, end clock %lu.\n", c1, c2);
     ASSERT(c1+100<c2 && c1+200>c2); /* must be in the vincinity */
     return 0;
 }
@@ -89,7 +89,7 @@ int time_test() {
 int asc_test() {
     time_t t=time(NULL);
     struct tm * ptme=gmtime(&t);
-    printf("Current time is %s.\n\r", asctime(ptme));
+    printf("Current time is %s.\n", asctime(ptme));
     ASSERT(!strcmp(asctime(ptme),ctime(&t)));
     return 0;
 }

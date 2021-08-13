@@ -22,8 +22,8 @@ static int tests_run = 0;
 void main() {
     int result = all_tests();
     if (result == 0)
-        printf("PASSED\n\r");
-    printf("Tests run: %d\n\r", tests_run);
+        printf("PASSED\n");
+    printf("Tests run: %d\n", tests_run);
 }
 
 /* Enumerate all files on B:*[*]. */
@@ -35,8 +35,6 @@ int enum_files_test() {
     while (d=readdir(dir)) != NULL)
         printf("%s\n", d->d_name;
     */
-
-    ASSERT(0==0); 
     return 0;
 }
 

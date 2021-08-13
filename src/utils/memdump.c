@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
 
     /* Check command line arguments. */
     if (argc!=3) {
-        printf("Usage: memdump <addr> <size>\n\r");
-        printf("       addr ... decimal address\n\r");
-        printf("       size ... number of bytes to dump (max 1024)\n\r");
+        printf("Usage: memdump <addr> <size>\n");
+        printf("       addr ... decimal address\n");
+        printf("       size ... number of bytes to dump (max 1024)\n");
         exit(1);
     }
 
@@ -38,18 +38,18 @@ int main(int argc, char *argv[]) {
 
     /* size==0 */
     if (size==0) {
-        printf("Size can't be zero.\n\r");
+        printf("Size can't be zero.\n");
         exit(2);
     }
 
     if (size>1024) {
-        printf("This would take too long to print. Max size is 1024.\n\r");
+        printf("This would take too long to print. Max size is 1024.\n");
         exit(3);
     }
 
     /* overflow? */
     if (eaddr<addr) {
-        printf("Overflow. Your parameters pass known memory space.\n\r");
+        printf("Overflow. Your parameters pass known memory space.\n");
         exit(4);
     }
 
@@ -61,13 +61,13 @@ int main(int argc, char *argv[]) {
     char bytes[3 * BYTES_PER_ROW + 1 ]; memset(bytes,0,3 * BYTES_PER_ROW + 1);
 
     /* Dump it. */
-    printf("\n\rMemory dump 0x%04x - 0x%04x\n\r", addr, eaddr);
+    printf("\nMemory dump 0x%04x - 0x%04x\n", addr, eaddr);
 
     /* Iterate */
     int missing=0;
     do {
         /* Print memory address. */
-        printf("\n\r%04x  ",addr);
+        printf("\n%04x  ",addr);
 
         /* Calculate row end address. */
         int erow = addr + BYTES_PER_ROW;
@@ -108,6 +108,6 @@ int main(int argc, char *argv[]) {
     } while (addr<eaddr);
 
     /* Newline */
-    printf("\n\r");
+    printf("\n");
     return 0;
 }

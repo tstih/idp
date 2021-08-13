@@ -14,6 +14,7 @@
  */
 #include <stdbool.h>
 #include <time.h>
+#include <stdlib.h>
 #include <partner.h>
 
 #include <util/leanmean.h>
@@ -23,6 +24,9 @@
 /* initialize partner library, called from the standard library! */
 extern void _init_conio();
 void libinit() {
+
+    /* Change newline type to DOS. */
+    nltype=NL_LFCR;
 
     /* Initialize console. */
     _init_conio();

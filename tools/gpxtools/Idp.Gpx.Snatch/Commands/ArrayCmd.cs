@@ -50,6 +50,9 @@ namespace Idp.Gpx.Snatch.Commands
             First = 32;
             Last = 127;
             Format = "glyphs";
+            GridColumns = 16;
+            PointColor = "#000000";
+            TransparentColor = "#ffffff";
         }
         #endregion // Ctor
 
@@ -81,6 +84,9 @@ namespace Idp.Gpx.Snatch.Commands
         [Argument(Aliases = "fmt", Description = "Export format: grid, c, asm, glyphs.")]
         public string Format { get; set; }
 
+        [Argument(Aliases = "gc", Required = false, Description = "Grid columns (for grid export).")]
+        public int GridColumns { get; set; }
+
         [Argument(Aliases = "hp,ghp", Required = false, Description = "Glyph horizontal padding.")]
         public int HorizontalPadding { get; set; }
 
@@ -100,7 +106,7 @@ namespace Idp.Gpx.Snatch.Commands
         public string PointColor { get; set; }
 
         [Argument(Aliases = "m,mc", Required = false, Description = "Mask color in (r,g,b) format, no spaces!")]
-        public string MackColorColor { get; set; }
+        public string MaskColor { get; set; }
 
         [Argument(Aliases = "tc", Required = false, Description = "Transparent color in (r,g,b) format, no spaces!")]
         public string TransparentColor { get; set; }

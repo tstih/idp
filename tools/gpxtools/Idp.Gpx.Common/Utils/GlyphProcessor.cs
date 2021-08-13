@@ -58,6 +58,41 @@ namespace Idp.Gpx.Common.Utils
 
         #region Method(s)
 
+        public Color ColorFromString(string color)
+        {
+            if (color.StartsWith('#'))
+            {
+                int r = Convert.ToInt32(color.Substring(1, 2), 16);
+                int g = Convert.ToInt32(color.Substring(3, 2), 16);
+                int b = Convert.ToInt32(color.Substring(5, 2), 16);
+                return Color.FromArgb(r, g, b);
+            } else // Should be r,g,b; no spaces.
+            {
+                string[] srgb = color.Split(new char[] { ',' });
+                int r = int.Parse(srgb[0]);
+                int g = int.Parse(srgb[1]);
+                int b = int.Parse(srgb[2]);
+                return Color.FromArgb(r, g, b);
+            }
+        }
+
+        public Bitmap ToMono(
+            Color srcFore, Color srcBack,
+            Color dstFore, Color dstBack,
+            byte srcTres = 30)
+        {
+            Bitmap result = new Bitmap(_bmp.Width, _bmp.Height);
+            for (int y = 0; y < _bmp.Height; y++)
+                for (int x = 0; x < _bmp.Width; x++)
+                {
+                    if (IsPixel(x, y, srcFore, srcTres))
+                        result.SetPixel(x, y, dstFore);
+                    else
+                        result.SetPixel(x, y, dstBack);
+                }
+            return result;
+        }
+
         public Bitmap QuantDither(Color[] reduced)
         {
             Bitmap result = new Bitmap(_bmp.Width, _bmp.Height);
@@ -740,6 +775,16 @@ namespace Idp.Gpx.Common.Utils
         }
 
         #endregion // Method(s)
+
+        #region Properties
+        public Bitmap Image
+        {
+            get
+            {
+                return _bmp;
+            }
+        }
+        #endregion // Properties
 
         #region Helper(s)
 

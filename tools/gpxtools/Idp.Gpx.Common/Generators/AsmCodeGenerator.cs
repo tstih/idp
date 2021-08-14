@@ -138,7 +138,7 @@ namespace Idp.Gpx.Common.Generators
                 { // Row start.
 
                     if (index != 0) // We have full string builder.
-                        AddDirective("dw", sb.ToString());
+                        AddDirective("db", sb.ToString());
 
                     // And reset string builder.
                     sb = new StringBuilder();

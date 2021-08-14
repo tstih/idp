@@ -2,7 +2,7 @@
   "profiles": {
     "Idp.Gpx.Partnerize": {
       "commandName": "Project",
-      "commandLineArgs": "dither -o tut -file img\\tut.png -w 128"
+      "commandLineArgs": "dither -o aliens -file img\\aliens.jpg -w 255 -inv"
     }
   }
 }

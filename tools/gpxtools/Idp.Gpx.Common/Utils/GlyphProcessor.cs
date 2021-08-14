@@ -790,8 +790,13 @@ namespace Idp.Gpx.Common.Utils
             bits = new BitArray(8 * bytesPerGlyphLine * _bmp.Height, false);
             for (int y = 0; y < _bmp.Height; y++)
                 for (int x = 0; x < _bmp.Width; x++)
-                    bits[y * 8 * bytesPerGlyphLine + x] =
-                        IsPixel(x,y, Color.Black); // TODO: configure pixel color.
+                {
+                    int pixbyte = x / 8;
+                    int pixbit = x % 8;
+                    int pixX = 8 * pixbyte + 7 - pixbit;
+                    bits[y * 8 * bytesPerGlyphLine + pixX] =
+                        IsPixel(x, y, Color.Black); // TODO: configure pixel color.
+                }
             return bits;
         }
 

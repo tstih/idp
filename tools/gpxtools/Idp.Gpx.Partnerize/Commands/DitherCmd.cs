@@ -45,6 +45,9 @@ namespace Idp.Gpx.Partnerize.Commands
         [Argument(Aliases = "h", Required = false, Description = "Fit to this height. Only for reducing size.")]
         public int Height { get; set; }
 
+        [Argument(Aliases = "inv", Required = false, Description = "Inverse bitmap.")]
+        public bool Inverse { get; set; }
+
         #endregion // Command Line Arguments
 
         #region Properties
@@ -63,7 +66,7 @@ namespace Idp.Gpx.Partnerize.Commands
             Err = err;
 
             // Dither.
-            Bitmap dithered=Dither(Filename);
+            Bitmap dithered=Dither(Filename, Inverse);
 
             // And export as asm.
             Export(dithered);
@@ -95,8 +98,8 @@ namespace Idp.Gpx.Partnerize.Commands
                 .AddLabel("_" + id, true)
                 .AddComment("raster header")
                 .AddDirective("db", (byte)(stride - 1), "class(top nibble) + stride(bot nibble)")
-                .AddDirective("db", dithered.Width.ToString(), "width")
-                .AddDirective("db", dithered.Height.ToString(), "height")
+                .AddDirective("db", (dithered.Width-1).ToString(), "width")
+                .AddDirective("db", (dithered.Height-1).ToString(), "height")
                 .AddDirective("db", 0, "reserved")
                 .AddComment("bitmap raw data");
 
@@ -114,7 +117,7 @@ namespace Idp.Gpx.Partnerize.Commands
                 for(int x=0;x<dithered.Width;x++)
                 {
                     int offset = y * stride + x / 8;
-                    int bit = x % 8;
+                    int bit = 7 - (x % 8);
                     int b = bytes[offset];
                     b = b >> bit;
                     b = b & 0x01;
@@ -126,11 +129,17 @@ namespace Idp.Gpx.Partnerize.Commands
 
             bmp.Save(Output + ".png", ImageFormat.Png);
 
-            File.WriteAllBytes(Output + ".bin", bytes);
-
+            using (FileStream fileStream = new FileStream(Output + ".gph", FileMode.Create))
+            {
+                fileStream.WriteByte((byte)(stride-1));
+                fileStream.WriteByte((byte)(dithered.Width - 1));
+                fileStream.WriteByte((byte)(dithered.Height - 1));
+                fileStream.WriteByte(0);
+                fileStream.Write(bytes);
+            }
         }
 
-        Bitmap Dither(string fname)
+        Bitmap Dither(string fname, bool inverse=false)
         {
             // Generate...
             Color[] monochrome = new Color[]
@@ -142,7 +151,17 @@ namespace Idp.Gpx.Partnerize.Commands
             // Load...
             GlyphProcessor gproc=new GlyphProcessor(fname);
             gproc.SizeToFit(Width, Height);
-            return gproc.QuantDither(monochrome);
+            Bitmap dithered=gproc.QuantDither(monochrome);
+            if (inverse)
+            {
+                for (int y = 0; y < dithered.Height; y++)
+                    for (int x = 0; x < dithered.Width; x++)
+                        if (dithered.GetPixel(x, y) == monochrome[0])
+                            dithered.SetPixel(x, y, monochrome[1]);
+                        else
+                            dithered.SetPixel(x, y, monochrome[0]);
+            }
+            return dithered;
         }
         #endregion // Helper(s)
     }

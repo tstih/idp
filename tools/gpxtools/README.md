@@ -38,9 +38,14 @@ Partnerize tool converts images to Partner format and exports them in
 The `dither` commands accepts an image, dithers it, and exports is as
 `BIN`, `PNG`, and `S` file. 
 
-The commend accepts two arguments: 
+The commend accepts arguments: 
  * `-o` or `-save` is the output filename without extension
  * `-f` or `-file` is the input image filename
+ * `-w` or `-width` is the desired width
+ * `-h` or `-height` is the desired height
+
+Image will never be upscaled, but it will be downscaled if too
+big to fit `-w` and `-h`. The proportions will be maintained.
 
 Example:
 

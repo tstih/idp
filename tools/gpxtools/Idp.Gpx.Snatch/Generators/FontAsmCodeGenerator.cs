@@ -9,13 +9,12 @@
  * 02.04.2021   tstih
  * 
  */
+using System;
+using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 
-using XYZ.Formats;
 using Idp.Gpx.Common.Generators;
-using System;
-using System.Collections.Generic;
 
 namespace Idp.Gpx.Snatch.Generators
 {

@@ -17,8 +17,6 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using XYZ.Ex;
-using XYZ.Formats;
 using Idp.Gpx.Common.CmdLine;
 
 using Idp.Gpx.Common.Generators;

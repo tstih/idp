@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ByteArrayEx.cs
  * 
  * Extension functions for byte array.
@@ -15,9 +15,11 @@
  */
 using System.Runtime.InteropServices;
 
-namespace XYZ.Ex {
+namespace Idp.Gpx.Common.Ex
+{
 
-    public static class ByteArrayEx {
+    public static class ByteArrayEx
+    {
 
         /// <summary>
         /// Convert byte array to struct. The struct should have the
@@ -27,7 +29,7 @@ namespace XYZ.Ex {
         {
             S result;
             GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-            result = (S)Marshal.PtrToStructure(handle.AddrOfPinnedObject(),typeof(S));
+            result = (S)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(S));
             handle.Free();
             return result;
         }
@@ -36,7 +38,7 @@ namespace XYZ.Ex {
         /// Convert struct to byte array. The struct should have the
         /// [StructLayout(LayoutKind.Explicit)] attribute.
         /// </summary>
-        public static byte[] ToByteArray<S>(this S s) where S: struct
+        public static byte[] ToByteArray<S>(this S s) where S : struct
         {
             //Set the buffer to the correct size 
             byte[] buffer = new byte[Marshal.SizeOf(s)];

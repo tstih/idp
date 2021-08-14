@@ -13,8 +13,6 @@ using System;
 using System.Collections;
 using System.Text;
 
-using XYZ.Formats;
-
 namespace Idp.Gpx.Common.Generators
 {
     public class AsmCodeGenerator : CodeGenerator

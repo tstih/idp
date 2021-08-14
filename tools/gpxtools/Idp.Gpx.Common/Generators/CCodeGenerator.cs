@@ -12,10 +12,10 @@
 using System;
 using System.Text;
 
-using XYZ.Formats;
-using XYZ.Ex;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Idp.Gpx.Common.Data;
+using Idp.Gpx.Common.Ex;
 
 namespace Idp.Gpx.Common.Generators
 {

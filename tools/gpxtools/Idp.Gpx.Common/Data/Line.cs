@@ -11,7 +11,7 @@
  */
 using System.Runtime.InteropServices;
 
-namespace XYZ.Formats
+namespace Idp.Gpx.Common.Data
 {
     [StructLayout(LayoutKind.Explicit, CharSet = CharSet.Ansi)]
     public struct Line

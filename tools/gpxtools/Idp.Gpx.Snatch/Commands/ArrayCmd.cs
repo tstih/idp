@@ -18,16 +18,12 @@
  * 
  */
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
 
-using XYZ.Formats;
 using Idp.Gpx.Common.CmdLine;
-using Idp.Gpx.Snatch.Generators;
 using Idp.Gpx.Snatch.Exports;
 
 namespace Idp.Gpx.Snatch.Commands

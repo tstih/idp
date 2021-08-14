@@ -9,13 +9,9 @@
  * 02.03.2021   tstih
  * 
  */
-using System.Collections;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
-
-using XYZ.Formats;
 
 using Idp.Gpx.Snatch.Commands;
 using Idp.Gpx.Snatch.Generators;
@@ -54,11 +50,11 @@ namespace Idp.Gpx.Snatch.Exports
             _headers = new FontAsmCodeGenerator(_headersInternal);
             _data = new FontAsmCodeGenerator(_dataInternal);
             byte bytesPerGlyphLine = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
-            int generation = (int)GenerationGlyphType.Font;
+            int generation = (int)0;
             if (!cmd.Proportional)
-                generation |= (int)FontType.Fixed;
+                generation |= (int)1;
             if (cmd.Tiny) 
-                generation |= (int)((int)GenerationDrawMode.Tiny<<3);
+                generation |= (int)((int)1<<3);
             _headers.AddFontHeader(
                 cmd.Output,
                 (byte)generation,

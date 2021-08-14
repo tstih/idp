@@ -18,18 +18,16 @@
  * 
  */
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using XYZ.Ex;
-using XYZ.Formats;
+
 using Idp.Gpx.Common.CmdLine;
-using System.IO;
 using Idp.Gpx.Common.Generators;
-using System;
 using Idp.Gpx.Common.Utils;
+using Idp.Gpx.Common.Data;
 
 namespace Idp.Gpx.Silhouette.Commands {
 
@@ -87,15 +85,6 @@ namespace Idp.Gpx.Silhouette.Commands {
             Std = std;
             Err = err;
 
-            AnimationHeader a = new AnimationHeader()
-            {
-                GlyphHeader = new GlyphHeader()
-                {
-                    Generation= (byte)((int)GenerationGlyphType.Animation|((int)GenerationDrawMode.Lines<<3)),
-                    LineWidthInBytes=0
-                }
-            };
-
             // For each bitmap in animated gif...
             int frameCount = 0;
             List<AnimationFrame> frames = new List<AnimationFrame>();
@@ -115,7 +104,6 @@ namespace Idp.Gpx.Silhouette.Commands {
                 // Next image.
                 frameCount++;
             }
-            a.GlyphHeader.Width = (ushort)w; a.GlyphHeader.Height = (ushort)h;
 
             // Finally, export full animation.
             // And, finally, write C code.
@@ -130,9 +118,9 @@ namespace Idp.Gpx.Silhouette.Commands {
                     .LineOfCode(string.Format("byte_t {0}[] = {{", Output.ToLower()));
 
                 // Export glyph header first.
-                cgen.CommentedByte((byte)a.GlyphHeader.Generation, "Lines animation format.", true);
-                cgen.CommentedShort((ushort)a.GlyphHeader.Width, string.Format("Glyph width={0}.", a.GlyphHeader.Width));
-                cgen.CommentedShort((ushort)a.GlyphHeader.Height, string.Format("Glyph height={0}.", a.GlyphHeader.Height));
+                cgen.CommentedByte((byte)0, "Lines animation format.", true);
+                cgen.CommentedShort((ushort)w, string.Format("Glyph width={0}.", w));
+                cgen.CommentedShort((ushort)h, string.Format("Glyph height={0}.", h));
                 cgen.CommentedByte((byte)0, "Reserved byte. Only used for raster graphics.");
                 cgen.CommentedByte((byte)frames.Count, string.Format("# animation frames={0}.", frames.Count));
 

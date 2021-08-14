@@ -9,21 +9,13 @@
  * 13.06.2021   tstih
  * 
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 
-using XYZ.Ex;
-using XYZ.Formats;
 using Idp.Gpx.Common.CmdLine;
 
 using Idp.Gpx.Common.Generators;
-
-using Idp.Gpx.Common.Utils;
 
 namespace Idp.Gpx.Partnerize.Commands
 {

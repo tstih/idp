@@ -9,14 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Idp.Gpx.Silhouette", "Idp.G
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Idp.Gpx.Snatch", "Idp.Gpx.Snatch\Idp.Gpx.Snatch.csproj", "{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XYZ", "XYZ\XYZ.csproj", "{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{56B276F6-5250-4022-BA62-F34CE66B8557}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Idp.Gpx.Partnerize", "Idp.Gpx.Partnerize\Idp.Gpx.Partnerize.csproj", "{CC2EAB6B-036E-41A8-B2E7-5B8F3A85F4BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Idp.Gpx.Partnerize", "Idp.Gpx.Partnerize\Idp.Gpx.Partnerize.csproj", "{CC2EAB6B-036E-41A8-B2E7-5B8F3A85F4BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,18 +62,6 @@ Global
 		{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}.Release|x64.Build.0 = Release|Any CPU
 		{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}.Release|x86.ActiveCfg = Release|Any CPU
 		{B108BD3D-8A09-46BF-9E71-AF7FF6F5EEA7}.Release|x86.Build.0 = Release|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x64.Build.0 = Debug|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Debug|x86.Build.0 = Debug|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x64.ActiveCfg = Release|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x64.Build.0 = Release|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x86.ActiveCfg = Release|Any CPU
-		{301E88BE-82B1-4AFD-8E49-CF4E78B7065F}.Release|x86.Build.0 = Release|Any CPU
 		{CC2EAB6B-036E-41A8-B2E7-5B8F3A85F4BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC2EAB6B-036E-41A8-B2E7-5B8F3A85F4BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC2EAB6B-036E-41A8-B2E7-5B8F3A85F4BB}.Debug|x64.ActiveCfg = Debug|Any CPU

@@ -10,14 +10,16 @@
  * 
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-using XYZ.Formats;
+using AForge.Imaging.Filters;
+
 using Idp.Gpx.Common.Ex;
-using System.Collections;
+using Idp.Gpx.Common.Data;
 
 namespace Idp.Gpx.Common.Utils
 {
@@ -37,6 +39,14 @@ namespace Idp.Gpx.Common.Utils
         #endregion // Private(s)
 
         #region Ctor
+        public GlyphProcessor(string filename, PixelFormat pf=PixelFormat.Format24bppRgb)
+        {
+            var bmp = Bitmap.FromFile(filename) as Bitmap;
+            _bmp = AForge.Imaging.Image.Clone(
+                Bitmap.FromFile(filename) as Bitmap,
+                pf);
+        }
+
         public GlyphProcessor(Bitmap bmp)
         {
             _bmp = bmp;
@@ -57,6 +67,25 @@ namespace Idp.Gpx.Common.Utils
         #endregion // Ctor
 
         #region Method(s)
+        public Bitmap SizeToFit(int w, int h)
+        {
+            float scaleFactor = ScaleFactor(
+                new Rectangle(0, 0, w, h), // Desired size.
+                new Rectangle(0, 0, _bmp.Width, _bmp.Height) // Actual size
+                );
+            if (scaleFactor < 1) // Only reduce size. Don't increase!
+            {
+                int newWidth = (int)Math.Floor((float)_bmp.Width * scaleFactor);
+                int newHeight = (int)Math.Floor((float)_bmp.Height * scaleFactor);
+                // Resize filter.
+                ResizeBicubic filter = new ResizeBicubic(newWidth, newHeight);
+                // apply the filter
+                Bitmap newImage = filter.Apply(_bmp);
+                _bmp = newImage;
+            }
+            // And return it too.
+            return _bmp;
+        }
 
         public Color ColorFromString(string color)
         {
@@ -787,6 +816,14 @@ namespace Idp.Gpx.Common.Utils
         #endregion // Properties
 
         #region Helper(s)
+
+        private float ScaleFactor(Rectangle outer, Rectangle inner)
+        {
+            float factor = (float)outer.Height / (float)inner.Height;
+            if ((float)inner.Width * factor > outer.Width) // Switch!  
+                factor = (float)outer.Width / (float)inner.Width;
+            return factor;
+        }
 
         private static void TransferError(
              Bitmap bmp,

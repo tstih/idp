@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Idp.Gpx.Common\Idp.Gpx.Common.csproj" />
-    <ProjectReference Include="..\XYZ\XYZ.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -28,6 +28,7 @@ namespace Idp.Gpx.Partnerize.Commands
         #region Ctor
         public DitherCmd()
         {
+            Width = Height = 1024;
         }
         #endregion // Ctor
 
@@ -37,6 +38,13 @@ namespace Idp.Gpx.Partnerize.Commands
 
         [Argument(Aliases = "o,save", Required = false, Description = "Output filename without extension (default=ani, extension depends on format)")]
         public string Output { get; set; }
+
+        [Argument(Aliases = "w", Required = false, Description = "Fit to this width. Only for reducing size.")]
+        public int Width { get; set; }
+
+        [Argument(Aliases = "h", Required = false, Description = "Fit to this height. Only for reducing size.")]
+        public int Height { get; set; }
+
         #endregion // Command Line Arguments
 
         #region Properties
@@ -70,20 +78,26 @@ namespace Idp.Gpx.Partnerize.Commands
         {
             // Now generate assembly.
             StringBuilder assembly = new StringBuilder();
-            string id = string.Format("{0}_bitmap", Output);
+            string id = string.Format("{0}_raster", Output);
             AsmCodeGenerator gen = new AsmCodeGenerator(assembly, 2, 8);
 
             // Generate standard header.
-            gen.AddHeader(Output, id, ".s", "see glyph.h for format details")
+            int stride = 0;
+            if (dithered.Width % 8 != 0)
+                stride = dithered.Width / 8 + 1;
+            else
+                stride = dithered.Width / 8;
+
+            gen.AddHeader(Output, id, ".s", "see gpx.h for format details")
                 .AddDirective("module", id).NextLine()
                 .AddDirective("globl", "_" + id).NextLine()
                 .AddDirective("area", "_CODE")
                 .AddLabel("_" + id, true)
-                .AddComment("bitmap header")
-                .AddDirective("db", (byte)0, "bitmap generation")
-                .AddDirective("dw", dithered.Width.ToString(), "bitmap width")
-                .AddDirective("dw", dithered.Height.ToString(), "bitmap height")
-                .AddDirective("db", (byte)Math.Floor((float)dithered.Width/8.0f), "bitmap stride")
+                .AddComment("raster header")
+                .AddDirective("db", (byte)(stride - 1), "class(top nibble) + stride(bot nibble)")
+                .AddDirective("db", dithered.Width.ToString(), "width")
+                .AddDirective("db", dithered.Height.ToString(), "height")
+                .AddDirective("db", 0, "reserved")
                 .AddComment("bitmap raw data");
 
             GlyphProcessor gproc = new GlyphProcessor(dithered);
@@ -95,11 +109,6 @@ namespace Idp.Gpx.Partnerize.Commands
 
             // Now convert back from byes and save image as a test.
             Bitmap bmp = new Bitmap(dithered.Width, dithered.Height);
-            int stride;
-            if (dithered.Width % 8 != 0)
-                stride = dithered.Width / 8 + 1;
-            else
-                stride = dithered.Width / 8;
 
             for(int y=0;y<dithered.Height;y++)
                 for(int x=0;x<dithered.Width;x++)
@@ -131,7 +140,8 @@ namespace Idp.Gpx.Partnerize.Commands
             };
 
             // Load...
-            GlyphProcessor gproc=new GlyphProcessor(Image.FromFile(fname) as Bitmap);
+            GlyphProcessor gproc=new GlyphProcessor(fname);
+            gproc.SizeToFit(Width, Height);
             return gproc.QuantDither(monochrome);
         }
         #endregion // Helper(s)

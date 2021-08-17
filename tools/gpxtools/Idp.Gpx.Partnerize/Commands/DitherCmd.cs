@@ -97,14 +97,14 @@ namespace Idp.Gpx.Partnerize.Commands
                 .AddDirective("area", "_CODE")
                 .AddLabel("_" + id, true)
                 .AddComment("raster header")
-                .AddDirective("db", (byte)(stride - 1), "class(top nibble) + stride(bot nibble)")
+                .AddDirective("db", (byte)(stride - 1), "class(bits 5-7) + stride(bits 0-4)")
                 .AddDirective("db", (dithered.Width-1).ToString(), "width")
                 .AddDirective("db", (dithered.Height-1).ToString(), "height")
                 .AddDirective("db", 0, "reserved")
                 .AddComment("bitmap raw data");
 
             GlyphProcessor gproc = new GlyphProcessor(dithered);
-            byte[] bytes = gproc.ToBytes();
+            byte[] bytes = gproc.ToBytes(Color.Black);
             gen.AddByteTable(bytes, 16);
 
             // And save as text.
@@ -129,7 +129,7 @@ namespace Idp.Gpx.Partnerize.Commands
 
             bmp.Save(Output + ".png", ImageFormat.Png);
 
-            using (FileStream fileStream = new FileStream(Output + ".gph", FileMode.Create))
+            using (FileStream fileStream = new FileStream(Output + ".g", FileMode.Create))
             {
                 fileStream.WriteByte((byte)(stride-1));
                 fileStream.WriteByte((byte)(dithered.Width - 1));

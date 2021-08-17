@@ -119,7 +119,7 @@ namespace Idp.Gpx.Partnerize.Commands
                 .AddComment("bitmap raw data");
 
             GlyphProcessor gproc = new GlyphProcessor(processedBmp);
-            byte[] bytes = gproc.ToBytes();
+            byte[] bytes = gproc.ToBytes(Color.Black);
             gen.AddByteTable(bytes, 16);
 
             // And save as text.

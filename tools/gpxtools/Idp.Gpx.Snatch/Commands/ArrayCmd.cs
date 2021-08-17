@@ -49,6 +49,7 @@ namespace Idp.Gpx.Snatch.Commands
             GridColumns = 16;
             PointColor = "#000000";
             TransparentColor = "#ffffff";
+            HorizontalSpacingHint = 0;
         }
         #endregion // Ctor
 
@@ -115,6 +116,9 @@ namespace Idp.Gpx.Snatch.Commands
 
         [Argument(Aliases = "ew", Required = false, Description = "Empty glyph width?")]
         public int EmptyWidth { get; set; }
+
+        [Argument(Aliases = "hsh", Required = false, Description = "Hint best horizontal spacing. 0-15.")]
+        public int HorizontalSpacingHint { get; set; }
         #endregion // Command Line Arguments
 
         #region Properties
@@ -139,10 +143,7 @@ namespace Idp.Gpx.Snatch.Commands
             Dictionary<string, Export> exports = new Dictionary<string, Export>(StringComparer.InvariantCultureIgnoreCase)
             {
                 { "grid", new GridExport() },
-                /*{ "c", new CExport() },*/
-                { "asm", new AsmExport() },
-                { "glyphs", ie },
-                { "images", ie },
+                { "asm", new AsmExport() }
             };
 
             // Format must be valid.

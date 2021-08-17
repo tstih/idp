@@ -782,27 +782,57 @@ namespace Idp.Gpx.Common.Utils
             return result;
         }
 
-        public BitArray ToBits()
+        public void FindGlyphBounds(out Rectangle bounds, int emptyWidth, Color foreColor, byte threshold = 30)
         {
-            // Char to bitfield.
-            BitArray bits;
-            int bytesPerGlyphLine = (byte)((_bmp.Width - 1) / 8 + 1);
-            bits = new BitArray(8 * bytesPerGlyphLine * _bmp.Height, false);
+            // First scan character and find min and max pixel position.
+            int minx = _bmp.Width, maxx = 0;
+            bool isEmpty = true; // Assume empty glyph.
             for (int y = 0; y < _bmp.Height; y++)
                 for (int x = 0; x < _bmp.Width; x++)
+                    if (IsPixel(x, y, foreColor, threshold))
+                    {
+                        if (x > maxx) maxx = x;
+                        if (x < minx) minx = x;
+                        isEmpty = false;
+                    }
+            int charWidth = maxx - minx;
+            if (isEmpty)
+                bounds = new Rectangle(0, 0, emptyWidth, _bmp.Height);
+            else
+                bounds = new Rectangle(minx, 0, maxx-minx+1, _bmp.Height);
+        }
+
+        public BitArray ToBits(Color foreColor, int threshold=30, Rectangle? bounds=null)
+        {
+            // First fix bounds.
+            if (!bounds.HasValue)
+                bounds = new Rectangle(0, 0, _bmp.Width, _bmp.Height);
+            else
+                bounds = new Rectangle(bounds.Value.Left, 0,
+                    bounds.Value.Width, _bmp.Height);
+
+            // Char to bitfield.
+            BitArray bits;
+
+            int bytesPerGlyphLine = Stride(bounds.Value.Width);
+            bits = new BitArray(8 * bytesPerGlyphLine * _bmp.Height, false);
+            for (int y = 0; y < _bmp.Height; y++)
+                for (int x = bounds.Value.Left; 
+                    x < bounds.Value.Left + bounds.Value.Width; 
+                    x++)
                 {
-                    int pixbyte = x / 8;
-                    int pixbit = x % 8;
+                    int pixbyte = (x - bounds.Value.Left) / 8;
+                    int pixbit = (x-bounds.Value.Left) % 8;
                     int pixX = 8 * pixbyte + 7 - pixbit;
                     bits[y * 8 * bytesPerGlyphLine + pixX] =
-                        IsPixel(x, y, Color.Black); // TODO: configure pixel color.
+                        IsPixel(x, y, foreColor, (byte)threshold); 
                 }
             return bits;
         }
 
-        public byte[] ToBytes()
+        public byte[] ToBytes(Color foreColor, int threshold = 30)
         {
-            BitArray bits=ToBits();
+            BitArray bits=ToBits(foreColor,threshold,null);
             byte[] ret = new byte[(bits.Length - 1) / 8 + 1];
             bits.CopyTo(ret, 0);
             return ret;
@@ -821,6 +851,14 @@ namespace Idp.Gpx.Common.Utils
         #endregion // Properties
 
         #region Helper(s)
+
+        private int Stride(int width)
+        {
+            if (width % 8 != 0)
+                return width / 8 + 1;
+            else
+                return width / 8;
+        }
 
         private float ScaleFactor(Rectangle outer, Rectangle inner)
         {

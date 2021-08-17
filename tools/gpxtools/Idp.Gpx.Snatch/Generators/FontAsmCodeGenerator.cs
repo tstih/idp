@@ -29,14 +29,16 @@ namespace Idp.Gpx.Snatch.Generators
         #region Method(s)
         public void AddFontHeader(
             string name,
-            byte generation,
+            byte fontFlags,
             byte width,
             byte height,
-            byte lineWidthInBytes,
             byte firstAscii,
             byte lastAscii)
         {
             string id = string.Format("{0}_font", name);
+
+            // 0 base width and height
+            width--; height--;
 
             // Generate standard header.
             AddHeader(name, id, ".s", "see font.h for format details")
@@ -45,10 +47,9 @@ namespace Idp.Gpx.Snatch.Generators
                 .AddDirective("area", "_CODE")
                 .AddLabel("_"+id, true)
                 .AddComment("font header")
-                .AddDirective("db", (byte)generation, "font generation")
-                .AddDirective("dw", width, "font width (max width for proportional)")
-                .AddDirective("dw", height, "font height")
-                .AddDirective("db", lineWidthInBytes, "line width in bytes (unused for tiny)")
+                .AddDirective("db", (byte)fontFlags, "font flags")
+                .AddDirective("db", width, "width (max width for proportional)")
+                .AddDirective("db", height, "height")
                 .AddDirective("db", firstAscii, "first ascii")
                 .AddDirective("db", lastAscii, "last ascii");
 
@@ -122,13 +123,6 @@ namespace Idp.Gpx.Snatch.Generators
             return new Tuple<string, string>(glyphName, glyphDesc);
         }
 
-        public void TableOfWidths(byte[] widths, int perRow = 8)
-        {
-            AddComment("table of widths");
-            AddByteTable(widths, perRow);
-            NextLine();
-        }
-
         public void GlyphOffsets(ushort[] offsets, int perRow = 8)
         {
             AddComment("glpyh offsets");
@@ -140,7 +134,9 @@ namespace Idp.Gpx.Snatch.Generators
             int ascii,
             BitArray bits,
             byte widthInBytes,
+            byte width,
             byte height,
+            List<byte> bin,
             byte originx = 0,
             byte originy = 0)
         {
@@ -151,7 +147,19 @@ namespace Idp.Gpx.Snatch.Generators
             // First add glyph comment.
             AddComment(glyphDesc);
 
-            // Now add glyph bytes.
+            // Now add glyph header ...
+            AddDirective("db", (byte)(widthInBytes - 1), "class(bits 5-7) + stride(bits 0-4)");
+            AddDirective("db", (width - 1).ToString(), "width");
+            AddDirective("db", (height - 1).ToString(), "height");
+            AddDirective("db", 0, "reserved");
+            // And binary...
+            bin.Add((byte)(widthInBytes - 1));
+            bin.Add((byte)(width - 1));
+            bin.Add((byte)(height - 1));
+            bin.Add((byte)(0));
+            bin.AddRange(BitArrayToByteArray(bits));
+
+            // ...and glyph bits.
             for (int line = 0; line < height; line++)
             {
                 _sb.Append(Tabs(_codeIdentTabs)); // Ident.
@@ -162,7 +170,7 @@ namespace Idp.Gpx.Snatch.Generators
                     _sb.Append("0b");
                     for (int bit = 0; bit < 8; bit++)
                     {
-                        int index = line * 8 * widthInBytes + 8 * byt + bit;
+                        int index = line * 8 * widthInBytes + 8 * byt + (7-bit);
                         _sb.Append(bits[index] ? 1 : 0);
                     }
                 }
@@ -171,5 +179,14 @@ namespace Idp.Gpx.Snatch.Generators
             _sb.AppendLine(); // Conclude glyph.
         }
         #endregion // Method(s)
+
+        #region Private(s)
+        private byte[] BitArrayToByteArray(BitArray bits)
+        {
+            byte[] ret = new byte[(bits.Length - 1) / 8 + 1];
+            bits.CopyTo(ret, 0);
+            return ret;
+        }
+        #endregion // Private(s)
     }
 }

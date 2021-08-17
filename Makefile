@@ -35,7 +35,7 @@ IHX					=	$(wildcard $(BUILD_DIR)/*.ihx)
 COM					=	$(patsubst %.ihx,%.com,$(IHX))
 APPS 				= 	$(filter-out %test.com %xp.com,$(COM))
 TESTS				= 	$(filter %test.com %xp.com,$(COM))
-TEST_DATA			=	$(wildcard $(BUILD_DIR)/*.tst)
+TEST_DATA			=	$(wildcard $(BUILD_DIR)/*.tst) $(wildcard $(BUILD_DIR)/*.gph)
 
 # CP/M User areas.
 APP_USER			=	0

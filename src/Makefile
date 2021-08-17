@@ -1,5 +1,5 @@
 # Folders
-SUBDIRS = hello utils games
+SUBDIRS = hello gshow utils games
 
 # Rules.
 .PHONY: all

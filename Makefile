@@ -35,7 +35,10 @@ IHX					=	$(wildcard $(BUILD_DIR)/*.ihx)
 COM					=	$(patsubst %.ihx,%.com,$(IHX))
 APPS 				= 	$(filter-out %test.com %xp.com,$(COM))
 TESTS				= 	$(filter %test.com %xp.com,$(COM))
-TEST_DATA			=	$(wildcard $(BUILD_DIR)/*.tst) $(wildcard $(BUILD_DIR)/*.gph)
+TEST_DATA			=	$(wildcard $(BUILD_DIR)/*.tst)
+GRAPHICS			=	$(wildcard $(BUILD_DIR)/*.g) \
+						$(wildcard $(BUILD_DIR)/*.f) \
+						$(wildcard $(BUILD_DIR)/*.a)
 
 # CP/M User areas.
 APP_USER			=	0
@@ -67,16 +70,16 @@ clean:
 	rm -f diskdefs
 
 .PHONY: install
-install: floppy $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
+install: floppy $(APPS) $(GRAPHICS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: ccp
-ccp: floppy-ccp $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
+ccp: floppy-ccp $(APPS) $(GRAPHICS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: boot
-boot: floppy-boot $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
+boot: floppy-boot $(APPS) $(GRAPHICS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: bootg
-bootg: floppy-bootg $(APPS) $(TESTS) $(TEST_DATA) bin hfe after
+bootg: floppy-bootg $(APPS) $(GRAPHICS) $(TESTS) $(TEST_DATA) bin hfe after
 
 .PHONY: floppy
 floppy:
@@ -107,6 +110,11 @@ hfe:
 $(APPS):
 	sdobjcopy -I ihex -O binary $(basename $@).ihx $(basename $@).com
 	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ $(APP_USER):$(@F)
+
+.PHONY: $(GRAPHICS)
+$(GRAPHICS):
+	cpmcp -f idpfdd $(BUILD_DIR)/fddb.img $@ $(APP_USER):$(@F)
+
 
 .PHONY: $(TESTS)
 $(TESTS):

@@ -18,22 +18,7 @@
 
 #include <gpx.h>
 
-/* stride */
-extern int _stridexy(
-    coord x, 
-    coord y, 
-    void *data, 
-    uint8_t start, 
-    uint8_t end);
-
-typedef struct raster_glyph_s {
-    uint8_t stride;
-    uint8_t width;
-    uint8_t height;
-    uint8_t reserved;
-} raster_glyph_t;
-
-raster_glyph_t *raster;
+glyph_t *glyph;
 
 int main(int argc, char *argv[]) {
 
@@ -53,30 +38,21 @@ int main(int argc, char *argv[]) {
     }
 
     /* Now that we've got the length, allocate memory. */
-    raster=malloc(statbuf.st_size);
+    glyph=malloc(statbuf.st_size);
 
     /* And load the file into it. */
     int fd=open(fname,O_RDONLY);
-    read(fd,raster,statbuf.st_size);
+    int bread=read(fd,glyph,statbuf.st_size);
     close(fd);
 
     /* enter graphics mode */
     gpx_t *g=gpx_init();
-
-    /* Pointer arith.. */
-    uint8_t *rasterdata=(uint8_t *)raster;
-    rasterdata += 4;
-    int tpos=0;
-
-    /* Draw */
-    for(int y=ypos;y<ypos+raster->height;y++) {
-        _stridexy(xpos,y,rasterdata,0,raster->width);
-        rasterdata = rasterdata + (raster->stride + 1);
-    }
+    
+    gpx_draw_glyph(g, xpos, ypos, glyph);
 
     /* leave graphics */
     gpx_exit(g);
 
     /* Free raster memory. */
-    free(raster);
+    free(glyph);
 }

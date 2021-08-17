@@ -11,7 +11,7 @@ L2FIX	= sed '/-b _DATA = 0x8000/d'
 
 # Source files.
 CRT0	=	crt0cpm3-z80
-TARGET	=	gshow-xp
+TARGET	=	gshow
 
 # Virtual paths are all subfolders!
 DIRS	=	$(wildcard */)
@@ -32,7 +32,7 @@ OBJS	=	$(addprefix $(BUILD_DIR)/, \
 # Rules.
 .PHONY: all
 all: $(BUILD_DIR)/$(TARGET).ihx
-	cp *.gph $(BUILD_DIR) 2>/dev/null || :
+	cp *.g $(BUILD_DIR) 2>/dev/null || :
 
 $(BUILD_DIR)/$(TARGET).ihx: $(OBJS)
 	$(LD) $(LDFLAGS) -o $(BUILD_DIR)/$(TARGET).ihx $(BUILD_DIR)/$(CRT0).rel $(OBJS)

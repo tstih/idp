@@ -9,6 +9,7 @@
  * 02.03.2021   tstih
  * 
  */
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -30,9 +31,10 @@ namespace Idp.Gpx.Snatch.Exports
         private FontAsmCodeGenerator _headers;
         private StringBuilder _dataInternal;
         private FontAsmCodeGenerator _data;
-        private byte[] _widths;
         private ushort[] _offs;
         private ushort _off;
+        private Color foreColor, backColor;
+        private List<byte> _bin;
         #endregion // Private(s)
 
         #region Ctor
@@ -46,25 +48,29 @@ namespace Idp.Gpx.Snatch.Exports
         #region Export Implementation
         public override RetCode Begin(ArrayCmd cmd)
         {
+            _bin = new List<byte>();
             _off = 0;
             _headers = new FontAsmCodeGenerator(_headersInternal);
             _data = new FontAsmCodeGenerator(_dataInternal);
-            byte bytesPerGlyphLine = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
-            int generation = (int)0;
-            if (!cmd.Proportional)
-                generation |= (int)1;
-            if (cmd.Tiny) 
-                generation |= (int)((int)1<<3);
+            // Bit 8 of font flags is for proportional font
+            int fontFlags = (int)cmd.HorizontalSpacingHint;
+            if (cmd.Proportional)
+                fontFlags |= (int)0x0080;
             _headers.AddFontHeader(
                 cmd.Output,
-                (byte)generation,
+                (byte)fontFlags,
                 (byte)cmd.GlyphWidth,
                 (byte)cmd.GlyphHeight,
-                bytesPerGlyphLine,
                 (byte)cmd.First,
                 (byte)cmd.Last);
-            _widths = new byte[cmd.Last - cmd.First + 1];
             _offs = new ushort[cmd.Last - cmd.First + 1];
+
+            // Add bytes to the binary structure.
+            _bin.Add((byte)fontFlags);
+            _bin.Add((byte)cmd.GlyphWidth);
+            _bin.Add((byte)cmd.GlyphHeight);
+            _bin.Add((byte)cmd.First);
+            _bin.Add((byte)cmd.Last);
 
             return RetCode.SUCCESS;
         }
@@ -73,6 +79,12 @@ namespace Idp.Gpx.Snatch.Exports
         {
             // First extract glyph to a separate bitmap.
             GlyphProcessor gp = new GlyphProcessor(cmd.SourceBitmap,cmd.CurrentGlyphRect);
+
+            // Get colors.
+            foreColor = gp.ColorFromString(cmd.PointColor);
+            backColor = gp.ColorFromString(cmd.TransparentColor);
+            int index = cmd.CurrentGlyphAscii - cmd.First;
+            int totalGlyphs = cmd.Last - cmd.First + 1;
 
             if (cmd.Tiny)
             {
@@ -83,27 +95,52 @@ namespace Idp.Gpx.Snatch.Exports
                     cmd.CurrentGlyphAscii,
                     moves);
                 // Remember glyph offset.
-                int index = cmd.CurrentGlyphAscii - cmd.First;
                 _offs[index] = _off;
-                if (moves != null)
-                    _widths[index] = (byte)(maxw);
-                else 
-                    _widths[index] = (byte)cmd.EmptyWidth;
                 int m;
                 if (moves != null) m = moves.Length; else m = 1;
                 _off = (ushort)(_off + m);
             }
             else
             {
-                var bytesPerGlyphLine = (byte)((cmd.GlyphWidth - 1) / 8 + 1);
-                var bits = gp.ToBits();
+                Rectangle glyphBounds;
+                if (cmd.Proportional)
+                {
+                    gp.FindGlyphBounds(
+                        out glyphBounds,
+                        cmd.EmptyWidth,
+                        foreColor,
+                        (byte)cmd.Threshold);
+                } 
+                else
+                    glyphBounds = new Rectangle(
+                        0, 0, cmd.GlyphWidth, cmd.GlyphHeight);
+
+                var bits = gp.ToBits(foreColor,(byte)cmd.Threshold,
+                    glyphBounds);
+
+                int stride;
+                if (glyphBounds.Width % 8 != 0)
+                    stride = glyphBounds.Width / 8 + 1;
+                else
+                    stride = glyphBounds.Width / 8;
 
                 // And generate as 0b const.
                 _data.AddRasterFontGlyph(
                     cmd.CurrentGlyphAscii,
                     bits,
-                    bytesPerGlyphLine,
-                    (byte)cmd.CurrentGlyphRect.Height, 0, 0);
+                    (byte)stride,
+                    (byte)glyphBounds.Width,
+                    (byte)glyphBounds.Height,
+                    _bin,
+                    0, 
+                    0);
+
+                // Add glyph to the table of offsets.
+                _offs[index] = _off;
+                _off = (ushort)(_off +
+                    4 + // Glyph header!
+                    stride * 
+                    glyphBounds.Height);
             }
 
             return RetCode.SUCCESS;
@@ -114,24 +151,20 @@ namespace Idp.Gpx.Snatch.Exports
             // Merge _data and _headers.
             StringBuilder asm = new StringBuilder();
 
-            // Pointers to letters if tiny.
-            if (cmd.Tiny)
-            {
-                _headers.GlyphOffsets(_offs);
-            }
-
-
-            // Table of width (if proportional).
-            if (cmd.Proportional)
-            {
-                _headers.TableOfWidths(_widths);
-            }
+            // Pointers to letters. Add header size (5)
+            // and 2 x offset table size
+            for (int i = 0; i < _offs.Length; i++)
+                _offs[i] = (ushort)(_offs[i] + 5 + 2 * _offs.Length);
+            _headers.GlyphOffsets(_offs);
 
             asm.Append(_headersInternal.ToString());
             asm.Append(_dataInternal.ToString());
 
             // Write result to text file.
             File.WriteAllText(cmd.Output + ".s", asm.ToString());
+
+            // And bin array to binary file.
+            File.WriteAllBytes(cmd.Output + ".f", _bin.ToArray());
 
             // And write result to std. output.
             cmd.Std.Append(asm.ToString());
